@@ -1,0 +1,28 @@
+# Dependencies & build
+node_modules/
+dist/
+
+# Secrets — never commit
+.env
+.env.*
+!.env.example
+.secrets/
+
+# Supabase CLI local state
+supabase/.temp/
+supabase/.branches/
+
+# Editors / OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+~$*
+
+# Assignment spec (local only)
+docs/*.docx
+
+# Logs
+*.log
+npm-debug.log*
