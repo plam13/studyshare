@@ -1,0 +1,97 @@
+/* StudyShare — global styles (on top of Bootstrap 5) */
+
+:root {
+  --ss-primary: #4f46e5;
+  --ss-primary-dark: #4338ca;
+  --ss-accent: #f59e0b;
+  --ss-bg: #f8f9fc;
+  --bs-primary: var(--ss-primary);
+  --bs-primary-rgb: 79, 70, 229;
+  --bs-link-color: var(--ss-primary);
+  --bs-link-hover-color: var(--ss-primary-dark);
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--ss-bg);
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+/* Buttons follow the brand color */
+.btn-primary {
+  --bs-btn-bg: var(--ss-primary);
+  --bs-btn-border-color: var(--ss-primary);
+  --bs-btn-hover-bg: var(--ss-primary-dark);
+  --bs-btn-hover-border-color: var(--ss-primary-dark);
+  --bs-btn-active-bg: var(--ss-primary-dark);
+  --bs-btn-active-border-color: var(--ss-primary-dark);
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--ss-primary);
+  --bs-btn-border-color: var(--ss-primary);
+  --bs-btn-hover-bg: var(--ss-primary);
+  --bs-btn-hover-border-color: var(--ss-primary);
+  --bs-btn-active-bg: var(--ss-primary-dark);
+}
+
+/* Navbar */
+.ss-navbar {
+  background: linear-gradient(90deg, var(--ss-primary-dark), var(--ss-primary));
+}
+
+.ss-brand {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.ss-brand .bi {
+  color: var(--ss-accent);
+}
+
+.ss-navbar .nav-link.active {
+  font-weight: 600;
+  border-bottom: 2px solid var(--ss-accent);
+}
+
+/* Cards with a subtle hover lift */
+.ss-card-hover {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ss-card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
+}
+
+/* Hero block on the home page */
+.ss-hero {
+  background: linear-gradient(135deg, var(--ss-primary), #7c3aed);
+  color: #fff;
+  border-radius: 1rem;
+}
+
+/* Empty / placeholder states */
+.ss-empty {
+  color: var(--bs-secondary-color);
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.ss-empty .bi {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+/* Footer */
+.ss-footer {
+  flex-shrink: 0;
+  background-color: #fff;
+  border-top: 1px solid var(--bs-border-color);
+}
