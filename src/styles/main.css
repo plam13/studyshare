@@ -76,6 +76,16 @@ main {
   border-radius: 1rem;
 }
 
+/* Auth (login / register) cards */
+.ss-auth-card {
+  border-radius: 1rem;
+}
+
+.ss-auth-icon {
+  font-size: 2.75rem;
+  color: var(--ss-primary);
+}
+
 /* Empty / placeholder states */
 .ss-empty {
   color: var(--bs-secondary-color);
