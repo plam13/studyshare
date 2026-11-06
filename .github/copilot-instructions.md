@@ -2,69 +2,106 @@
 
 These instructions give AI dev agents (GitHub Copilot, Claude Code, etc.) the context and rules for working on this project.
 
-## App context
+## Project
 
-**StudyShare** is a multi-page web app where students share study materials (PDF, DOCX, PPTX) organized by courses.
+**StudyShare** is a web app where students share study materials (PDF, DOCX, PPTX) organized by courses.
 
 - **Guests** browse courses and material lists.
-- **Users** (registered) upload materials, download files, comment, rate (1–5 stars), edit/delete **only their own** content, manage a profile with avatar.
+- **Users** (registered) upload materials, download files, comment, rate (1–5 stars), edit/delete **only their own** content, manage a profile with avatar, see a personal dashboard.
 - **Admins** additionally manage courses, moderate (delete any material/comment) and assign roles.
 
 UI language is **Bulgarian**. Code, identifiers, comments, commit messages and docs are in **English**.
 
 ## Tech stack (fixed — do not change)
 
-- **Frontend:** plain HTML, CSS, JavaScript (ES modules) + **Bootstrap 5** + **Bootstrap Icons**.
+- **Frontend:** vanilla JavaScript (ES modules), HTML, CSS, **Bootstrap 5**, **Bootstrap Icons**.
   - **No** TypeScript, **no** React/Vue/Angular/Svelte, no jQuery.
-- **Build:** Node.js, npm, **Vite** (multi-page mode).
-- **Backend:** **Supabase** — Postgres DB, Auth (JWT), Storage. Optional Edge Functions.
-  - Frontend talks to Supabase only via `@supabase/supabase-js` (REST API).
-- **Deploy:** Netlify.
+- **Build:** Node.js, npm, **Vite**.
+- **Backend:** **Supabase** — Postgres DB, Auth (JWT), Storage, optional Edge Functions.
+  - The browser talks to Supabase only via `@supabase/supabase-js` (REST API).
+- **Deploy:** Netlify (`public/_redirects` serves `index.html` for all routes).
 
 ## Architecture
 
-- **Multi-page navigation:** every screen is its own `*.html` file in the project root. No SPA router, no screens built as popups.
-  - Each new page must be registered in the `pages` list in `vite.config.js`.
-  - Pass parameters via the query string, e.g. `material.html?id=<uuid>`.
-- **Each HTML page** contains `<div id="app-header">`, `<main>`, `<div id="app-footer">` and loads exactly one module: `/src/pages/<page>.js`.
-- **Each page script** starts with `initPage({ activePage: '<page>' })` from `src/app.js` (loads Bootstrap, global CSS, renders header/footer).
+- **One `index.html` shell** with `#app-header`, `<main id="app">` and `#app-footer`. Entry point: `src/main.js`.
+- **One client-side router** (`src/router.js`) using the History API (`pushState` / `popstate`):
+  - Working Back/Forward, correct page on direct URL load, active nav link, page title, 404 page.
+  - Internal `<a href="/...">` links are intercepted; modified clicks, `target`, `download`, `data-external` and external links stay native.
+  - Focus moves to the page `<h1>` after navigation.
+  - Route access rules (`any` / `guest` / `user` / `admin`) are UX only — **RLS is the authorization boundary**.
+- **Pages** live in `src/pages/<page>/` as separate files: `<page>.html` (fragment), `<page>.css` (optional), `<page>.js`.
+  - HTML fragments **must not** include `html`, `head` or `body`; import them with Vite `?raw`.
+  - A page module exports `mount(container, ctx)`; it may return a cleanup function (called on unmount).
+    `ctx = { params, query, user, route, signal, navigate, setTitle }`. Use `ctx.signal` to cancel/ignore stale requests.
+  - Remove page-level listeners/subscriptions in the cleanup function (listeners on `container` children are dropped automatically).
+- **Shared components** in `src/components/<name>/` (header, footer, cards, rating stars…), each with its own JS/HTML/CSS.
+
+### Canonical routes
+
+| Route | Page | Access |
+|---|---|---|
+| `/` | Landing page | any |
+| `/login` | Login | guest |
+| `/register` | Register | guest |
+| `/dashboard` | User dashboard (after login) | user |
+| `/courses` | Course list | any |
+| `/courses/:id` | Materials in a course | any |
+| `/materials/add` | Upload material | user |
+| `/materials/:id` | Material details, download, comments, rating | any |
+| `/materials/:id/edit` | Edit material | user (author/admin) |
+| `/profile` | My profile | user |
+| `/admin` | Admin panel | admin |
+| `*` | Not Found | any |
+
+After login go to the safe `?redirect=` target or `/dashboard`; after logout go to `/`. Never allow open redirects.
 
 ### Folder responsibilities
 
 | Folder | Purpose |
 |---|---|
-| `src/pages/` | One JS file per HTML page: wires DOM events, calls services, renders results. No direct DB queries here. |
-| `src/components/` | Reusable UI renderers (header, footer, cards, rating stars…). Pure functions that return/insert HTML. |
-| `src/services/` | All Supabase access: `supabase.js` (single client), `auth.js`, `courses.js`, `materials.js`, `storage.js`, `admin.js`… |
-| `src/utils/` | Small generic helpers (DOM, formatting, validation, toasts, guards). |
-| `src/styles/` | Global CSS on top of Bootstrap (`main.css`). Prefer Bootstrap utility classes; add custom CSS with the `ss-` prefix. |
-| `supabase/migrations/` | SQL migrations — the only way to change the DB schema. |
-| `public/` | Static assets copied as-is (favicon, images). |
+| `src/main.js` | Global CSS/JS, layout, auth init, router start |
+| `src/router.js` | Route table, matching, guards, mount/unmount |
+| `src/pages/` | One folder per page: fragment + CSS + JS. No direct DB queries — call services. |
+| `src/components/` | Reusable UI components |
+| `src/services/` | All Supabase access: `supabase.js` (single client), `auth.js` (auth + current-user state), `courses.js`, `materials.js`, `storage.js`, `admin.js`… |
+| `src/utils/` | Small helpers: DOM/escaping, validation, toasts, guards, formatting |
+| `src/styles.css` | Global styles on top of Bootstrap; custom classes use the `ss-` prefix |
+| `supabase/migrations/` | SQL migrations — the only way to change the DB schema |
+| `scripts/` | Node.js maintenance scripts (seed, admin bootstrap) — server-side only |
+| `public/` | Static assets copied as-is (favicon, `_redirects`) |
 
 ### Rules
 
-- Keep files small and focused; avoid monolith scripts. Split logic into services/components when a page script grows.
-- Services return data or throw an `Error` with a user-friendly message; pages catch errors and show them to the user.
-- Always escape user content inserted via `innerHTML` with `escapeHtml()` from `src/utils/dom.js`.
+- Keep files small and focused; avoid monolith scripts.
+- Services return data or throw an `Error` with a user-friendly Bulgarian message; pages catch and display it.
+- Always escape user content inserted via `innerHTML` with `escapeHtml()`, or use `textContent`.
 - Use `async/await`, named exports, `const`/`let`, no globals.
-- Responsive design is required: use the Bootstrap grid, test at mobile width.
-- Use Bootstrap Icons (`<i class="bi bi-...">`) and visual feedback (spinners, toasts, disabled buttons while loading).
+- Responsive design is required (Bootstrap grid, test at mobile width). Use semantic HTML, visible focus, `prefers-reduced-motion`.
+- Use Bootstrap Icons and visual feedback (spinners, disabled buttons while saving, empty states).
+- **Toasts** (`src/utils/toast.js`: `showSuccess`, `showError`, `showInfo`): show for errors and significant mutations
+  (created, saved, deleted, uploaded). Do **not** show obvious ones ("login successful", "data loaded").
+  Keep field validation errors next to the input.
 
 ## Database & security
 
-- Tables: `profiles`, `user_roles`, `courses`, `materials`, `comments`, `ratings` (see README for the schema).
-- **Every schema change goes through a Supabase migration** in `supabase/migrations/` (`npx supabase migration new <name>`), then `npx supabase db push`. Never edit the schema only in the dashboard.
-- **RLS is enabled on every table.** Access control lives in RLS policies, not in the frontend. Frontend checks are only for UX.
-- Roles are stored in `user_roles` (`user` | `admin`); policies use the SQL helper `public.is_admin()`.
-- Storage buckets: `avatars` (public) and `materials` (private, downloaded via signed URLs). Bucket access is also enforced with storage policies.
+- Tables: `profiles`, `user_roles`, `courses`, `materials`, `comments`, `ratings` + view `material_stats` (see README).
+- **Every schema change is a migration** in `supabase/migrations/`:
+  `npx supabase migration new <name>` → write SQL → `npx supabase db push --remote --dry-run` → `npx supabase db push --remote`.
+  Never change the schema only in the dashboard.
+- **RLS is enabled on every table.** Roles are in `user_roles` (`user` | `admin`); policies use `public.is_admin()`.
+  Never accept roles from signup metadata. No public "become admin" operation.
+- Least-privilege grants: clients may only update allowed columns (e.g. not `author_id`, `downloads_count`).
+- Storage: `avatars` (public) and `materials` (private, download via short-lived signed URLs), protected by storage policies.
+  Delete Storage objects explicitly — DB cascades do not remove files.
 
 ## Secrets
 
-- `.env` holds `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` (publishable key — safe for the browser). It is git-ignored; `.env.example` is the template.
-- Never commit `.env`, `.secrets/`, the DB password, the service-role key or access tokens. Never use the service-role key in frontend code.
+- `.env` holds only public values: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`. `.env.example` is the template.
+- Never commit `.env`, `.secrets/`, the DB password, the service-role key or access tokens.
+- Privileged keys (service role) are used only in `scripts/` or Edge Functions, never with a `VITE_` prefix, never printed in logs.
 
 ## Workflow
 
 - AI dev loop: prompt → implement → run & test (`npm run dev`, `npm run build`) → refine → commit & push.
-- Make small, working commits with Conventional Commit messages (`feat:`, `fix:`, `chore:`, `docs:`, `refactor:`, `style:`).
-- Update `README.md` when adding pages, tables or setup steps.
+- Small, working commits with Conventional Commit messages (`feat:`, `fix:`, `chore:`, `docs:`, `refactor:`, `style:`).
+- Update `README.md` when adding routes, tables or setup steps.

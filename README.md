@@ -1,15 +1,34 @@
 # StudyShare
 
-A multi-page web app for sharing study materials by course. Students upload lecture notes, solved exercises and slides (PDF / DOCX / PPTX), download others' materials, comment and rate them. Admins manage courses, moderate content and assign roles.
+A web app for sharing study materials by course. Students upload lecture notes, solved exercises and slides (PDF / DOCX / PPTX), download others' materials, comment and rate them. Admins manage courses, moderate content and assign roles.
 
 > 🚧 Work in progress — capstone project for the SoftUni course “Software Technologies with AI”.
 
 ## Tech stack
 
-- **Frontend:** HTML, CSS, JavaScript (ES modules), Bootstrap 5, Bootstrap Icons
-- **Build:** Node.js, npm, Vite (multi-page)
+- **Frontend:** HTML, CSS, vanilla JavaScript (ES modules), Bootstrap 5, Bootstrap Icons
+- **Build:** Node.js, npm, Vite
 - **Backend:** Supabase (Postgres DB, Auth, Storage)
 - **Hosting:** Netlify
+
+## Architecture (short)
+
+- Single `index.html` shell + client-side router (`src/router.js`, History API) with clean URLs.
+- Each page is a separate folder in `src/pages/` (HTML fragment + CSS + JS), loaded on demand.
+- All data access goes through services in `src/services/`; authorization is enforced by Supabase RLS.
+
+### Routes
+
+| Route | Page | Access |
+|---|---|---|
+| `/` | Landing page | everyone |
+| `/login`, `/register` | Login / registration | guests |
+| `/dashboard` | User dashboard | users |
+| `/courses`, `/courses/:id` | Courses and their materials | everyone |
+| `/materials/add`, `/materials/:id/edit` | Upload / edit material | users |
+| `/materials/:id` | Material details | everyone |
+| `/profile` | My profile | users |
+| `/admin` | Admin panel | admins |
 
 ## Local development
 
@@ -17,25 +36,26 @@ A multi-page web app for sharing study materials by course. Students upload lect
 git clone https://github.com/plam13/studyshare.git
 cd studyshare
 npm install
-cp .env.example .env   # then fill in your Supabase URL and anon/publishable key
+cp .env.example .env   # fill in VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY
 npm run dev
 ```
 
 ## Project structure
 
 ```
-├── *.html                 # one file per page (index, login, register, courses, …)
-├── public/                # static assets (favicon)
+├── index.html             # app shell
+├── public/                # static assets (favicon, Netlify _redirects)
 ├── src/
-│   ├── app.js             # shared page init (Bootstrap, CSS, header/footer)
-│   ├── pages/             # page scripts — one per HTML page
-│   ├── components/        # reusable UI renderers (header, footer, …)
-│   ├── services/          # Supabase client and data-access services
-│   ├── utils/             # generic helpers
-│   └── styles/            # global CSS
+│   ├── main.js            # entry: global CSS/JS, layout, auth init, router start
+│   ├── router.js          # routes, guards, mount/unmount
+│   ├── styles.css         # global styles
+│   ├── pages/<page>/      # page fragment (.html) + styles (.css) + logic (.js)
+│   ├── components/        # header, footer, …
+│   ├── services/          # Supabase client, auth and data services
+│   └── utils/             # escaping, validation, toasts, guards
 ├── supabase/migrations/   # DB migrations (SQL)
 ├── .github/copilot-instructions.md   # AI agent instructions
-└── vite.config.js         # multi-page build config
+└── vite.config.js
 ```
 
-Full documentation (architecture, DB schema, roles) will be added as the project grows.
+Full documentation (DB schema diagram, roles, deployment) will be added as the project grows.
