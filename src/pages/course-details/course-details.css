@@ -1,0 +1,8 @@
+.ss-course-heading {
+  flex: 1 1 20rem;
+  min-width: 0;
+}
+
+.ss-course-heading h1 {
+  overflow-wrap: anywhere;
+}

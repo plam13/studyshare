@@ -52,7 +52,10 @@ export async function listCourseMaterials(courseId, { signal } = {}) {
     supabase.from('materials').select(MATERIAL_FIELDS).eq('course_id', courseId).order('created_at', { ascending: false }),
     signal,
   );
-  if (error) throwFriendly(error, 'Материалите не можаха да бъдат заредени.');
+  if (error) {
+    if (isNotFoundError(error)) return []; // e.g. malformed course ID in the URL
+    throwFriendly(error, 'Материалите не можаха да бъдат заредени.');
+  }
   return withStats(data, signal);
 }
 
