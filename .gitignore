@@ -24,6 +24,9 @@ Thumbs.db
 # Assignment spec (local only)
 docs/*.docx
 
+# Real course PDFs — uploaded to Supabase Storage by the seed script, never committed
+pdf/
+
 # Logs
 *.log
 npm-debug.log*
