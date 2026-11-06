@@ -136,6 +136,12 @@ export function mountComments(box, { materialId, comments: initial, user, signal
     }
   });
 
+  // Live feedback: an error under a comment textarea disappears as soon as the text becomes valid.
+  box.addEventListener('input', (event) => {
+    const textarea = event.target.closest('textarea[name="content"]');
+    if (textarea?.classList.contains('is-invalid')) validateContent(textarea);
+  });
+
   box.addEventListener('submit', async (event) => {
     const form = event.target.closest('[data-form]');
     if (!form) return;

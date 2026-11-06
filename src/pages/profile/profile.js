@@ -8,7 +8,7 @@ import { renderMaterialList } from '../../components/material-item/material-item
 import { confirmDialog } from '../../components/confirm-dialog/confirm-dialog.js';
 import { renderEmpty, renderError, renderLoading } from '../../components/page-state/page-state.js';
 import { showError, showSuccess } from '../../utils/toast.js';
-import { clearFormErrors, setButtonLoading, setFieldError } from '../../utils/validation.js';
+import { enableLiveValidation, setButtonLoading, setFieldError, validateForm } from '../../utils/validation.js';
 
 const ROLES = {
   user: { label: 'Потребител', className: 'text-bg-secondary' },
@@ -58,16 +58,18 @@ export function mount(container, { user, signal }) {
   const nameForm = container.querySelector('#name-form');
   nameForm.elements.fullName.value = user.fullName;
   nameForm.elements.email.value = user.email;
+  const nameRules = {
+    fullName: (form) => {
+      const { length } = form.elements.fullName.value.trim();
+      return length >= 2 && length <= FULL_NAME_MAX_LENGTH ? '' : `Въведи име между 2 и ${FULL_NAME_MAX_LENGTH} символа.`;
+    },
+  };
+  enableLiveValidation(nameForm, nameRules);
+
   nameForm.addEventListener('submit', async (event) => {
     event.preventDefault();
-    clearFormErrors(nameForm);
-    const input = nameForm.elements.fullName;
-    const fullName = input.value.trim();
-    const valid = setFieldError(
-      input,
-      fullName.length >= 2 && fullName.length <= FULL_NAME_MAX_LENGTH ? '' : `Въведи име между 2 и ${FULL_NAME_MAX_LENGTH} символа.`,
-    );
-    if (!valid) return input.focus();
+    if (!validateForm(nameForm, nameRules)) return;
+    const fullName = nameForm.elements.fullName.value.trim();
     if (fullName === user.fullName) return;
 
     const button = nameForm.querySelector('button[type="submit"]');
@@ -86,12 +88,14 @@ export function mount(container, { user, signal }) {
   const avatarForm = container.querySelector('#avatar-form');
   const avatarInput = avatarForm.elements.avatar;
   avatarInput.accept = AVATAR_ACCEPT;
+  // A picked file is checked right away (type/size), not only on submit.
   avatarInput.addEventListener('change', () => setFieldError(avatarInput, avatarInput.files[0] ? validateAvatarFile(avatarInput.files[0]) : ''));
+  const avatarRules = { avatar: () => validateAvatarFile(avatarInput.files[0]) };
 
   avatarForm.addEventListener('submit', async (event) => {
     event.preventDefault();
+    if (!validateForm(avatarForm, avatarRules)) return;
     const file = avatarInput.files[0];
-    if (!setFieldError(avatarInput, validateAvatarFile(file))) return avatarInput.focus();
 
     const button = avatarForm.querySelector('button[type="submit"]');
     setButtonLoading(button, true);

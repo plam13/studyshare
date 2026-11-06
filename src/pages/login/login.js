@@ -1,7 +1,7 @@
 import html from './login.html?raw';
 import { login } from '../../services/auth.js';
 import { showError } from '../../utils/toast.js';
-import { clearFormErrors, isValidEmail, setButtonLoading, setFieldError } from '../../utils/validation.js';
+import { enableLiveValidation, isValidEmail, setButtonLoading, validateForm } from '../../utils/validation.js';
 import { keepRedirectParam } from '../../utils/dom.js';
 
 /**
@@ -23,17 +23,18 @@ export function mount(container) {
     toggle.setAttribute('aria-label', show ? 'Скрий паролата' : 'Покажи паролата');
   });
 
+  const rules = {
+    email: (f) => (isValidEmail(f.elements.email.value) ? '' : 'Въведи валиден имейл адрес.'),
+    password: (f) => (f.elements.password.value ? '' : 'Въведи парола.'),
+  };
+  enableLiveValidation(form, rules);
+
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
-    clearFormErrors(form);
+    if (!validateForm(form, rules)) return;
 
     const email = form.elements.email.value.trim();
     const password = form.elements.password.value;
-    const valid = [
-      setFieldError(form.elements.email, isValidEmail(email) ? '' : 'Въведи валиден имейл адрес.'),
-      setFieldError(form.elements.password, password ? '' : 'Въведи парола.'),
-    ].every(Boolean);
-    if (!valid) return;
 
     const button = form.querySelector('button[type="submit"]');
     setButtonLoading(button, true);

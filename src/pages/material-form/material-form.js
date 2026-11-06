@@ -8,7 +8,7 @@ import { renderEmpty, renderError, renderLoading, renderNotFound } from '../../c
 import { escapeHtml } from '../../utils/dom.js';
 import { formatBytes } from '../../utils/format.js';
 import { showError, showSuccess } from '../../utils/toast.js';
-import { clearFormErrors, setButtonLoading, setFieldError } from '../../utils/validation.js';
+import { enableLiveValidation, setButtonLoading, setFieldError, validateForm } from '../../utils/validation.js';
 
 const TITLE_MIN = 3;
 const TITLE_MAX = 150;
@@ -27,15 +27,21 @@ function readValues(form) {
   };
 }
 
-function validate(form, values, { fileRequired }) {
-  const f = form.elements;
-  const titleOk = values.title.length >= TITLE_MIN && values.title.length <= TITLE_MAX;
-  return [
-    setFieldError(f.courseId, values.courseId ? '' : 'Избери курс.'),
-    setFieldError(f.title, titleOk ? '' : `Заглавието трябва да е между ${TITLE_MIN} и ${TITLE_MAX} символа.`),
-    setFieldError(f.description, values.description.length <= DESCRIPTION_MAX ? '' : `Описанието е до ${DESCRIPTION_MAX} символа.`),
-    setFieldError(f.file, values.file || fileRequired ? validateMaterialFile(values.file) : ''),
-  ].every(Boolean);
+/** Field rules shared by submit validation and live re-validation. */
+function formRules({ fileRequired }) {
+  return {
+    courseId: (form) => (form.elements.courseId.value ? '' : 'Избери курс.'),
+    title: (form) => {
+      const { length } = form.elements.title.value.trim();
+      return length >= TITLE_MIN && length <= TITLE_MAX ? '' : `Заглавието трябва да е между ${TITLE_MIN} и ${TITLE_MAX} символа.`;
+    },
+    description: (form) =>
+      form.elements.description.value.trim().length <= DESCRIPTION_MAX ? '' : `Описанието е до ${DESCRIPTION_MAX} символа.`,
+    file: (form) => {
+      const file = form.elements.file.files[0] ?? null;
+      return file || fileRequired ? validateMaterialFile(file) : '';
+    },
+  };
 }
 
 /** Fills static texts for add vs. edit mode. */
@@ -145,14 +151,13 @@ export async function mount(container, { route, params, query, user, signal, nav
     selected.hidden = Boolean(message);
   });
 
+  const rules = formRules({ fileRequired: !isEdit });
+  enableLiveValidation(form, rules);
+
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
-    clearFormErrors(form);
+    if (!validateForm(form, rules)) return;
     const values = readValues(form);
-    if (!validate(form, values, { fileRequired: !isEdit })) {
-      form.querySelector('.is-invalid')?.focus();
-      return;
-    }
 
     const button = form.querySelector('button[type="submit"]');
     setButtonLoading(button, true);
