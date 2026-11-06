@@ -9,3 +9,41 @@
 
   <div id="material-content"></div>
 </section>
+
+<template id="material-layout">
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
+        <h1 class="h3 ss-material-title mb-0" data-field="title"></h1>
+        <div class="d-flex gap-2" data-region="owner-actions" hidden>
+          <a class="btn btn-outline-primary btn-sm" data-field="edit-link" href="#">
+            <i class="bi bi-pencil-square me-1" aria-hidden="true"></i>Редактирай
+          </a>
+          <button type="button" class="btn btn-outline-danger btn-sm" data-action="delete-material">
+            <i class="bi bi-trash me-1" aria-hidden="true"></i>Изтрий
+          </button>
+        </div>
+      </div>
+      <div class="d-flex flex-wrap gap-3 small text-secondary mb-3" data-region="meta"></div>
+
+      <div class="card border-0 shadow-sm mb-3">
+        <div class="card-body">
+          <h2 class="h6 text-uppercase text-secondary mb-2">Описание</h2>
+          <p class="ss-material-description mb-0" data-field="description"></p>
+        </div>
+      </div>
+
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body" data-region="rating"></div>
+      </div>
+
+      <div data-region="comments"></div>
+    </div>
+
+    <aside class="col-lg-4" aria-label="Файл">
+      <div class="card border-0 shadow-sm ss-file-card">
+        <div class="card-body" data-region="file-card"></div>
+      </div>
+    </aside>
+  </div>
+</template>

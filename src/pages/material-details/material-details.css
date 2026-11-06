@@ -36,6 +36,43 @@
   overflow-wrap: anywhere;
 }
 
+/* Interactive rating: hover fills stars up to the pointer */
+.ss-rate-stars {
+  display: inline-flex;
+  gap: 0.125rem;
+}
+
+.ss-rate-star {
+  padding: 0.125rem 0.25rem;
+  border: 0;
+  border-radius: 0.375rem;
+  background: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: #adb5bd;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.ss-rate-star.is-filled {
+  color: var(--ss-accent);
+}
+
+.ss-rate-stars:hover .ss-rate-star:not(:disabled) {
+  color: var(--ss-accent);
+}
+
+.ss-rate-stars .ss-rate-star:hover ~ .ss-rate-star:not(:disabled) {
+  color: #adb5bd;
+}
+
+.ss-rate-star:hover:not(:disabled) {
+  transform: scale(1.15);
+}
+
+.ss-rate-star:disabled {
+  opacity: 0.6;
+}
+
 @media (min-width: 992px) {
   .ss-file-card {
     position: sticky;

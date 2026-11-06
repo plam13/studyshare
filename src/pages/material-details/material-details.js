@@ -1,39 +1,32 @@
 import html from './material-details.html?raw';
 import './material-details.css';
-import { getMaterial } from '../../services/materials.js';
+import { deleteMaterial, getMaterial, incrementDownloads } from '../../services/materials.js';
 import { listComments } from '../../services/comments.js';
+import { getMyRating } from '../../services/ratings.js';
 import { getMaterialDownloadUrl } from '../../services/storage.js';
 import { renderFileBadge } from '../../components/material-item/material-item.js';
 import { renderStars } from '../../components/rating-stars/rating-stars.js';
-import { renderAvatar } from '../../components/avatar/avatar.js';
-import { renderEmpty, renderError, renderLoading, renderNotFound } from '../../components/page-state/page-state.js';
+import { confirmDialog } from '../../components/confirm-dialog/confirm-dialog.js';
+import { renderError, renderLoading, renderNotFound } from '../../components/page-state/page-state.js';
 import { escapeHtml } from '../../utils/dom.js';
-import { fileTypeInfo, formatBytes, formatDate, formatDateTime, formatNumber, plural } from '../../utils/format.js';
-import { showError } from '../../utils/toast.js';
+import { fileTypeInfo, formatBytes, formatDate, formatNumber, plural } from '../../utils/format.js';
+import { showError, showSuccess } from '../../utils/toast.js';
 import { setButtonLoading } from '../../utils/validation.js';
+import { mountComments } from './comments-section.js';
+import { mountRating } from './rating-section.js';
 
-function renderComment(comment) {
+function renderMeta(material) {
+  const edited = material.updatedAt && material.updatedAt !== material.createdAt
+    ? `<span><i class="bi bi-pencil me-1" aria-hidden="true"></i>редактиран ${formatDate(material.updatedAt)}</span>`
+    : '';
   return `
-    <li class="list-group-item ss-comment py-3">
-      ${renderAvatar(comment.authorName, comment.authorAvatarUrl)}
-      <div class="ss-comment-body">
-        <div class="d-flex flex-wrap justify-content-between gap-2">
-          <strong>${escapeHtml(comment.authorName)}</strong>
-          <time class="small text-secondary" datetime="${escapeHtml(comment.createdAt)}">${formatDateTime(comment.createdAt)}</time>
-        </div>
-        <p class="ss-comment-content mb-0 mt-1">${escapeHtml(comment.content)}</p>
-      </div>
-    </li>`;
+    <span><i class="bi bi-person me-1" aria-hidden="true"></i>${escapeHtml(material.authorName)}</span>
+    <span><i class="bi bi-calendar3 me-1" aria-hidden="true"></i>${formatDate(material.createdAt)}</span>
+    ${edited}
+    ${renderStars(material.avgRating, material.ratingsCount)}`;
 }
 
-function renderComments(comments) {
-  if (!comments.length) {
-    return renderEmpty({ icon: 'bi-chat-square-text', title: 'Още няма коментари.', text: 'Сподели мнението си за материала.' });
-  }
-  return `<ul class="list-group shadow-sm">${comments.map(renderComment).join('')}</ul>`;
-}
-
-function renderDownloadAction(material, user) {
+function renderDownloadAction(user) {
   if (!user) {
     const back = encodeURIComponent(window.location.pathname);
     return `
@@ -48,72 +41,50 @@ function renderDownloadAction(material, user) {
     </button>`;
 }
 
-function renderMaterial(material, comments, user) {
+function renderFileCard(material, user) {
   const type = fileTypeInfo(material.fileType);
-  const edited = material.updatedAt && material.updatedAt !== material.createdAt
-    ? `<span><i class="bi bi-pencil me-1" aria-hidden="true"></i>редактиран ${formatDate(material.updatedAt)}</span>`
-    : '';
-
   return `
-    <div class="row g-4">
-      <div class="col-lg-8">
-        <h1 class="h3 ss-material-title mb-2">${escapeHtml(material.title)}</h1>
-        <div class="d-flex flex-wrap gap-3 small text-secondary mb-3">
-          <span><i class="bi bi-person me-1" aria-hidden="true"></i>${escapeHtml(material.authorName)}</span>
-          <span><i class="bi bi-calendar3 me-1" aria-hidden="true"></i>${formatDate(material.createdAt)}</span>
-          ${edited}
-          ${renderStars(material.avgRating, material.ratingsCount)}
-        </div>
-
-        <div class="card border-0 shadow-sm mb-4">
-          <div class="card-body">
-            <h2 class="h6 text-uppercase text-secondary mb-2">Описание</h2>
-            <p class="ss-material-description mb-0">${escapeHtml(material.description) || '<span class="text-secondary">Няма описание.</span>'}</p>
-          </div>
-        </div>
-
-        <h2 class="h5 mb-3"><i class="bi bi-chat-dots me-2" aria-hidden="true"></i>Коментари <span class="badge text-bg-light border">${comments.length}</span></h2>
-        ${renderComments(comments)}
+    <div class="d-flex align-items-center gap-3 mb-3">
+      ${renderFileBadge(material.fileType, { large: true })}
+      <div class="ss-min-w-0">
+        <div class="fw-semibold text-break">${escapeHtml(material.fileName)}</div>
+        <div class="small text-secondary">${type.label} · ${formatBytes(material.fileSize)}</div>
       </div>
+    </div>
+    <dl class="row small mb-3">
+      <dt class="col-6">Курс</dt>
+      <dd class="col-6"><a href="/courses/${encodeURIComponent(material.courseId)}">${escapeHtml(material.course?.title ?? '—')}</a></dd>
+      <dt class="col-6">Изтегляния</dt>
+      <dd class="col-6" data-field="downloads">${formatNumber(material.downloadsCount)}</dd>
+      <dt class="col-6">Оценки</dt>
+      <dd class="col-6">${plural(material.ratingsCount, 'глас', 'гласа')}</dd>
+      <dt class="col-6">Коментари</dt>
+      <dd class="col-6">${formatNumber(material.commentsCount)}</dd>
+    </dl>
+    ${renderDownloadAction(user)}`;
+}
 
-      <aside class="col-lg-4">
-        <div class="card border-0 shadow-sm ss-file-card">
-          <div class="card-body">
-            <div class="d-flex align-items-center gap-3 mb-3">
-              ${renderFileBadge(material.fileType, { large: true })}
-              <div class="ss-min-w-0">
-                <div class="fw-semibold text-break">${escapeHtml(material.fileName)}</div>
-                <div class="small text-secondary">${type.label} · ${formatBytes(material.fileSize)}</div>
-              </div>
-            </div>
-            <dl class="row small mb-3">
-              <dt class="col-6">Курс</dt>
-              <dd class="col-6"><a href="/courses/${encodeURIComponent(material.courseId)}">${escapeHtml(material.course?.title ?? '—')}</a></dd>
-              <dt class="col-6">Изтегляния</dt>
-              <dd class="col-6">${formatNumber(material.downloadsCount)}</dd>
-              <dt class="col-6">Оценки</dt>
-              <dd class="col-6">${plural(material.ratingsCount, 'глас', 'гласа')}</dd>
-              <dt class="col-6">Коментари</dt>
-              <dd class="col-6">${formatNumber(material.commentsCount)}</dd>
-            </dl>
-            ${renderDownloadAction(material, user)}
-          </div>
-        </div>
-      </aside>
-    </div>`;
+/** Loads the material plus everything the page needs; null when the material does not exist. */
+async function loadPageData(id, user, signal) {
+  const material = await getMaterial(id, { signal });
+  if (!material) return null;
+  const canRate = user && material.authorId !== user.id;
+  const [comments, myScore] = await Promise.all([
+    listComments(material.id, { signal }),
+    canRate ? getMyRating(material.id, user.id, { signal }) : Promise.resolve(0),
+  ]);
+  return { material, comments, myScore };
 }
 
 /** Public page: material details, download, comments and rating (/materials/:id). */
-export async function mount(container, { params, user, signal, setTitle }) {
+export async function mount(container, { params, user, signal, setTitle, navigate }) {
   container.innerHTML = html;
   const content = container.querySelector('#material-content');
   content.innerHTML = renderLoading('Зареждане на материала…');
 
-  let material;
-  let comments;
+  let data;
   try {
-    material = await getMaterial(params.id, { signal });
-    comments = material ? await listComments(material.id, { signal }) : [];
+    data = await loadPageData(params.id, user, signal);
   } catch (error) {
     if (signal.aborted) return;
     content.innerHTML = renderError(error.message);
@@ -121,7 +92,7 @@ export async function mount(container, { params, user, signal, setTitle }) {
   }
   if (signal.aborted) return;
 
-  if (!material) {
+  if (!data) {
     content.innerHTML = renderNotFound({
       title: 'Материалът не е намерен',
       text: 'Възможно е да е изтрит или адресът да е грешен.',
@@ -131,23 +102,83 @@ export async function mount(container, { params, user, signal, setTitle }) {
     return;
   }
 
+  let { material } = data;
   setTitle(material.title);
   const courseLink = container.querySelector('[data-field="course-link"]');
   courseLink.textContent = material.course?.title ?? 'Курс';
   courseLink.href = `/courses/${encodeURIComponent(material.courseId)}`;
   container.querySelector('[data-field="crumb"]').textContent = material.title;
 
-  content.innerHTML = renderMaterial(material, comments, user);
+  content.replaceChildren(container.querySelector('#material-layout').content.cloneNode(true));
+  const region = (name) => content.querySelector(`[data-region="${name}"]`);
 
-  content.querySelector('[data-action="download"]')?.addEventListener('click', async (event) => {
-    const button = event.currentTarget;
+  content.querySelector('[data-field="title"]').textContent = material.title;
+  const description = content.querySelector('[data-field="description"]');
+  if (material.description) description.textContent = material.description;
+  else description.innerHTML = '<span class="text-secondary">Няма описание.</span>';
+
+  const renderSummary = () => {
+    region('meta').innerHTML = renderMeta(material);
+    region('file-card').innerHTML = renderFileCard(material, user);
+  };
+  renderSummary();
+
+  // Author or admin: edit / delete (UX only — RLS enforces the same rule)
+  if (user && (material.authorId === user.id || user.isAdmin)) {
+    region('owner-actions').hidden = false;
+    content.querySelector('[data-field="edit-link"]').href = `/materials/${encodeURIComponent(material.id)}/edit`;
+  }
+
+  // Ratings and comments change the aggregates → reload the summary (stars, counts)
+  const refreshSummary = async () => {
+    try {
+      const fresh = await getMaterial(material.id, { signal });
+      if (signal.aborted || !fresh) return;
+      material = fresh;
+      renderSummary();
+    } catch {
+      /* the summary is secondary — keep the old numbers */
+    }
+  };
+
+  mountRating(region('rating'), { material, user, myScore: data.myScore, signal, onChange: refreshSummary });
+  mountComments(region('comments'), { materialId: material.id, comments: data.comments, user, signal, onChange: refreshSummary });
+
+  content.addEventListener('click', async (event) => {
+    const button = event.target.closest('[data-action="download"], [data-action="delete-material"]');
+    if (!button) return;
+
+    if (button.dataset.action === 'download') {
+      setButtonLoading(button, true);
+      try {
+        const url = await getMaterialDownloadUrl(material.filePath, material.fileName);
+        const count = await incrementDownloads(material.id);
+        if (count !== null) {
+          material.downloadsCount = count;
+          content.querySelector('[data-field="downloads"]').textContent = formatNumber(count);
+        }
+        window.location.assign(url); // attachment → the browser saves the file, the page stays
+      } catch (error) {
+        showError(error.message);
+      } finally {
+        setButtonLoading(button, false);
+      }
+      return;
+    }
+
+    const ok = await confirmDialog({
+      title: 'Изтриване на материал',
+      message: `Сигурен ли си, че искаш да изтриеш „${material.title}“? Файлът, коментарите и оценките също ще бъдат изтрити.`,
+      confirmLabel: 'Изтрий',
+    });
+    if (!ok) return;
     setButtonLoading(button, true);
     try {
-      const url = await getMaterialDownloadUrl(material.filePath, material.fileName);
-      window.location.assign(url); // attachment → the browser saves the file, the page stays
+      await deleteMaterial(material);
+      showSuccess('Материалът е изтрит.');
+      navigate(`/courses/${material.courseId}`);
     } catch (error) {
       showError(error.message);
-    } finally {
       setButtonLoading(button, false);
     }
   });
