@@ -1,5 +1,6 @@
 import { supabase } from './supabase.js';
 import { isNotFoundError, throwFriendly, withSignal } from './errors.js';
+import { removeMaterialFiles, uploadMaterialFile } from './storage.js';
 
 const MATERIAL_FIELDS = `
   id, title, description, file_path, file_name, file_type, file_size, downloads_count,
@@ -88,6 +89,71 @@ export async function getMaterial(id, { signal } = {}) {
   if (!data) return null;
   const [material] = await withStats([data], signal);
   return material;
+}
+
+// ---------------------------------------------------------------------------
+// Mutations (RLS: authors edit/delete their own materials, admins any)
+// ---------------------------------------------------------------------------
+
+function toRow({ courseId, title, description }) {
+  return { course_id: courseId, title, description };
+}
+
+function fileColumns(file) {
+  return { file_path: file.filePath, file_name: file.fileName, file_type: file.fileType, file_size: file.fileSize };
+}
+
+/**
+ * Uploads the file and creates the material. If the DB insert fails, the uploaded file is removed.
+ * @returns {Promise<string>} the new material ID
+ */
+export async function createMaterial({ courseId, title, description, file }, authorId) {
+  const uploaded = await uploadMaterialFile(authorId, file);
+  const { data, error } = await supabase
+    .from('materials')
+    .insert({ ...toRow({ courseId, title, description }), ...fileColumns(uploaded), author_id: authorId })
+    .select('id')
+    .single();
+  if (error) {
+    await removeMaterialFiles([uploaded.filePath]);
+    throwFriendly(error, 'Материалът не можа да бъде запазен. Опитай отново.');
+  }
+  return data.id;
+}
+
+/**
+ * Updates a material. With a new `file` the old one is replaced (uploaded into the editor's folder)
+ * and removed from Storage after a successful save.
+ */
+export async function updateMaterial(material, { courseId, title, description, file }, editorId) {
+  const uploaded = file ? await uploadMaterialFile(editorId, file) : null;
+  const changes = { ...toRow({ courseId, title, description }), ...(uploaded ? fileColumns(uploaded) : {}) };
+
+  const { data, error } = await supabase.from('materials').update(changes).eq('id', material.id).select('id');
+  if (error || !data.length) {
+    if (uploaded) await removeMaterialFiles([uploaded.filePath]);
+    if (error) throwFriendly(error, 'Промените не можаха да бъдат запазени. Опитай отново.');
+    throw new Error('Нямаш права да редактираш този материал.');
+  }
+  if (uploaded) await removeMaterialFiles([material.filePath]);
+}
+
+/** Deletes the material row (comments/ratings cascade), then its file in Storage. */
+export async function deleteMaterial(material) {
+  const { data, error } = await supabase.from('materials').delete().eq('id', material.id).select('id');
+  if (error) throwFriendly(error, 'Материалът не можа да бъде изтрит. Опитай отново.');
+  if (!data.length) throw new Error('Нямаш права да изтриеш този материал.');
+  await removeMaterialFiles([material.filePath]);
+}
+
+/** +1 download (security definer RPC). Returns the new count, or null on failure (never blocks a download). */
+export async function incrementDownloads(materialId) {
+  const { data, error } = await supabase.rpc('increment_material_downloads', { p_material_id: materialId });
+  if (error) {
+    console.warn('Could not increment the download counter', error);
+    return null;
+  }
+  return data;
 }
 
 /**

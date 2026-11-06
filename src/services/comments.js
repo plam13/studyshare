@@ -26,3 +26,24 @@ export async function listComments(materialId, { signal } = {}) {
   if (error) throwFriendly(error, 'Коментарите не можаха да бъдат заредени.');
   return data.map(normalizeComment);
 }
+
+export const COMMENT_MAX_LENGTH = 1000;
+
+export async function addComment(materialId, authorId, content) {
+  const { error } = await supabase.from('comments').insert({ material_id: materialId, author_id: authorId, content });
+  if (error) throwFriendly(error, 'Коментарът не можа да бъде публикуван. Опитай отново.');
+}
+
+/** Only the author may edit (RLS). */
+export async function updateComment(commentId, content) {
+  const { data, error } = await supabase.from('comments').update({ content }).eq('id', commentId).select('id');
+  if (error) throwFriendly(error, 'Коментарът не можа да бъде запазен. Опитай отново.');
+  if (!data.length) throw new Error('Нямаш права да редактираш този коментар.');
+}
+
+/** The author or an admin may delete (RLS). */
+export async function deleteComment(commentId) {
+  const { data, error } = await supabase.from('comments').delete().eq('id', commentId).select('id');
+  if (error) throwFriendly(error, 'Коментарът не можа да бъде изтрит. Опитай отново.');
+  if (!data.length) throw new Error('Нямаш права да изтриеш този коментар.');
+}
