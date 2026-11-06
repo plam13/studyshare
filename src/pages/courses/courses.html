@@ -1,4 +1,18 @@
 <section>
-  <h1 class="h3 mb-4"><i class="bi bi-journal-bookmark me-2" aria-hidden="true"></i>Курсове</h1>
-  <div class="ss-empty"><i class="bi bi-tools" aria-hidden="true"></i>Списъкът с курсове предстои.</div>
+  <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+    <div>
+      <h1 class="h3 mb-1"><i class="bi bi-journal-bookmark me-2" aria-hidden="true"></i>Курсове</h1>
+      <p class="text-secondary mb-0">Избери курс, за да видиш учебните материали към него.</p>
+    </div>
+    <div class="ss-search">
+      <label for="course-search" class="visually-hidden">Търси курс</label>
+      <div class="input-group">
+        <span class="input-group-text bg-white"><i class="bi bi-search" aria-hidden="true"></i></span>
+        <input type="search" class="form-control" id="course-search" placeholder="Търси курс…" autocomplete="off" />
+      </div>
+    </div>
+  </div>
+
+  <p class="small text-secondary" id="courses-summary" aria-live="polite"></p>
+  <div id="courses-list"></div>
 </section>

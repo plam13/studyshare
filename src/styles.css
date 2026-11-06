@@ -91,6 +91,12 @@ button:focus-visible,
   margin-bottom: 0.75rem;
 }
 
+/* Search box in page headers */
+.ss-search {
+  flex: 1 1 16rem;
+  max-width: 24rem;
+}
+
 /* Initial app loader */
 .ss-loader {
   display: flex;
