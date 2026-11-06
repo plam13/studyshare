@@ -4,6 +4,17 @@ A web app for sharing study materials by course. Students upload lecture notes, 
 
 > 🚧 Work in progress — capstone project for the SoftUni course “Software Technologies with AI”.
 
+**Live demo:** https://studyshare-softuni.netlify.app (demo accounts are listed [below](#demo-accounts)).
+
+## Features
+
+- Browse courses and their materials (search, sorting by date, rating, downloads, title) — no login needed.
+- Upload materials (PDF, Word, PowerPoint, Excel, TXT, ZIP up to 20 MB) to a course; edit or delete your own.
+- Download files (logged-in users), with a download counter.
+- Comment (add, edit, delete your own) and rate materials with 1–5 stars (not your own).
+- Profile with avatar upload and name editing; personal dashboard with statistics.
+- Admins: manage courses, moderate any material or comment, assign roles.
+
 ## Tech stack
 
 - **Frontend:** HTML, CSS, vanilla JavaScript (ES modules), Bootstrap 5, Bootstrap Icons
@@ -39,6 +50,19 @@ npm install
 cp .env.example .env   # fill in VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY
 npm run dev
 ```
+
+## Deployment (Netlify)
+
+- Build settings are in `netlify.toml` (`npm run build` → `dist/`); `public/_redirects` sends every route to `index.html`, so clean URLs such as `/materials/<id>` work on reload.
+- Environment variables on Netlify: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` (public values only).
+- Supabase Auth → URL configuration: Site URL `https://studyshare-softuni.netlify.app`, redirect URLs for the live site and `http://localhost:5173/**`.
+- Manual deploy with the Netlify CLI: `netlify deploy --build --prod`.
+
+## Files and storage
+
+- `materials` bucket (private): object path `<uploader-id>/<uuid>-<safe-name>`; the original file name is kept in `materials.file_name` and used when downloading. Only logged-in users can download.
+- `avatars` bucket (public): `<user-id>/avatar-<timestamp>.<ext>`; old avatar files are removed when replaced.
+- Deleting or replacing a material also deletes its file — database cascades do not remove Storage objects.
 
 ## Sample data (seed)
 
