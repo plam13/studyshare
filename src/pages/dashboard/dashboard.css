@@ -1,0 +1,23 @@
+.ss-stat-card .ss-stat-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.75rem;
+  font-size: 1.35rem;
+  color: var(--tone);
+  background-color: color-mix(in srgb, var(--tone) 14%, white);
+}
+
+.ss-stat-card .ss-stat-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.ss-stat--primary { --tone: var(--ss-primary); }
+.ss-stat--success { --tone: #198754; }
+.ss-stat--warning { --tone: #d97706; }
+.ss-stat--info { --tone: #0891b2; }
+.ss-stat--purple { --tone: #7c3aed; }
+.ss-stat--rose { --tone: #e11d48; }
