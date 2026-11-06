@@ -1,3 +1,3 @@
 import { initPage } from '../app.js';
 
-initPage({ activePage: 'admin' });
+await initPage({ activePage: 'admin', access: 'admin' });

@@ -1,3 +1,3 @@
 import { initPage } from '../app.js';
 
-initPage({ activePage: 'material-edit' });
+await initPage({ activePage: 'material-edit', access: 'user' });
