@@ -40,6 +40,26 @@ cp .env.example .env   # fill in VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE
 npm run dev
 ```
 
+## Sample data (seed)
+
+The seed script creates demo users (through the Supabase Auth Admin API), courses, materials with sample PDF files in Storage, comments and ratings. It is safe to rerun: existing records are skipped and passwords are never reset.
+
+```bash
+cp .env.server.example .env.server.local   # server-side only: SUPABASE_URL, SUPABASE_SECRET_KEY, SEED_EXPECTED_PROJECT_REF
+npm run seed:dry-run                        # shows what would be created, writes nothing
+npm run seed                                # applies the seed
+```
+
+> The secret key is used only by Node.js scripts in `scripts/`. It never has a `VITE_` prefix and never reaches the browser.
+
+## Demo accounts
+
+| Role | Email | Password |
+|---|---|---|
+| Admin | `admin@studyshare.bg` | `admin123` |
+| User | `demo@studyshare.bg` | `demo123` |
+| User | `maria@studyshare.bg`, `peter@studyshare.bg`, `elena@studyshare.bg` | `pass123` |
+
 ## Project structure
 
 ```
@@ -54,6 +74,7 @@ npm run dev
 │   ├── services/          # Supabase client, auth and data services
 │   └── utils/             # escaping, validation, toasts, guards
 ├── supabase/migrations/   # DB migrations (SQL)
+├── scripts/               # server-side Node.js scripts (seed)
 ├── .github/copilot-instructions.md   # AI agent instructions
 └── vite.config.js
 ```
