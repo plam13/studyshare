@@ -1,0 +1,15 @@
+.ss-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+
+.ss-stars-icons {
+  color: var(--ss-accent);
+  letter-spacing: 1px;
+}
+
+.ss-stars-value {
+  font-weight: 600;
+}

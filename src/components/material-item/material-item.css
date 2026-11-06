@@ -1,0 +1,65 @@
+.ss-material-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 1rem;
+  flex-wrap: wrap;
+}
+
+.ss-material-item-body {
+  flex: 1 1 16rem;
+  min-width: 0;
+}
+
+.ss-material-item-body h3 {
+  overflow-wrap: anywhere;
+}
+
+.ss-material-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+}
+
+.ss-material-item-rating {
+  flex: 0 0 auto;
+}
+
+/* File-type badge */
+.ss-file-badge {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 0.6rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--tone);
+  background-color: color-mix(in srgb, var(--tone) 12%, white);
+  border: 1px solid color-mix(in srgb, var(--tone) 35%, white);
+}
+
+.ss-file-badge .bi {
+  font-size: 1.25rem;
+}
+
+.ss-file-badge--lg {
+  width: 4.5rem;
+  height: 4.5rem;
+  font-size: 0.85rem;
+}
+
+.ss-file-badge--lg .bi {
+  font-size: 1.8rem;
+}
+
+.ss-file-badge--danger { --tone: #dc3545; }
+.ss-file-badge--primary { --tone: #2563eb; }
+.ss-file-badge--warning { --tone: #d97706; }
+.ss-file-badge--success { --tone: #198754; }
+.ss-file-badge--secondary { --tone: #6c757d; }
+.ss-file-badge--dark { --tone: #343a40; }
