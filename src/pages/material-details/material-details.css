@@ -1,0 +1,44 @@
+.ss-material-title {
+  overflow-wrap: anywhere;
+}
+
+.ss-material-description {
+  white-space: pre-line;
+}
+
+.ss-file-card dt {
+  font-weight: 500;
+  color: var(--bs-secondary-color);
+}
+
+.ss-file-card dd {
+  margin-bottom: 0.5rem;
+  overflow-wrap: anywhere;
+}
+
+.ss-min-w-0 {
+  min-width: 0;
+}
+
+/* Comments */
+.ss-comment {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.ss-comment-body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ss-comment-content {
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 992px) {
+  .ss-file-card {
+    position: sticky;
+    top: 1rem;
+  }
+}
