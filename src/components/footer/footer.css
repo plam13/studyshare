@@ -1,0 +1,5 @@
+.ss-footer {
+  flex-shrink: 0;
+  background-color: #fff;
+  border-top: 1px solid var(--bs-border-color);
+}

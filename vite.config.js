@@ -1,25 +1,11 @@
 import { defineConfig } from 'vite';
-import { resolve } from 'node:path';
 
-const root = import.meta.dirname;
-
-// Multi-page app: every HTML file in the project root is a separate page/entry.
-const pages = [
-  'index',
-  'register',
-  'login',
-  'courses',
-  'course',
-  'material',
-  'material-edit',
-  'profile',
-  'admin',
-];
-
+// Single HTML shell (index.html) + client-side router (src/router.js).
+// appType 'spa' makes the dev/preview server fall back to index.html for clean URLs
+// like /login or /materials/123; in production Netlify does the same via public/_redirects.
 export default defineConfig({
+  appType: 'spa',
   build: {
-    rollupOptions: {
-      input: Object.fromEntries(pages.map((name) => [name, resolve(root, `${name}.html`)])),
-    },
+    target: 'es2022', // top-level await in src/main.js
   },
 });

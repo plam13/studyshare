@@ -1,0 +1,22 @@
+.ss-navbar {
+  background: linear-gradient(90deg, var(--ss-primary-dark), var(--ss-primary));
+}
+
+.ss-brand {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.ss-brand .bi {
+  color: var(--ss-accent);
+}
+
+.ss-navbar .nav-link.active {
+  font-weight: 600;
+  color: #fff;
+  box-shadow: inset 0 -2px 0 var(--ss-accent);
+}
+
+.ss-navbar .btn.active {
+  box-shadow: 0 0 0 2px var(--ss-accent);
+}

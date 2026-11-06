@@ -1,4 +1,4 @@
-/* StudyShare — global styles (on top of Bootstrap 5) */
+/* StudyShare — global styles (on top of Bootstrap 5). Page/component styles live next to their JS. */
 
 :root {
   --ss-primary: #4f46e5;
@@ -8,7 +8,9 @@
   --bs-primary: var(--ss-primary);
   --bs-primary-rgb: 79, 70, 229;
   --bs-link-color: var(--ss-primary);
+  --bs-link-color-rgb: 79, 70, 229;
   --bs-link-hover-color: var(--ss-primary-dark);
+  --bs-link-hover-color-rgb: 67, 56, 202;
 }
 
 body {
@@ -18,8 +20,21 @@ body {
   background-color: var(--ss-bg);
 }
 
-main {
+#app {
   flex: 1 0 auto;
+}
+
+#app:focus,
+#app h1:focus {
+  outline: none;
+}
+
+/* Visible keyboard focus */
+a:focus-visible,
+button:focus-visible,
+.btn:focus-visible {
+  outline: 3px solid var(--ss-accent);
+  outline-offset: 2px;
 }
 
 /* Buttons follow the brand color */
@@ -30,6 +45,8 @@ main {
   --bs-btn-hover-border-color: var(--ss-primary-dark);
   --bs-btn-active-bg: var(--ss-primary-dark);
   --bs-btn-active-border-color: var(--ss-primary-dark);
+  --bs-btn-disabled-bg: var(--ss-primary);
+  --bs-btn-disabled-border-color: var(--ss-primary);
 }
 
 .btn-outline-primary {
@@ -38,25 +55,7 @@ main {
   --bs-btn-hover-bg: var(--ss-primary);
   --bs-btn-hover-border-color: var(--ss-primary);
   --bs-btn-active-bg: var(--ss-primary-dark);
-}
-
-/* Navbar */
-.ss-navbar {
-  background: linear-gradient(90deg, var(--ss-primary-dark), var(--ss-primary));
-}
-
-.ss-brand {
-  font-weight: 700;
-  letter-spacing: 0.02em;
-}
-
-.ss-brand .bi {
-  color: var(--ss-accent);
-}
-
-.ss-navbar .nav-link.active {
-  font-weight: 600;
-  border-bottom: 2px solid var(--ss-accent);
+  --bs-btn-active-border-color: var(--ss-primary-dark);
 }
 
 /* Cards with a subtle hover lift */
@@ -69,14 +68,7 @@ main {
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
 }
 
-/* Hero block on the home page */
-.ss-hero {
-  background: linear-gradient(135deg, var(--ss-primary), #7c3aed);
-  color: #fff;
-  border-radius: 1rem;
-}
-
-/* Auth (login / register) cards */
+/* Auth (login / register) cards — shared by both pages */
 .ss-auth-card {
   border-radius: 1rem;
 }
@@ -99,9 +91,23 @@ main {
   margin-bottom: 0.75rem;
 }
 
-/* Footer */
-.ss-footer {
-  flex-shrink: 0;
-  background-color: #fff;
-  border-top: 1px solid var(--bs-border-color);
+/* Initial app loader */
+.ss-loader {
+  display: flex;
+  justify-content: center;
+  padding: 4rem 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .ss-card-hover:hover {
+    transform: none;
+  }
 }

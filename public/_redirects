@@ -1,0 +1,2 @@
+# Netlify: serve the app shell for every client-side route (/login, /materials/123, …)
+/*    /index.html    200

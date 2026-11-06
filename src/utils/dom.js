@@ -13,10 +13,16 @@ export function escapeHtml(value) {
 }
 
 /**
- * Reads a query-string parameter from the current URL.
- * @param {string} name
- * @returns {string | null}
+ * Carries the current ?redirect= parameter over to links marked with [data-keep-redirect]
+ * (e.g. the "Register" link on the login page).
+ * @param {ParentNode} root
  */
-export function getQueryParam(name) {
-  return new URLSearchParams(window.location.search).get(name);
+export function keepRedirectParam(root) {
+  const redirect = new URLSearchParams(window.location.search).get('redirect');
+  if (!redirect) return;
+  root.querySelectorAll('a[data-keep-redirect]').forEach((link) => {
+    const url = new URL(link.getAttribute('href'), window.location.origin);
+    url.searchParams.set('redirect', redirect);
+    link.setAttribute('href', url.pathname + url.search);
+  });
 }

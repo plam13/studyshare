@@ -1,0 +1,10 @@
+.ss-hero {
+  background: linear-gradient(135deg, var(--ss-primary), #7c3aed);
+  color: #fff;
+  border-radius: 1rem;
+}
+
+.ss-hero-icon {
+  font-size: 9rem;
+  opacity: 0.85;
+}
