@@ -3,7 +3,8 @@ import './material-details.css';
 import { deleteMaterial, getMaterial, incrementDownloads } from '../../services/materials.js';
 import { listComments } from '../../services/comments.js';
 import { getMyRating } from '../../services/ratings.js';
-import { getMaterialDownloadUrl } from '../../services/storage.js';
+import { downloadMaterialFile } from '../../services/storage.js';
+import { saveBlob } from '../../utils/download.js';
 import { renderFileBadge } from '../../components/material-item/material-item.js';
 import { renderStars } from '../../components/rating-stars/rating-stars.js';
 import { confirmDialog } from '../../components/confirm-dialog/confirm-dialog.js';
@@ -151,13 +152,13 @@ export async function mount(container, { params, user, signal, setTitle, navigat
     if (button.dataset.action === 'download') {
       setButtonLoading(button, true);
       try {
-        const url = await getMaterialDownloadUrl(material.filePath, material.fileName);
+        const blob = await downloadMaterialFile(material.filePath);
+        saveBlob(blob, material.fileName);
         const count = await incrementDownloads(material.id);
-        if (count !== null) {
+        if (count !== null && !signal.aborted) {
           material.downloadsCount = count;
           content.querySelector('[data-field="downloads"]').textContent = formatNumber(count);
         }
-        window.location.assign(url); // attachment → the browser saves the file, the page stays
       } catch (error) {
         showError(error.message);
       } finally {

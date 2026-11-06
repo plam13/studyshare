@@ -3,7 +3,6 @@ import { throwFriendly } from './errors.js';
 
 export const MATERIALS_BUCKET = 'materials';
 export const AVATARS_BUCKET = 'avatars';
-const SIGNED_URL_TTL_SECONDS = 60;
 
 /** Limits mirror the bucket settings in supabase/migrations/*_storage_buckets.sql. */
 export const MATERIAL_MAX_BYTES = 20 * 1024 * 1024;
@@ -82,6 +81,15 @@ export function safeStorageName(fileName) {
   return `${slug || 'file'}${ext ? `.${ext}` : ''}`;
 }
 
+/**
+ * supabase-js sends a File/Blob with its own `type` (the `contentType` option is ignored for blobs).
+ * Browsers report some types inconsistently (ZIP on Windows: application/x-zip-compressed, or ''),
+ * so re-wrap the file with the MIME type derived from the extension.
+ */
+function withMimeType(file, mimeType) {
+  return file.type === mimeType ? file : new Blob([file], { type: mimeType });
+}
+
 // ---------------------------------------------------------------------------
 // Materials bucket (private)
 // ---------------------------------------------------------------------------
@@ -95,7 +103,7 @@ export async function uploadMaterialFile(userId, file) {
   const filePath = `${userId}/${crypto.randomUUID()}-${safeStorageName(file.name)}`;
   const { error } = await supabase.storage
     .from(MATERIALS_BUCKET)
-    .upload(filePath, file, { contentType: fileType, upsert: false });
+    .upload(filePath, withMimeType(file, fileType), { contentType: fileType, upsert: false });
   if (error) throwFriendly(error, 'Файлът не можа да бъде качен. Провери типа и размера и опитай отново.');
   return { filePath, fileName: file.name, fileType, fileSize: file.size };
 }
@@ -109,16 +117,15 @@ export async function removeMaterialFiles(paths) {
 }
 
 /**
- * Creates a short-lived signed URL for a private material file.
- * The browser downloads it with the original file name (Content-Disposition: attachment).
- * Storage policies allow this only for logged-in users.
+ * Downloads a private material file as a Blob (authenticated request; Storage policies allow
+ * this only for logged-in users). The caller saves it under the original name — a signed URL's
+ * `download` option double-encodes non-ASCII names (Cyrillic file names would come out garbled).
+ * @returns {Promise<Blob>}
  */
-export async function getMaterialDownloadUrl(filePath, fileName) {
-  const { data, error } = await supabase.storage
-    .from(MATERIALS_BUCKET)
-    .createSignedUrl(filePath, SIGNED_URL_TTL_SECONDS, { download: fileName });
+export async function downloadMaterialFile(filePath) {
+  const { data, error } = await supabase.storage.from(MATERIALS_BUCKET).download(filePath);
   if (error) throwFriendly(error, 'Файлът не можа да бъде изтеглен. Опитай отново.');
-  return data.signedUrl;
+  return data;
 }
 
 // ---------------------------------------------------------------------------
@@ -134,7 +141,7 @@ export async function uploadAvatarFile(userId, file) {
   const path = `${userId}/avatar-${Date.now()}.${ext}`;
   const { error } = await supabase.storage
     .from(AVATARS_BUCKET)
-    .upload(path, file, { contentType: AVATAR_TYPES[ext], upsert: false });
+    .upload(path, withMimeType(file, AVATAR_TYPES[ext]), { contentType: AVATAR_TYPES[ext], upsert: false });
   if (error) throwFriendly(error, 'Снимката не можа да бъде качена. Опитай отново.');
   const { data } = supabase.storage.from(AVATARS_BUCKET).getPublicUrl(path);
   return { path, publicUrl: data.publicUrl };

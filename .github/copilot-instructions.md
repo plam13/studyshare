@@ -91,7 +91,9 @@ After login go to the safe `?redirect=` target or `/dashboard`; after logout go 
 - **RLS is enabled on every table.** Roles are in `user_roles` (`user` | `admin`); policies use `public.is_admin()`.
   Never accept roles from signup metadata. No public "become admin" operation.
 - Least-privilege grants: clients may only update allowed columns (e.g. not `author_id`, `downloads_count`).
-- Storage: `avatars` (public) and `materials` (private, download via short-lived signed URLs), protected by storage policies.
+- Storage: `avatars` (public) and `materials` (private, downloaded by logged-in users through the authenticated
+  `storage.download()` API and saved under the original file name), protected by storage policies.
+  Uploads are re-wrapped with the MIME type derived from the extension (supabase-js ignores `contentType` for Blobs).
   Delete Storage objects explicitly — DB cascades do not remove files.
 
 ## Secrets
