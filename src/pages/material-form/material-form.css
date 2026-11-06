@@ -1,0 +1,15 @@
+.ss-current-file,
+.ss-selected-file {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  background-color: var(--bs-tertiary-bg);
+  overflow-wrap: anywhere;
+}
+
+.ss-selected-file {
+  border-style: dashed;
+}
