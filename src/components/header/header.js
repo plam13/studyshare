@@ -1,5 +1,6 @@
 import './header.css';
 import { escapeHtml } from '../../utils/dom.js';
+import { renderAvatar } from '../avatar/avatar.js';
 
 /**
  * Main navigation links.
@@ -39,8 +40,8 @@ function renderAccountArea(user) {
   const name = escapeHtml(user.fullName || user.email);
   const badge = user.isAdmin ? '<span class="badge text-bg-warning ms-1">admin</span>' : '';
   return `
-    <a class="btn btn-outline-light btn-sm" href="/profile" data-nav-href="/profile">
-      <i class="bi bi-person-circle me-1" aria-hidden="true"></i>${name}${badge}
+    <a class="btn btn-outline-light btn-sm ss-account-link" href="/profile" data-nav-href="/profile">
+      ${renderAvatar(user.fullName || user.email, user.avatarUrl, { size: 'xs' })}<span>${name}</span>${badge}
     </a>
     <button class="btn btn-light btn-sm" type="button" data-action="logout">
       <i class="bi bi-box-arrow-right me-1" aria-hidden="true"></i>Изход

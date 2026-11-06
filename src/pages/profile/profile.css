@@ -1,0 +1,8 @@
+.ss-profile-avatar {
+  display: flex;
+  justify-content: center;
+}
+
+.ss-profile-avatar .ss-avatar {
+  box-shadow: 0 0 0 4px #fff, 0 0 0 6px var(--ss-primary);
+}

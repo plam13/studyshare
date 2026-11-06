@@ -16,7 +16,7 @@ function initials(name) {
  * User avatar: profile picture when available, otherwise colored initials.
  * @param {string} name
  * @param {string | null} avatarUrl
- * @param {{ size?: 'sm' | 'md' | 'lg' }} [options]
+ * @param {{ size?: 'xs' | 'sm' | 'md' | 'lg' }} [options]
  */
 export function renderAvatar(name, avatarUrl, { size = 'md' } = {}) {
   const sizeClass = `ss-avatar--${size}`;
