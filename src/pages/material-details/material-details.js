@@ -7,6 +7,7 @@ import { downloadMaterialFile } from '../../services/storage.js';
 import { saveBlob } from '../../utils/download.js';
 import { renderFileBadge } from '../../components/material-item/material-item.js';
 import { renderStars } from '../../components/rating-stars/rating-stars.js';
+import { renderMaterialBanner } from '../../components/material-banner/material-banner.js';
 import { confirmDialog } from '../../components/confirm-dialog/confirm-dialog.js';
 import { renderError, renderLoading, renderNotFound } from '../../components/page-state/page-state.js';
 import { escapeHtml } from '../../utils/dom.js';
@@ -113,6 +114,7 @@ export async function mount(container, { params, user, signal, setTitle, navigat
   content.replaceChildren(container.querySelector('#material-layout').content.cloneNode(true));
   const region = (name) => content.querySelector(`[data-region="${name}"]`);
 
+  region('banner').innerHTML = renderMaterialBanner(material);
   content.querySelector('[data-field="title"]').textContent = material.title;
   const description = content.querySelector('[data-field="description"]');
   if (material.description) description.textContent = material.description;

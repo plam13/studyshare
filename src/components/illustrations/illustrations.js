@@ -15,7 +15,7 @@ const CUBE_COLORS = {
 };
 
 /** Isometric cube; (x, y) is the centre of the top face. */
-function cube({ x, y, w = 70, h = 40, d = 60, color = 'blue', label = '' }) {
+export function cube({ x, y, w = 70, h = 40, d = 60, color = 'blue', label = '' }) {
   const c = CUBE_COLORS[color];
   const stroke = `stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"`;
   const text = label
@@ -43,7 +43,8 @@ function stickerText({ x, y, text, size = 100, fill, depth = '#2f2f2f', offset =
     </g>`;
 }
 
-function sparkle(x, y, r = 12, fill = '#f6d84a') {
+/** Four-pointed sparkle centred at (x, y). */
+export function sparkle(x, y, r = 12, fill = '#f6d84a') {
   const k = r * 0.18;
   return `<path class="ss-sparkle" transform="translate(${x} ${y})" fill="${fill}" stroke="${INK}" stroke-width="2"
             stroke-linejoin="round" d="M0,${-r} Q${k},${-k} ${r},0 Q${k},${k} 0,${r} Q${-k},${k} ${-r},0 Q${-k},${-k} 0,${-r}Z"/>`;

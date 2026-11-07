@@ -1,0 +1,70 @@
+.ss-material-banner {
+  overflow: hidden;
+  border: var(--ss-border);
+  border-radius: var(--ss-radius-lg);
+  box-shadow: var(--ss-shadow);
+  background: var(--ss-tone);
+}
+
+.ss-material-banner svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1200 / 320;
+}
+
+.ss-banner-bg { fill: var(--ss-tone); }
+.ss-banner-dot { fill: rgba(31, 31, 31, 0.14); }
+
+.ss-banner-slug {
+  font-family: var(--ss-mono);
+  font-size: 26px;
+  font-weight: 700;
+  fill: var(--ss-tone-strong);
+}
+
+.ss-banner-title {
+  font-family: var(--ss-mono);
+  font-size: 50px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  fill: var(--ss-ink);
+}
+
+.ss-banner-chip {
+  fill: var(--ss-paper);
+  stroke: var(--ss-ink);
+  stroke-width: 3;
+}
+
+.ss-banner-chip-text {
+  font-family: var(--ss-mono);
+  font-size: 20px;
+  font-weight: 700;
+  fill: var(--ss-ink);
+}
+
+.ss-banner-shadow { fill: var(--ss-ink); }
+
+.ss-banner-sheet {
+  fill: var(--ss-tone, var(--ss-paper));
+  stroke: var(--ss-ink);
+  stroke-width: 3.5;
+  stroke-linejoin: round;
+}
+
+.ss-banner-fold {
+  fill: var(--ss-paper);
+  stroke: var(--ss-ink);
+  stroke-width: 3.5;
+  stroke-linejoin: round;
+}
+
+.ss-banner-line { fill: rgba(31, 31, 31, 0.22); }
+
+.ss-banner-type {
+  font-family: var(--ss-mono);
+  font-size: 44px;
+  font-weight: 800;
+  fill: var(--ss-ink);
+}
