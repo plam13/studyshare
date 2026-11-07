@@ -13,6 +13,11 @@ body {
 #app {
   flex: 1 0 auto;
 }
+
+/* `hidden` must win over Bootstrap display utilities (e.g. `d-flex` is !important too; this rule loads later) */
+[hidden] {
+  display: none !important;
+}
 #app:focus,
 #app h1:focus {
   outline: none;
