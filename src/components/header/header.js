@@ -29,7 +29,7 @@ function isActive(href, pathname, exact) {
 function renderAccountArea(user) {
   if (!user) {
     return `
-      <a class="btn btn-outline-light btn-sm" href="/login" data-nav-href="/login" data-nav-exact>
+      <a class="btn btn-light btn-sm" href="/login" data-nav-href="/login" data-nav-exact>
         <i class="bi bi-box-arrow-in-right me-1" aria-hidden="true"></i>Вход
       </a>
       <a class="btn btn-warning btn-sm" href="/register" data-nav-href="/register" data-nav-exact>
@@ -38,9 +38,9 @@ function renderAccountArea(user) {
   }
 
   const name = escapeHtml(user.fullName || user.email);
-  const badge = user.isAdmin ? '<span class="badge text-bg-warning ms-1">admin</span>' : '';
+  const badge = user.isAdmin ? '<span class="ss-chip ss-tone-yellow ss-admin-chip">admin</span>' : '';
   return `
-    <a class="btn btn-outline-light btn-sm ss-account-link" href="/profile" data-nav-href="/profile">
+    <a class="btn btn-light btn-sm ss-account-link" href="/profile" data-nav-href="/profile">
       ${renderAvatar(user.fullName || user.email, user.avatarUrl, { size: 'xs' })}<span>${name}</span>${badge}
     </a>
     <button class="btn btn-light btn-sm" type="button" data-action="logout">
@@ -91,17 +91,17 @@ export function createHeader(container, { onLogout }) {
       .join('');
 
     container.innerHTML = `
-      <nav class="navbar navbar-expand-lg navbar-dark ss-navbar shadow-sm" aria-label="Основна навигация">
+      <nav class="navbar navbar-expand-lg ss-navbar" aria-label="Основна навигация">
         <div class="container">
           <a class="navbar-brand ss-brand" href="/">
-            <i class="bi bi-mortarboard-fill me-1" aria-hidden="true"></i>StudyShare
+            <span class="ss-logo" aria-hidden="true"><i class="bi bi-mortarboard-fill"></i></span>StudyShare
           </a>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
                   aria-controls="mainNav" aria-expanded="false" aria-label="Меню">
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="mainNav">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">${links}</ul>
+            <ul class="navbar-nav me-auto gap-lg-1 my-2 my-lg-0">${links}</ul>
             <div class="d-flex flex-wrap gap-2">${renderAccountArea(user)}</div>
           </div>
         </div>

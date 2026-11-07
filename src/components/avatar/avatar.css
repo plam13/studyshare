@@ -2,14 +2,16 @@
   display: inline-grid;
   place-items: center;
   flex: none;
+  border: var(--ss-line) solid var(--ss-ink);
   border-radius: 50%;
-  font-weight: 700;
-  color: #fff;
-  background-color: var(--ss-primary);
+  font-family: var(--ss-mono);
+  font-weight: 800;
+  color: var(--ss-ink);
+  background-color: var(--ss-sky);
   object-fit: cover;
 }
 
-.ss-avatar--xs { width: 1.375rem; height: 1.375rem; font-size: 0.6rem; }
+.ss-avatar--xs { width: 1.5rem; height: 1.5rem; font-size: 0.6rem; border-width: 1.5px; }
 .ss-avatar--sm { width: 2rem; height: 2rem; font-size: 0.75rem; }
 .ss-avatar--md { width: 2.5rem; height: 2.5rem; font-size: 0.9rem; }
-.ss-avatar--lg { width: 6rem; height: 6rem; font-size: 2rem; }
+.ss-avatar--lg { width: 6.5rem; height: 6.5rem; font-size: 2rem; box-shadow: var(--ss-shadow); }
