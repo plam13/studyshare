@@ -3,12 +3,12 @@
 
   <div class="row g-4">
     <div class="col-md-5 col-lg-4">
-      <div class="card border-0 shadow-sm text-center">
+      <div class="card text-center">
         <div class="card-body p-4">
           <div class="ss-profile-avatar mb-3" data-field="avatar"></div>
           <h2 class="h5 mb-1 text-break" data-field="fullName"></h2>
           <p class="text-secondary small mb-2 text-break" data-field="email"></p>
-          <span class="badge rounded-pill" data-field="role"></span>
+          <span class="ss-chip" data-field="role"></span>
 
           <hr />
 
@@ -31,7 +31,7 @@
     </div>
 
     <div class="col-md-7 col-lg-8">
-      <form id="name-form" class="card border-0 shadow-sm mb-4" novalidate>
+      <form id="name-form" class="card mb-4" novalidate>
         <div class="card-body p-4">
           <h2 class="h5 mb-3"><i class="bi bi-pencil-square me-2" aria-hidden="true"></i>Лични данни</h2>
           <div class="mb-3">
@@ -56,7 +56,7 @@
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
           <h2 id="my-materials-title" class="h5 mb-0">
             <i class="bi bi-files me-2" aria-hidden="true"></i>Моите материали
-            <span class="badge text-bg-light border" data-field="materials-count"></span>
+            <span class="ss-chip ss-tone-blue" data-field="materials-count"></span>
           </h2>
           <a class="btn btn-outline-primary btn-sm" href="/materials/add"><i class="bi bi-cloud-arrow-up me-1" aria-hidden="true"></i>Качи материал</a>
         </div>

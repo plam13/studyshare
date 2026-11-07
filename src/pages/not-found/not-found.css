@@ -1,0 +1,11 @@
+.ss-notfound-art {
+  display: block;
+  width: 100%;
+  max-width: 360px;
+  height: auto;
+  margin-inline: auto;
+}
+
+.ss-notfound-path {
+  overflow-wrap: anywhere;
+}

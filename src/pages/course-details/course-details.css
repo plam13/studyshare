@@ -1,3 +1,13 @@
+.ss-course-banner {
+  padding: 1.25rem 1.5rem;
+  background-color: var(--ss-tone);
+  background-image: radial-gradient(rgba(31, 31, 31, 0.12) 1.2px, transparent 1.2px);
+  background-size: 20px 20px;
+  border: var(--ss-border);
+  border-radius: var(--ss-radius-lg);
+  box-shadow: var(--ss-shadow);
+}
+
 .ss-course-heading {
   flex: 1 1 20rem;
   min-width: 0;

@@ -1,23 +1,20 @@
-.ss-stat-card .ss-stat-icon {
-  display: inline-grid;
-  place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: 0.75rem;
-  font-size: 1.35rem;
-  color: var(--tone);
-  background-color: color-mix(in srgb, var(--tone) 14%, white);
+.ss-stat-card {
+  padding: 1rem;
 }
 
-.ss-stat-card .ss-stat-value {
-  font-size: 1.75rem;
-  font-weight: 700;
+.ss-stat-card .ss-icon-tile {
+  width: 2.4rem;
+  height: 2.4rem;
+  font-size: 1.15rem;
+}
+
+.ss-stat-value {
+  font-family: var(--ss-mono);
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 800;
   line-height: 1.1;
 }
 
-.ss-stat--primary { --tone: var(--ss-primary); }
-.ss-stat--success { --tone: #198754; }
-.ss-stat--warning { --tone: #d97706; }
-.ss-stat--info { --tone: #0891b2; }
-.ss-stat--purple { --tone: #7c3aed; }
-.ss-stat--rose { --tone: #e11d48; }
+.ss-stat-hint {
+  color: var(--ss-ink-soft);
+}

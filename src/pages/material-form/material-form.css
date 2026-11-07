@@ -4,12 +4,13 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.5rem 0.75rem;
-  border: 1px solid var(--bs-border-color);
-  border-radius: var(--bs-border-radius);
-  background-color: var(--bs-tertiary-bg);
+  border: var(--ss-border);
+  border-radius: var(--ss-radius-sm);
+  background-color: var(--ss-sky-soft);
   overflow-wrap: anywhere;
 }
 
 .ss-selected-file {
   border-style: dashed;
+  background-color: var(--ss-yellow-light);
 }

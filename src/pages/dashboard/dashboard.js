@@ -6,36 +6,36 @@ import { renderMaterialList } from '../../components/material-item/material-item
 import { renderEmpty, renderError, renderLoading } from '../../components/page-state/page-state.js';
 import { formatNumber, formatRating, plural } from '../../utils/format.js';
 
-function statCard({ tone, icon, value, label, hint = '' }) {
+const TILTS = ['ss-tilt-left', 'ss-tilt-right', 'ss-tilt-right-sm', 'ss-tilt-left-sm'];
+
+function statCard({ tone, icon, value, label, hint = '' }, index) {
   return `
     <div class="col-6 col-md-4 col-xl-2">
-      <div class="card h-100 border-0 shadow-sm ss-stat-card ss-stat--${tone}">
-        <div class="card-body">
-          <span class="ss-stat-icon mb-2"><i class="bi ${icon}" aria-hidden="true"></i></span>
-          <div class="ss-stat-value">${value}</div>
-          <div class="small fw-semibold">${label}</div>
-          ${hint ? `<div class="small text-secondary">${hint}</div>` : ''}
-        </div>
+      <div class="ss-sticker ss-stat-card ss-tone-${tone} ${TILTS[index % TILTS.length]}">
+        <span class="ss-icon-tile ss-tone-paper"><i class="bi ${icon}" aria-hidden="true"></i></span>
+        <div class="ss-stat-value mt-2">${value}</div>
+        <div class="small fw-semibold">${label}</div>
+        ${hint ? `<div class="small ss-stat-hint">${hint}</div>` : ''}
       </div>
     </div>`;
 }
 
 function renderStats(stats) {
-  return `
-    <div class="row g-3">
-      ${statCard({ tone: 'primary', icon: 'bi-files', value: formatNumber(stats.materialsCount), label: 'Мои материали' })}
-      ${statCard({ tone: 'success', icon: 'bi-cloud-arrow-down', value: formatNumber(stats.downloadsTotal), label: 'Изтегляния', hint: 'на моите материали' })}
-      ${statCard({
-        tone: 'warning',
-        icon: 'bi-star-half',
-        value: stats.ratingsReceived ? formatRating(stats.avgRatingReceived) : '—',
-        label: 'Среден рейтинг',
-        hint: plural(stats.ratingsReceived, 'оценка', 'оценки'),
-      })}
-      ${statCard({ tone: 'info', icon: 'bi-chat-dots', value: formatNumber(stats.commentsReceived), label: 'Получени коментари' })}
-      ${statCard({ tone: 'purple', icon: 'bi-pencil-square', value: formatNumber(stats.commentsWritten), label: 'Мои коментари' })}
-      ${statCard({ tone: 'rose', icon: 'bi-hand-thumbs-up', value: formatNumber(stats.ratingsGiven), label: 'Дадени оценки' })}
-    </div>`;
+  const cards = [
+    { tone: 'sky', icon: 'bi-files', value: formatNumber(stats.materialsCount), label: 'Мои материали' },
+    { tone: 'green', icon: 'bi-cloud-arrow-down', value: formatNumber(stats.downloadsTotal), label: 'Изтегляния', hint: 'на моите материали' },
+    {
+      tone: 'yellow',
+      icon: 'bi-star-half',
+      value: stats.ratingsReceived ? formatRating(stats.avgRatingReceived) : '—',
+      label: 'Среден рейтинг',
+      hint: plural(stats.ratingsReceived, 'оценка', 'оценки'),
+    },
+    { tone: 'coral', icon: 'bi-chat-dots', value: formatNumber(stats.commentsReceived), label: 'Получени коментари' },
+    { tone: 'lilac', icon: 'bi-pencil-square', value: formatNumber(stats.commentsWritten), label: 'Мои коментари' },
+    { tone: 'blue', icon: 'bi-hand-thumbs-up', value: formatNumber(stats.ratingsGiven), label: 'Дадени оценки' },
+  ];
+  return `<div class="row g-4">${cards.map(statCard).join('')}</div>`;
 }
 
 /** Home page for logged-in users: personal statistics + latest own materials. */
@@ -60,7 +60,7 @@ export async function mount(container, { user, signal }) {
     materialsBox.innerHTML = renderError(materialsResult.reason.message);
   } else if (!materialsResult.value.length) {
     materialsBox.innerHTML = renderEmpty({
-      icon: 'bi-cloud-arrow-up',
+      illustration: true,
       title: 'Още не си качил материали.',
       text: 'Сподели записки или решени задачи с колегите си.',
       actionHtml: '<a class="btn btn-primary" href="/materials/add"><i class="bi bi-cloud-arrow-up me-1" aria-hidden="true"></i>Качи първия си материал</a>',

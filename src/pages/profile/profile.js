@@ -11,8 +11,8 @@ import { showError, showSuccess } from '../../utils/toast.js';
 import { enableLiveValidation, setButtonLoading, setFieldError, validateForm } from '../../utils/validation.js';
 
 const ROLES = {
-  user: { label: 'Потребител', className: 'text-bg-secondary' },
-  admin: { label: 'Администратор', className: 'text-bg-warning' },
+  user: { label: 'Потребител', className: 'ss-tone-blue' },
+  admin: { label: 'Администратор', className: 'ss-tone-yellow' },
 };
 
 function renderSummary(container, user) {

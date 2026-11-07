@@ -1,10 +1,88 @@
 .ss-hero {
-  background: linear-gradient(135deg, var(--ss-primary), #7c3aed);
-  color: #fff;
-  border-radius: 1rem;
+  background-color: var(--ss-sky);
+  background-image: radial-gradient(rgba(31, 31, 31, 0.16) 1.2px, transparent 1.2px);
+  background-size: 22px 22px;
+  border: var(--ss-border);
+  border-radius: var(--ss-radius-lg);
+  box-shadow: var(--ss-shadow-lg);
+  overflow: hidden;
 }
 
-.ss-hero-icon {
-  font-size: 9rem;
-  opacity: 0.85;
+.ss-hero-body {
+  background: var(--ss-sky-soft);
+}
+
+.ss-hero-title {
+  font-size: clamp(2rem, 4.5vw, 3.2rem);
+  line-height: 1.05;
+}
+
+.ss-hero-slashes {
+  color: var(--ss-blue-dark);
+}
+
+.ss-hero-art {
+  display: block;
+  width: 100%;
+  max-width: 520px;
+  height: auto;
+  margin-inline: auto;
+}
+
+@media (max-width: 991.98px) {
+  .ss-hero-art {
+    max-width: 360px;
+  }
+}
+
+/* Gentle float for the sparkles (disabled for reduced motion by the global rule) */
+.ss-hero-art .ss-sparkle {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ss-twinkle 3s ease-in-out infinite;
+}
+
+.ss-hero-art .ss-sparkle:nth-of-type(2) { animation-delay: 1s; }
+.ss-hero-art .ss-sparkle:nth-of-type(3) { animation-delay: 2s; }
+
+@keyframes ss-twinkle {
+  0%, 100% { scale: 1; }
+  50% { scale: 0.75; }
+}
+
+/* "How it works" numbered steps */
+.ss-steps {
+  display: grid;
+  gap: 0.85rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  counter-reset: ss-step;
+}
+
+.ss-steps li {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  background: var(--ss-paper);
+  border: var(--ss-border);
+  border-radius: var(--ss-radius);
+  box-shadow: var(--ss-shadow-sm);
+  counter-increment: ss-step;
+}
+
+.ss-steps li::before {
+  content: counter(ss-step, decimal-leading-zero);
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  font-family: var(--ss-mono);
+  font-weight: 800;
+  background: var(--ss-tone);
+  border: var(--ss-border);
+  border-radius: var(--ss-radius-sm);
 }

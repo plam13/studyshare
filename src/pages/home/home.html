@@ -1,70 +1,73 @@
-<section class="ss-hero p-4 p-md-5 mb-5 shadow">
+<section class="ss-hero p-3 p-sm-4 p-md-5 mb-5">
   <div class="row align-items-center g-4">
-    <div class="col-lg-8">
-      <h1 class="display-6 fw-bold mb-3">Споделяй записки. Учи по-умно.</h1>
-      <p class="lead mb-4">
-        StudyShare събира учебни материали по курсове — лекции, записки, решени задачи и презентации.
-        Качи своите, изтегли чуждите, оцени най-полезните.
-      </p>
-      <div class="d-flex flex-wrap gap-2">
-        <a class="btn btn-warning btn-lg" href="/courses"><i class="bi bi-journal-bookmark me-1" aria-hidden="true"></i>Разгледай курсовете</a>
-        <a class="btn btn-outline-light btn-lg" href="/register" data-show="guest"><i class="bi bi-person-plus me-1" aria-hidden="true"></i>Създай профил</a>
-        <a class="btn btn-outline-light btn-lg" href="/dashboard" data-show="user"><i class="bi bi-speedometer2 me-1" aria-hidden="true"></i>Към таблото</a>
+    <div class="col-lg-6">
+      <div class="ss-win ss-tone-paper">
+        <div class="ss-win-bar" aria-hidden="true">
+          <span class="ss-dot"></span><span class="ss-dot"></span><span class="ss-dot"></span>
+          <span class="ss-win-title">studyshare.bg</span>
+        </div>
+        <div class="ss-win-body ss-hero-body p-4">
+          <h1 class="ss-hero-title mb-3">
+            <span class="ss-hero-slashes" aria-hidden="true">//</span> Сподели.<br />Учи.<br />Повтори.
+            <span class="ss-hero-slashes" aria-hidden="true">//</span>
+          </h1>
+          <p class="mb-4">
+            Лекции, записки, решени задачи и презентации, подредени по курсове.
+            Качи своите, изтегли чуждите, оцени най-полезните.
+          </p>
+          <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-primary" href="/courses"><i class="bi bi-journal-bookmark me-1" aria-hidden="true"></i>Разгледай курсовете</a>
+            <a class="btn btn-warning" href="/register" data-show="guest"><i class="bi bi-person-plus me-1" aria-hidden="true"></i>Създай профил</a>
+            <a class="btn btn-warning" href="/dashboard" data-show="user"><i class="bi bi-speedometer2 me-1" aria-hidden="true"></i>Към таблото</a>
+          </div>
+          <p class="mt-3 mb-0 small" data-show="guest">
+            Вече имаш профил? <a class="fw-semibold" href="/login">Влез</a>
+          </p>
+        </div>
       </div>
-      <p class="mt-3 mb-0 small" data-show="guest">
-        Вече имаш профил? <a class="link-light fw-semibold" href="/login">Влез</a>
-      </p>
     </div>
-    <div class="col-lg-4 text-center d-none d-lg-block" aria-hidden="true">
-      <i class="bi bi-mortarboard-fill ss-hero-icon"></i>
-    </div>
+    <div class="col-lg-6" data-region="hero-art"></div>
   </div>
 </section>
 
 <section class="row g-4 mb-5" aria-label="Възможности">
   <div class="col-md-4">
-    <div class="card h-100 border-0 shadow-sm ss-card-hover">
-      <div class="card-body">
-        <i class="bi bi-cloud-arrow-up fs-2 text-primary" aria-hidden="true"></i>
-        <h2 class="h5 mt-2">Качвай материали</h2>
-        <p class="text-secondary mb-0">PDF, Word и PowerPoint файлове, подредени по курсове.</p>
-      </div>
+    <div class="ss-sticker ss-tone-sky ss-tilt-left-sm">
+      <span class="ss-icon-tile ss-tone-paper"><i class="bi bi-cloud-arrow-up" aria-hidden="true"></i></span>
+      <h2 class="h5 mt-3">Качвай материали</h2>
+      <p class="mb-0">PDF, Word и PowerPoint файлове, подредени по курсове.</p>
     </div>
   </div>
   <div class="col-md-4">
-    <div class="card h-100 border-0 shadow-sm ss-card-hover">
-      <div class="card-body">
-        <i class="bi bi-cloud-arrow-down fs-2 text-primary" aria-hidden="true"></i>
-        <h2 class="h5 mt-2">Изтегляй свободно</h2>
-        <p class="text-secondary mb-0">Намери нужните записки с търсене и филтри.</p>
-      </div>
+    <div class="ss-sticker ss-tone-green ss-tilt-right-sm">
+      <span class="ss-icon-tile ss-tone-paper"><i class="bi bi-cloud-arrow-down" aria-hidden="true"></i></span>
+      <h2 class="h5 mt-3">Изтегляй свободно</h2>
+      <p class="mb-0">Намери нужните записки с търсене и сортиране.</p>
     </div>
   </div>
   <div class="col-md-4">
-    <div class="card h-100 border-0 shadow-sm ss-card-hover">
-      <div class="card-body">
-        <i class="bi bi-star-half fs-2 text-primary" aria-hidden="true"></i>
-        <h2 class="h5 mt-2">Оценявай и коментирай</h2>
-        <p class="text-secondary mb-0">Най-полезните материали излизат най-отгоре.</p>
-      </div>
+    <div class="ss-sticker ss-tone-yellow ss-tilt-left-sm">
+      <span class="ss-icon-tile ss-tone-paper"><i class="bi bi-star-half" aria-hidden="true"></i></span>
+      <h2 class="h5 mt-3">Оценявай и коментирай</h2>
+      <p class="mb-0">Най-полезните материали излизат най-отгоре.</p>
     </div>
   </div>
 </section>
 
 <section class="mb-5" aria-labelledby="latest-title">
   <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-    <h2 id="latest-title" class="h4 mb-0"><i class="bi bi-clock-history me-2" aria-hidden="true"></i>Последно качени</h2>
-    <a href="/courses">Всички курсове <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+    <h2 id="latest-title" class="h4 mb-0 ss-page-title">Последно качени</h2>
+    <a class="btn btn-light btn-sm" href="/courses">Всички курсове <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
   </div>
   <div id="latest-materials"></div>
 </section>
 
 <section aria-labelledby="how-title">
-  <h2 id="how-title" class="h4 mb-3"><i class="bi bi-signpost-split me-2" aria-hidden="true"></i>Как работи?</h2>
-  <ol class="list-group list-group-numbered shadow-sm">
-    <li class="list-group-item">Създай безплатен профил.</li>
-    <li class="list-group-item">Избери курс и разгледай качените материали.</li>
-    <li class="list-group-item">Изтегли нужните файлове, оцени ги и остави коментар.</li>
-    <li class="list-group-item">Качи свои записки и помогни на колегите си.</li>
+  <h2 id="how-title" class="h4 mb-3 ss-page-title">Как работи?</h2>
+  <ol class="ss-steps">
+    <li class="ss-tone-sky">Създай безплатен профил.</li>
+    <li class="ss-tone-green">Избери курс и разгледай качените материали.</li>
+    <li class="ss-tone-yellow">Изтегли нужните файлове, оцени ги и остави коментар.</li>
+    <li class="ss-tone-coral">Качи свои записки и помогни на колегите си.</li>
   </ol>
 </section>

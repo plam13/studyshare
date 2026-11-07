@@ -63,7 +63,7 @@ function renderAddForm(user) {
     return `<p class="text-secondary mb-3"><a href="/login?redirect=${back}">Влез</a>, за да напишеш коментар.</p>`;
   }
   return `
-    <form class="card border-0 shadow-sm mb-3" data-form="add-comment" novalidate>
+    <form class="card mb-3" data-form="add-comment" novalidate>
       <div class="card-body">
         <label for="new-comment" class="form-label fw-semibold">Напиши коментар</label>
         <textarea class="form-control" id="new-comment" name="content" rows="3" maxlength="${COMMENT_MAX_LENGTH}"
@@ -87,7 +87,7 @@ export function mountComments(box, { materialId, comments: initial, user, signal
 
   box.innerHTML = `
     <h2 class="h5 mb-3"><i class="bi bi-chat-dots me-2" aria-hidden="true"></i>Коментари
-      <span class="badge text-bg-light border" data-field="comments-count"></span></h2>
+      <span class="ss-chip ss-tone-blue" data-field="comments-count"></span></h2>
     ${renderAddForm(user)}
     <div data-field="comments-list"></div>`;
   const list = box.querySelector('[data-field="comments-list"]');
@@ -96,7 +96,7 @@ export function mountComments(box, { materialId, comments: initial, user, signal
   function render() {
     count.textContent = comments.length;
     list.innerHTML = comments.length
-      ? `<ul class="list-group shadow-sm">${comments.map((comment) => renderComment(comment, user, editingId)).join('')}</ul>`
+      ? `<ul class="list-group">${comments.map((comment) => renderComment(comment, user, editingId)).join('')}</ul>`
       : renderEmpty({ icon: 'bi-chat-square-text', title: 'Още няма коментари.', text: 'Сподели мнението си за материала.' });
   }
 

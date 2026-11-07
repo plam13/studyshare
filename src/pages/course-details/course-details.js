@@ -6,24 +6,28 @@ import { renderMaterialList } from '../../components/material-item/material-item
 import { renderEmpty, renderError, renderLoading, renderNotFound } from '../../components/page-state/page-state.js';
 import { escapeHtml } from '../../utils/dom.js';
 import { plural } from '../../utils/format.js';
+import { courseTone } from '../../utils/tone.js';
 
 function renderHeader(course) {
   const uploadHref = `/materials/add?course=${encodeURIComponent(course.id)}`;
   return `
-    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
-      <div class="ss-course-heading">
-        <h1 class="h3 mb-1"><i class="bi bi-folder2-open me-2" aria-hidden="true"></i>${escapeHtml(course.title)}</h1>
-        <p class="text-secondary mb-0">${escapeHtml(course.description)}</p>
+    <div class="ss-course-banner ss-tone-${courseTone(course.id)} d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+      <div class="ss-course-heading d-flex align-items-start gap-3">
+        <span class="ss-icon-tile ss-tone-paper d-none d-sm-inline-grid"><i class="bi bi-folder2-open" aria-hidden="true"></i></span>
+        <div class="ss-min-w-0">
+          <h1 class="h3 mb-1">${escapeHtml(course.title)}</h1>
+          <p class="mb-0">${escapeHtml(course.description)}</p>
+        </div>
       </div>
-      <a class="btn btn-primary" href="${uploadHref}"><i class="bi bi-cloud-arrow-up me-1" aria-hidden="true"></i>Качи материал</a>
+      <a class="btn btn-warning" href="${uploadHref}"><i class="bi bi-cloud-arrow-up me-1" aria-hidden="true"></i>Качи материал</a>
     </div>
 
-    <div class="ss-toolbar card border-0 shadow-sm mb-3">
+    <div class="ss-toolbar card mb-3">
       <div class="card-body row g-2 align-items-center">
         <div class="col-md-6">
           <label for="material-search" class="visually-hidden">Търси материал</label>
           <div class="input-group">
-            <span class="input-group-text bg-white"><i class="bi bi-search" aria-hidden="true"></i></span>
+            <span class="input-group-text"><i class="bi bi-search" aria-hidden="true"></i></span>
             <input type="search" id="material-search" class="form-control" placeholder="Търси по заглавие или автор…" autocomplete="off" />
           </div>
         </div>
@@ -92,7 +96,7 @@ export async function mount(container, { params, signal, setTitle }) {
 
     if (!materials.length) {
       list.innerHTML = renderEmpty({
-        icon: 'bi-inbox',
+        illustration: true,
         title: 'Още няма материали в този курс.',
         text: 'Бъди първият, който ще качи записки!',
         actionHtml: `<a class="btn btn-primary" href="/materials/add?course=${encodeURIComponent(course.id)}"><i class="bi bi-cloud-arrow-up me-1" aria-hidden="true"></i>Качи материал</a>`,
