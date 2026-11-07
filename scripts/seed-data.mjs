@@ -52,7 +52,7 @@ export const COURSES = [
 export const MATERIALS = [
   { key: 'pb-intro', course: 'pb', author: 'maria@studyshare.bg', title: 'Лекция 1 — Първи стъпки в програмирането', description: 'Конспект на първата лекция: какво е програма, конзолен вход и изход, променливи и типове данни.', topic: 'First steps in programming', downloads: 142 },
   { key: 'pb-conditions', course: 'pb', author: 'peter@studyshare.bg', title: 'Условни конструкции — решени задачи', description: '15 решени задачи с if-else и switch, с обяснения стъпка по стъпка.', topic: 'Conditional statements - solved problems', downloads: 96 },
-  { key: 'pb-loops', course: 'pb', author: 'demo@studyshare.bg', title: 'Цикли — шпаргалка', description: 'Кратка шпаргалка за for, while и do-while с примери и типични грешки.', topic: 'Loops cheat sheet', downloads: 211 },
+  { key: 'pb-loops', course: 'pb', author: 'demo@studyshare.bg', title: 'Цикли — помощен лист', description: 'Кратък помощен лист за for, while и do-while с примери и типични грешки.', topic: 'Loops cheat sheet', downloads: 211 },
   { key: 'pf-arrays', course: 'pf', author: 'elena@studyshare.bg', title: 'Масиви и методи за масиви', description: 'map, filter, reduce, sort и други полезни методи — с примери.', topic: 'Arrays and array methods', downloads: 87 },
   { key: 'pf-regex', course: 'pf', author: 'maria@studyshare.bg', title: 'Регулярни изрази за начинаещи', description: 'Основен синтаксис, групи, квантори и 10 упражнения с решения.', topic: 'Regular expressions for beginners', downloads: 64 },
   { key: 'pf-exam', course: 'pf', author: 'peter@studyshare.bg', title: 'Подготовка за изпит — Fundamentals', description: 'Задачи от минали изпити с коментирани решения.', topic: 'Fundamentals exam preparation', downloads: 175 },
@@ -72,7 +72,7 @@ export const MATERIALS = [
 export const COMMENTS = [
   ['pb-intro', 'peter@studyshare.bg', 'Много ясно обяснено, благодаря!'],
   ['pb-intro', 'demo@studyshare.bg', 'Точно това ми трябваше преди упражненията.'],
-  ['pb-loops', 'maria@studyshare.bg', 'Шпаргалката е супер, разпечатах си я.'],
+  ['pb-loops', 'maria@studyshare.bg', 'Помощният лист е супер, разпечатах си го.'],
   ['pb-loops', 'elena@studyshare.bg', 'Може ли да добавиш и примери с вложени цикли?'],
   ['pf-exam', 'demo@studyshare.bg', 'Решенията са много полезни за подготовката.'],
   ['pf-exam', 'maria@studyshare.bg', 'Задача 3 има и по-кратко решение с reduce.'],
