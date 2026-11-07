@@ -1,4 +1,26 @@
 <section>
-  <h1 class="h3 mb-4"><i class="bi bi-shield-lock me-2" aria-hidden="true"></i>Админ панел</h1>
-  <div class="ss-empty"><i class="bi bi-tools" aria-hidden="true"></i>Управление на курсове, потребители и модерация предстоят.</div>
+  <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+    <div>
+      <h1 class="h3 mb-1"><i class="bi bi-shield-lock me-2" aria-hidden="true"></i>Админ панел</h1>
+      <p class="text-secondary mb-0">Потребители и роли, курсове и модерация на съдържанието.</p>
+    </div>
+  </div>
+
+  <div id="admin-stats" class="mb-4"></div>
+
+  <nav aria-label="Раздели на админ панела">
+    <ul class="nav nav-pills flex-wrap mb-4">
+      <li class="nav-item">
+        <a class="nav-link" href="/admin?tab=users" data-tab="users"><i class="bi bi-people me-1" aria-hidden="true"></i>Потребители</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/admin?tab=courses" data-tab="courses"><i class="bi bi-journal-bookmark me-1" aria-hidden="true"></i>Курсове</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/admin?tab=moderation" data-tab="moderation"><i class="bi bi-flag me-1" aria-hidden="true"></i>Модерация</a>
+      </li>
+    </ul>
+  </nav>
+
+  <div id="admin-section"></div>
 </section>

@@ -1,0 +1,133 @@
+.ss-admin-stat {
+  padding: 0.85rem 1rem;
+}
+
+.ss-admin-stat > .bi {
+  font-size: 1.3rem;
+}
+
+.ss-admin-stat-value {
+  font-family: var(--ss-mono);
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+/* Tables inside window cards */
+.ss-admin-table {
+  margin-bottom: 0;
+}
+
+.ss-admin-table td,
+.ss-admin-table th {
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.ss-admin-table .ss-admin-wrap {
+  white-space: normal;
+  min-width: 14rem;
+  overflow-wrap: anywhere;
+}
+
+/* Phones: every table row becomes a small card with "label: value" lines (labels from data-label) */
+@media (max-width: 767.98px) {
+  .ss-admin-table--stack thead {
+    display: none;
+  }
+
+  .ss-admin-table--stack,
+  .ss-admin-table--stack tbody,
+  .ss-admin-table--stack tr,
+  .ss-admin-table--stack td {
+    display: block;
+    width: 100%;
+  }
+
+  .ss-admin-table--stack tr {
+    padding: 0.5rem 0;
+    border-bottom: var(--ss-border);
+  }
+
+  .ss-admin-table--stack tr:last-child {
+    border-bottom: 0;
+  }
+
+  .ss-admin-table--stack td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.3rem 0;
+    border: 0;
+    text-align: right;
+    white-space: normal;
+  }
+
+  .ss-admin-table--stack td[data-label]::before {
+    content: attr(data-label);
+    font-family: var(--ss-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--ss-muted);
+    text-align: left;
+  }
+
+  .ss-admin-table--stack .ss-admin-wrap {
+    min-width: 0;
+    text-align: left;
+  }
+
+  .ss-admin-table--stack .ss-admin-actions {
+    justify-content: flex-end;
+    padding-top: 0.5rem;
+  }
+}
+
+.ss-admin-user {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.ss-admin-user-email {
+  font-size: 0.8rem;
+  color: var(--ss-muted);
+}
+
+/* Moderation lists */
+.ss-mod-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ss-mod-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px dashed rgba(31, 31, 31, 0.25);
+}
+
+.ss-mod-item:last-child {
+  border-bottom: 0;
+}
+
+.ss-mod-item-body {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.ss-mod-quote {
+  margin: 0.25rem 0 0;
+  padding-left: 0.6rem;
+  border-left: 3px solid var(--ss-lilac);
+  white-space: pre-line;
+}
+
+.ss-course-form-title {
+  font-family: var(--ss-mono);
+}
