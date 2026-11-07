@@ -4,7 +4,7 @@ A web app for sharing study materials by course. Students upload lecture notes, 
 
 > 🚧 Work in progress — capstone project for the SoftUni course “Software Technologies with AI”.
 
-**Live demo:** https://studyshare-softuni.netlify.app (demo accounts are listed [below](#demo-accounts)).
+**Live demo:** https://studyshare-learn.netlify.app (demo accounts are listed [below](#demo-accounts)).
 
 ## Features
 
@@ -55,7 +55,7 @@ npm run dev
 
 - Build settings are in `netlify.toml` (`npm run build` → `dist/`); `public/_redirects` sends every route to `index.html`, so clean URLs such as `/materials/<id>` work on reload.
 - Environment variables on Netlify: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` (public values only).
-- Supabase Auth → URL configuration: Site URL `https://studyshare-softuni.netlify.app`, redirect URLs for the live site and `http://localhost:5173/**`.
+- Supabase Auth → URL configuration: Site URL `https://studyshare-learn.netlify.app`, redirect URLs for the live site and `http://localhost:5173/**`.
 - Manual deploy with the Netlify CLI: `netlify deploy --build --prod`.
 
 ## Files and storage
