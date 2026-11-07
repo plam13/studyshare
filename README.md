@@ -39,7 +39,19 @@ A web app for sharing study materials by course. Students upload lecture notes, 
 | `/materials/add`, `/materials/:id/edit` | Upload / edit material | users |
 | `/materials/:id` | Material details | everyone |
 | `/profile` | My profile | users |
-| `/admin` | Admin panel | admins |
+| `/admin?tab=users\|courses\|moderation` | Admin panel | admins |
+
+### Admin panel
+
+- **Overview:** totals for users, admins, courses, materials, comments and downloads.
+- **Users:** list with email, role and activity, search and role filter; grant or revoke the admin role (with confirmation).
+  An admin cannot change their own role, so at least one admin always remains.
+- **Courses:** create, edit and delete. Deleting a course removes its materials, comments and ratings (DB cascade) and their files in Storage.
+- **Moderation:** the latest 20 materials and comments site-wide, each deletable.
+
+Security is enforced in the database, not in the browser:
+- `admin_list_users()` and `admin_get_stats()` are `SECURITY DEFINER` functions that check `public.is_admin()` first. They return only the needed fields (emails come from `auth.users`, which clients cannot read).
+- Role changes go through `user_roles` and its RLS policy (admins only, never on their own row). Users can never promote themselves.
 
 ## Local development
 
@@ -92,9 +104,10 @@ npm run seed                                # applies the seed
 ├── src/
 │   ├── main.js            # entry: global CSS/JS, layout, auth init, router start
 │   ├── router.js          # routes, guards, mount/unmount
-│   ├── styles.css         # global styles
+│   ├── styles.css         # global styles entry (imports src/styles/*)
+│   ├── styles/            # design tokens, base, Bootstrap theme, shared ss- blocks
 │   ├── pages/<page>/      # page fragment (.html) + styles (.css) + logic (.js)
-│   ├── components/        # header, footer, …
+│   ├── components/        # header, footer, cards, SVG illustrations, material banner, …
 │   ├── services/          # Supabase client, auth and data services
 │   └── utils/             # escaping, validation, toasts, guards
 ├── supabase/migrations/   # DB migrations (SQL)
