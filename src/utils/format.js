@@ -32,18 +32,18 @@ export function plural(count, one, many) {
 }
 
 const FILE_TYPES = {
-  'application/pdf': { label: 'PDF', icon: 'bi-file-earmark-pdf', tone: 'danger' },
-  'application/msword': { label: 'DOC', icon: 'bi-file-earmark-word', tone: 'primary' },
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': { label: 'DOCX', icon: 'bi-file-earmark-word', tone: 'primary' },
-  'application/vnd.ms-powerpoint': { label: 'PPT', icon: 'bi-file-earmark-ppt', tone: 'warning' },
-  'application/vnd.openxmlformats-officedocument.presentationml.presentation': { label: 'PPTX', icon: 'bi-file-earmark-ppt', tone: 'warning' },
-  'application/vnd.ms-excel': { label: 'XLS', icon: 'bi-file-earmark-excel', tone: 'success' },
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': { label: 'XLSX', icon: 'bi-file-earmark-excel', tone: 'success' },
-  'text/plain': { label: 'TXT', icon: 'bi-file-earmark-text', tone: 'secondary' },
-  'application/zip': { label: 'ZIP', icon: 'bi-file-earmark-zip', tone: 'dark' },
+  'application/pdf': { label: 'PDF', icon: 'bi-file-earmark-pdf', tone: 'coral' },
+  'application/msword': { label: 'DOC', icon: 'bi-file-earmark-word', tone: 'sky' },
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': { label: 'DOCX', icon: 'bi-file-earmark-word', tone: 'sky' },
+  'application/vnd.ms-powerpoint': { label: 'PPT', icon: 'bi-file-earmark-ppt', tone: 'yellow' },
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation': { label: 'PPTX', icon: 'bi-file-earmark-ppt', tone: 'yellow' },
+  'application/vnd.ms-excel': { label: 'XLS', icon: 'bi-file-earmark-excel', tone: 'green' },
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': { label: 'XLSX', icon: 'bi-file-earmark-excel', tone: 'green' },
+  'text/plain': { label: 'TXT', icon: 'bi-file-earmark-text', tone: 'paper' },
+  'application/zip': { label: 'ZIP', icon: 'bi-file-earmark-zip', tone: 'lilac' },
 };
 
-/** Display info (label, Bootstrap icon, color tone) for a MIME type. */
+/** Display info (label, Bootstrap icon, theme tone for ss-tone-*) for a MIME type. */
 export function fileTypeInfo(mimeType) {
-  return FILE_TYPES[mimeType] ?? { label: 'FILE', icon: 'bi-file-earmark', tone: 'secondary' };
+  return FILE_TYPES[mimeType] ?? { label: 'FILE', icon: 'bi-file-earmark', tone: 'paper' };
 }

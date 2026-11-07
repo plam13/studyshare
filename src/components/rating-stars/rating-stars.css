@@ -5,11 +5,24 @@
   white-space: nowrap;
 }
 
+/* Outlined stars: filled ones are yellow with an ink outline, empty ones are white with an ink outline */
 .ss-stars-icons {
-  color: var(--ss-accent);
-  letter-spacing: 1px;
+  display: inline-flex;
+  gap: 1px;
+  color: var(--ss-yellow);
+}
+
+.ss-stars-icons .bi::before {
+  -webkit-text-stroke: 0.6px var(--ss-ink);
+}
+
+.ss-stars-icons .bi-star::before {
+  content: '\F586'; /* bi-star-fill glyph, painted white = "empty" */
+  color: var(--ss-paper);
 }
 
 .ss-stars-value {
-  font-weight: 600;
+  font-family: var(--ss-mono);
+  font-weight: 800;
+  color: var(--ss-ink);
 }

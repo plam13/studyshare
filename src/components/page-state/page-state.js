@@ -1,4 +1,5 @@
 import { escapeHtml } from '../../utils/dom.js';
+import { emptyBoxArt } from '../illustrations/illustrations.js';
 
 /** Loading spinner placeholder. */
 export function renderLoading(text = 'Зареждане…') {
@@ -9,12 +10,16 @@ export function renderLoading(text = 'Зареждане…') {
     </div>`;
 }
 
-/** Empty state with icon, message and optional action HTML (already safe). */
-export function renderEmpty({ icon = 'bi-inbox', title, text = '', actionHtml = '' }) {
+/**
+ * Empty state with an icon (or the empty-box illustration), message and optional action HTML (already safe).
+ * @param {{ icon?: string, illustration?: boolean, title: string, text?: string, actionHtml?: string }} options
+ */
+export function renderEmpty({ icon = 'bi-inbox', illustration = false, title, text = '', actionHtml = '' }) {
+  const visual = illustration ? emptyBoxArt() : `<i class="bi ${icon}" aria-hidden="true"></i>`;
   return `
     <div class="ss-empty">
-      <i class="bi ${icon}" aria-hidden="true"></i>
-      <p class="fw-semibold mb-1">${escapeHtml(title)}</p>
+      ${visual}
+      <p class="ss-empty-title mb-1">${escapeHtml(title)}</p>
       ${text ? `<p class="mb-3">${escapeHtml(text)}</p>` : ''}
       ${actionHtml}
     </div>`;
