@@ -1,0 +1,389 @@
+/* Bootstrap 5 components re-skinned with the theme tokens (Bootstrap stays the foundation). */
+
+/* ------------------------------------------------------------------ Buttons */
+.btn {
+  --bs-btn-font-weight: 700;
+  --bs-btn-border-width: var(--ss-line);
+  --bs-btn-border-radius: 12px;
+  --bs-btn-border-radius-sm: var(--ss-radius-sm);
+  --bs-btn-border-radius-lg: var(--ss-radius);
+  --bs-btn-border-color: var(--ss-ink);
+  --bs-btn-hover-border-color: var(--ss-ink);
+  --bs-btn-active-border-color: var(--ss-ink);
+  --bs-btn-disabled-border-color: var(--ss-ink);
+  --bs-btn-focus-box-shadow: none;
+  box-shadow: var(--ss-shadow-sm);
+  transition: transform var(--ss-ease), box-shadow var(--ss-ease), background-color var(--ss-ease);
+}
+
+.btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 var(--ss-ink);
+}
+
+.btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 var(--ss-ink);
+}
+
+.btn:disabled,
+.btn.disabled {
+  box-shadow: none;
+  transform: none;
+  opacity: 0.7;
+}
+
+/* Buttons glued to inputs do not jump or cast shadows */
+.input-group > .btn,
+.btn-link {
+  box-shadow: none;
+  transform: none;
+}
+
+.btn-link {
+  --bs-btn-border-color: transparent;
+  --bs-btn-hover-border-color: transparent;
+  --bs-btn-active-border-color: transparent;
+}
+
+.btn-sm { --bs-btn-padding-x: 0.7rem; }
+
+.btn-primary {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: var(--ss-blue-dark);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--ss-blue-dark);
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: var(--ss-blue-dark);
+  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-bg: var(--ss-blue-dark);
+}
+
+.btn-success {
+  --bs-btn-color: var(--ss-ink);
+  --bs-btn-bg: var(--ss-green);
+  --bs-btn-hover-color: var(--ss-ink);
+  --bs-btn-hover-bg: var(--ss-green);
+  --bs-btn-active-color: var(--ss-ink);
+  --bs-btn-active-bg: var(--ss-green);
+  --bs-btn-disabled-color: var(--ss-ink);
+  --bs-btn-disabled-bg: var(--ss-green);
+}
+
+.btn-danger {
+  --bs-btn-color: var(--ss-ink);
+  --bs-btn-bg: var(--ss-coral);
+  --bs-btn-hover-color: var(--ss-ink);
+  --bs-btn-hover-bg: var(--ss-coral);
+  --bs-btn-active-color: var(--ss-ink);
+  --bs-btn-active-bg: var(--ss-coral);
+  --bs-btn-disabled-color: var(--ss-ink);
+  --bs-btn-disabled-bg: var(--ss-coral);
+}
+
+.btn-warning {
+  --bs-btn-color: var(--ss-ink);
+  --bs-btn-bg: var(--ss-yellow);
+  --bs-btn-hover-color: var(--ss-ink);
+  --bs-btn-hover-bg: var(--ss-yellow);
+  --bs-btn-active-color: var(--ss-ink);
+  --bs-btn-active-bg: var(--ss-yellow);
+  --bs-btn-disabled-color: var(--ss-ink);
+  --bs-btn-disabled-bg: var(--ss-yellow);
+}
+
+/* Outline / light buttons → "paper" buttons with a tinted hover */
+.btn-light,
+.btn-outline-primary,
+.btn-outline-secondary,
+.btn-outline-danger,
+.btn-outline-success {
+  --bs-btn-color: var(--ss-ink);
+  --bs-btn-bg: var(--ss-paper);
+  --bs-btn-hover-color: var(--ss-ink);
+  --bs-btn-hover-bg: var(--ss-sky-soft);
+  --bs-btn-active-color: var(--ss-ink);
+  --bs-btn-active-bg: var(--ss-sky);
+  --bs-btn-disabled-color: var(--ss-muted);
+  --bs-btn-disabled-bg: var(--ss-paper);
+}
+
+.btn-outline-danger {
+  --bs-btn-color: var(--ss-coral-dark);
+  --bs-btn-hover-color: var(--ss-ink);
+  --bs-btn-hover-bg: var(--ss-coral-light);
+  --bs-btn-active-bg: var(--ss-coral);
+}
+
+.btn-outline-success {
+  --bs-btn-hover-bg: var(--ss-green-light);
+  --bs-btn-active-bg: var(--ss-green);
+}
+
+.input-group > .btn-outline-secondary {
+  --bs-btn-bg: var(--ss-sky-soft);
+  --bs-btn-hover-bg: var(--ss-sky);
+}
+
+/* ------------------------------------------------------------------ Forms */
+.form-control,
+.form-select {
+  border-radius: var(--ss-radius-sm);
+  padding: 0.55rem 0.8rem;
+  background-color: var(--ss-paper);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--ss-ink);
+  box-shadow: 4px 4px 0 var(--ss-yellow), 4px 4px 0 2px var(--ss-ink);
+}
+
+.form-control[readonly] {
+  background-color: var(--ss-sky-soft);
+}
+
+.form-control-sm {
+  padding: 0.35rem 0.6rem;
+}
+
+/* Native file input: the "Choose file" button looks like a theme button */
+.form-control[type='file']::file-selector-button {
+  font-weight: 700;
+  color: var(--ss-ink);
+  background-color: var(--ss-yellow);
+  border-inline-end: var(--ss-border);
+}
+
+.form-control[type='file']:hover:not(:disabled):not([readonly])::file-selector-button {
+  background-color: var(--ss-yellow-light);
+}
+
+.form-label {
+  font-weight: 600;
+}
+
+.form-text {
+  color: var(--ss-muted);
+}
+
+:root {
+  --bs-form-invalid-color: var(--ss-coral-dark);
+  --bs-form-invalid-border-color: var(--ss-coral-dark);
+  --bs-form-valid-color: var(--ss-green-dark);
+  --bs-form-valid-border-color: var(--ss-green-dark);
+}
+
+.form-control.is-invalid:focus,
+.form-select.is-invalid:focus {
+  box-shadow: 4px 4px 0 var(--ss-coral-light), 4px 4px 0 2px var(--ss-coral-dark);
+}
+
+.invalid-feedback {
+  font-weight: 600;
+}
+
+/* Inside input groups the offset shadow would overlap neighbours → tint the field instead */
+.input-group > .form-control:focus,
+.input-group > .form-select:focus {
+  box-shadow: none;
+  background-color: var(--ss-yellow-light);
+}
+
+.input-group-text {
+  background-color: var(--ss-sky-soft);
+  border-radius: var(--ss-radius-sm);
+}
+
+.form-check-input {
+  border: var(--ss-border);
+}
+
+.form-check-input:checked {
+  background-color: var(--ss-blue-dark);
+  border-color: var(--ss-ink);
+}
+
+.form-check-input:focus {
+  border-color: var(--ss-ink);
+  box-shadow: 0 0 0 3px var(--ss-yellow);
+}
+
+/* ------------------------------------------------------------------ Cards */
+.card {
+  --bs-card-border-width: var(--ss-line);
+  --bs-card-border-color: var(--ss-ink);
+  --bs-card-border-radius: var(--ss-radius);
+  --bs-card-inner-border-radius: calc(var(--ss-radius) - var(--ss-line));
+  --bs-card-cap-bg: var(--ss-sky-soft);
+  --bs-card-bg: var(--ss-paper);
+  box-shadow: var(--ss-shadow);
+}
+
+.card-header {
+  border-bottom: var(--ss-border);
+  font-family: var(--ss-mono);
+  font-weight: 700;
+}
+
+/* ------------------------------------------------------------------ List groups */
+.list-group {
+  --bs-list-group-border-width: var(--ss-line);
+  --bs-list-group-border-color: var(--ss-ink);
+  --bs-list-group-border-radius: var(--ss-radius);
+  --bs-list-group-action-hover-bg: var(--ss-sky-soft);
+  --bs-list-group-action-active-bg: var(--ss-sky);
+  --bs-list-group-action-color: var(--ss-ink);
+  --bs-list-group-action-hover-color: var(--ss-ink);
+  box-shadow: var(--ss-shadow-sm);
+}
+
+.list-group-numbered > .list-group-item::before {
+  font-family: var(--ss-mono);
+  font-weight: 800;
+  color: var(--ss-blue-dark);
+  margin-right: 0.5rem;
+}
+
+/* ------------------------------------------------------------------ Badges */
+.badge {
+  --bs-badge-font-weight: 700;
+  --bs-badge-color: var(--ss-ink);
+  border: var(--ss-border);
+  border-radius: 999px;
+}
+
+.text-bg-light {
+  background-color: var(--ss-paper) !important;
+  color: var(--ss-ink) !important;
+}
+
+.text-bg-warning {
+  background-color: var(--ss-yellow) !important;
+  color: var(--ss-ink) !important;
+}
+
+.text-bg-secondary {
+  background-color: var(--ss-sky-soft) !important;
+  color: var(--ss-ink) !important;
+}
+
+/* ------------------------------------------------------------------ Alerts */
+.alert {
+  --bs-alert-border-color: var(--ss-ink);
+  --bs-alert-border-radius: var(--ss-radius-sm);
+  --bs-alert-color: var(--ss-ink);
+  border-width: var(--ss-line);
+  box-shadow: var(--ss-shadow-sm);
+  font-weight: 500;
+}
+
+.alert-danger { --bs-alert-bg: var(--ss-coral-light); }
+.alert-warning { --bs-alert-bg: var(--ss-yellow-light); }
+.alert-success { --bs-alert-bg: var(--ss-green-light); }
+.alert-info,
+.alert-primary { --bs-alert-bg: var(--ss-sky-soft); }
+
+.alert-danger > .bi:first-child { color: var(--ss-coral-dark); }
+
+/* ------------------------------------------------------------------ Breadcrumb */
+.breadcrumb {
+  --bs-breadcrumb-divider: '/';
+  --bs-breadcrumb-divider-color: var(--ss-blue);
+  --bs-breadcrumb-item-active-color: var(--ss-muted);
+  font-family: var(--ss-mono);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.breadcrumb-item.active {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 60vw;
+}
+
+/* ------------------------------------------------------------------ Modal */
+.modal {
+  --bs-modal-border-width: var(--ss-line);
+  --bs-modal-border-color: var(--ss-ink);
+  --bs-modal-border-radius: var(--ss-radius);
+  --bs-modal-inner-border-radius: calc(var(--ss-radius) - var(--ss-line));
+  --bs-modal-header-border-color: var(--ss-ink);
+  --bs-modal-footer-border-color: var(--ss-ink);
+  --bs-modal-box-shadow: var(--ss-shadow-lg);
+}
+
+.modal-content {
+  box-shadow: var(--ss-shadow-lg);
+}
+
+.modal-header {
+  background-color: var(--ss-yellow-light);
+}
+
+.modal-backdrop {
+  --bs-backdrop-bg: var(--ss-blue-dark);
+  --bs-backdrop-opacity: 0.35;
+}
+
+/* ------------------------------------------------------------------ Toasts (utils/toast.js) */
+.ss-toast {
+  --bs-toast-border-width: var(--ss-line);
+  --bs-toast-border-color: var(--ss-ink);
+  --bs-toast-border-radius: 12px;
+  --bs-toast-box-shadow: var(--ss-shadow-sm);
+  --bs-toast-color: var(--ss-ink);
+  --bs-toast-bg: var(--ss-tone, var(--ss-paper));
+  font-weight: 600;
+}
+
+.ss-toast-icon {
+  font-size: 1.1rem;
+  vertical-align: -0.15em;
+  color: var(--ss-tone-strong);
+}
+
+/* ------------------------------------------------------------------ Tables (admin) */
+.table {
+  --bs-table-border-color: rgba(31, 31, 31, 0.15);
+  --bs-table-hover-bg: var(--ss-sky-soft);
+  --bs-border-width: 1px;
+}
+
+.table > thead th {
+  font-family: var(--ss-mono);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: var(--ss-border);
+}
+
+/* ------------------------------------------------------------------ Nav pills / tabs (admin) */
+.nav-pills {
+  --bs-nav-pills-border-radius: var(--ss-radius-sm);
+  --bs-nav-pills-link-active-bg: var(--ss-sky);
+  --bs-nav-pills-link-active-color: var(--ss-ink);
+  --bs-nav-link-color: var(--ss-ink);
+  --bs-nav-link-hover-color: var(--ss-ink);
+  gap: 0.5rem;
+}
+
+.nav-pills .nav-link {
+  font-weight: 600;
+  border: var(--ss-line) solid transparent;
+}
+
+.nav-pills .nav-link:hover {
+  background-color: var(--ss-sky-soft);
+}
+
+.nav-pills .nav-link.active {
+  border-color: var(--ss-ink);
+  box-shadow: var(--ss-shadow-sm);
+}
+
+/* ------------------------------------------------------------------ Spinners */
+.spinner-border {
+  --bs-spinner-border-width: 0.2em;
+}

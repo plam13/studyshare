@@ -1,0 +1,91 @@
+/* Base layout and typography. */
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font-family: var(--ss-sans);
+  color: var(--ss-ink);
+  background-color: var(--ss-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+#app {
+  flex: 1 0 auto;
+}
+#app:focus,
+#app h1:focus {
+  outline: none;
+}
+
+h1, h2, h3, h4, h5,
+.h1, .h2, .h3, .h4, .h5,
+.display-1, .display-6,
+.ss-mono {
+  font-family: var(--ss-mono);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+h6, .h6 {
+  font-weight: 700;
+}
+
+a {
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 2px;
+}
+
+::selection {
+  background: var(--ss-yellow);
+  color: var(--ss-ink);
+}
+
+code {
+  color: var(--ss-coral-dark);
+  font-family: var(--ss-mono);
+}
+
+hr {
+  border-top: var(--ss-line) dashed var(--ss-ink);
+  opacity: 0.25;
+}
+
+/* Visible keyboard focus everywhere */
+a:focus-visible,
+button:focus-visible,
+.btn:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--ss-blue-dark);
+  outline-offset: 3px;
+}
+
+/* Page heading with a "//" accent */
+.ss-page-title::before {
+  content: '// ';
+  color: var(--ss-blue);
+}
+
+/* Initial app loader */
+.ss-loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 0;
+}
+
+/* Search box in page headers */
+.ss-search {
+  flex: 1 1 16rem;
+  max-width: 24rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

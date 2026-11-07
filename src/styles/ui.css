@@ -1,0 +1,210 @@
+/* Reusable theme building blocks (ss- prefix). Component-specific styles live next to their component. */
+
+/* ------------------------------------------------------------------ Tones
+   A tone sets --ss-tone (pastel surface) and --ss-tone-strong (accent) for any ss- block. */
+.ss-tone-sky { --ss-tone: var(--ss-sky); --ss-tone-strong: var(--ss-blue-dark); }
+.ss-tone-blue { --ss-tone: var(--ss-sky-soft); --ss-tone-strong: var(--ss-blue-dark); }
+.ss-tone-green { --ss-tone: var(--ss-green-light); --ss-tone-strong: var(--ss-green-dark); }
+.ss-tone-coral { --ss-tone: var(--ss-coral-light); --ss-tone-strong: var(--ss-coral-dark); }
+.ss-tone-yellow { --ss-tone: var(--ss-yellow-light); --ss-tone-strong: #8a6d00; }
+.ss-tone-lilac { --ss-tone: var(--ss-lilac-light); --ss-tone-strong: #4a4dc4; }
+.ss-tone-paper { --ss-tone: var(--ss-paper); --ss-tone-strong: var(--ss-ink); }
+
+/* ------------------------------------------------------------------ Logo tile (header + footer) */
+.ss-logo {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  font-size: 1.05rem;
+  color: var(--ss-ink);
+  background: var(--ss-yellow);
+  border: var(--ss-border);
+  border-radius: 9px;
+  box-shadow: var(--ss-shadow-sm);
+  transition: transform var(--ss-ease);
+}
+
+/* ------------------------------------------------------------------ Window card (○○○ title bar) */
+.ss-win {
+  display: flex;
+  flex-direction: column;
+  background: var(--ss-paper);
+  border: var(--ss-border);
+  border-radius: var(--ss-radius);
+  box-shadow: var(--ss-shadow);
+  overflow: hidden;
+  color: inherit;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+a.ss-win:hover {
+  color: inherit;
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0 var(--ss-ink);
+}
+
+a.ss-win:active {
+  transform: translate(2px, 2px);
+  box-shadow: var(--ss-shadow-sm);
+}
+
+.ss-win-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.8rem;
+  background: var(--ss-tone, var(--ss-sky-soft));
+  border-bottom: var(--ss-border);
+}
+
+.ss-win-bar .ss-dot {
+  width: 13px;
+  height: 13px;
+  flex: none;
+  border: var(--ss-line) solid var(--ss-ink);
+  border-radius: 50%;
+  background: var(--ss-paper);
+}
+
+.ss-win-title {
+  margin-left: 0.5rem;
+  min-width: 0;
+  font-family: var(--ss-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ss-win-body {
+  flex: 1 1 auto;
+  padding: 1.1rem 1.2rem;
+}
+
+/* ------------------------------------------------------------------ Chips */
+.ss-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
+  color: var(--ss-ink);
+  background: var(--ss-tone, var(--ss-paper));
+  border: var(--ss-border);
+  border-radius: 999px;
+}
+
+/* ------------------------------------------------------------------ Stat sticker */
+.ss-sticker {
+  height: 100%;
+  padding: 1.1rem 1.2rem;
+  background: var(--ss-tone, var(--ss-sky));
+  border: var(--ss-border);
+  border-radius: 18px;
+  box-shadow: var(--ss-shadow);
+  transform: rotate(var(--ss-tilt, 0deg));
+  transition: transform 0.15s ease;
+}
+
+.ss-sticker:hover {
+  transform: rotate(0deg) translateY(-2px);
+}
+
+.ss-tilt-left { --ss-tilt: -2deg; }
+.ss-tilt-left-sm { --ss-tilt: -1deg; }
+.ss-tilt-right { --ss-tilt: 1.5deg; }
+.ss-tilt-right-sm { --ss-tilt: 0.75deg; }
+
+/* ------------------------------------------------------------------ Empty / placeholder states */
+.ss-empty {
+  padding: 2.5rem 1rem;
+  text-align: center;
+  color: var(--ss-muted);
+}
+
+.ss-empty > .bi {
+  display: inline-grid;
+  place-items: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  margin-bottom: 1rem;
+  font-size: 2rem;
+  color: var(--ss-ink);
+  background: var(--ss-yellow-light);
+  border: var(--ss-border);
+  border-radius: 18px;
+  box-shadow: var(--ss-shadow-sm);
+}
+
+.ss-empty-art {
+  display: block;
+  width: 100%;
+  max-width: 260px;
+  height: auto;
+  margin: 0 auto 0.5rem;
+}
+
+.ss-empty .ss-empty-title {
+  font-family: var(--ss-mono);
+  font-weight: 800;
+  color: var(--ss-ink);
+}
+
+/* ------------------------------------------------------------------ Section label "// title" */
+.ss-label {
+  font-family: var(--ss-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ss-muted);
+}
+
+.ss-label::before {
+  content: '// ';
+  color: var(--ss-blue);
+}
+
+/* ------------------------------------------------------------------ Icon tile (square with outline) */
+.ss-icon-tile {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 2.75rem;
+  height: 2.75rem;
+  font-size: 1.3rem;
+  color: var(--ss-ink);
+  background: var(--ss-tone, var(--ss-sky));
+  border: var(--ss-border);
+  border-radius: 12px;
+  box-shadow: var(--ss-shadow-sm);
+}
+
+/* Lets flex children shrink so long titles wrap instead of overflowing */
+.ss-min-w-0 {
+  min-width: 0;
+}
+
+/* Big icon above the login / register heading */
+.ss-auth-icon {
+  width: 3.75rem;
+  height: 3.75rem;
+  font-size: 1.7rem;
+  border-radius: 16px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ss-sticker,
+  .ss-sticker:hover,
+  a.ss-win:hover,
+  .btn:hover {
+    transform: none;
+  }
+}

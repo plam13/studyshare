@@ -1,6 +1,8 @@
 // App entry point: global CSS/JS, shared layout, auth state and the client-side router.
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.min.css';
+import '@fontsource-variable/inter'; // self-hosted fonts with Cyrillic subsets
+import '@fontsource-variable/jetbrains-mono';
 import 'bootstrap'; // ESM build (registers data-api); same instance used by utils/toast.js
 import './styles.css';
 

@@ -1,0 +1,66 @@
+/* Design tokens — flat / neo-brutalist theme (2px ink outlines, hard offset shadows, pastel palette). */
+
+:root {
+  /* Palette */
+  --ss-ink: #1f1f1f;
+  --ss-ink-soft: #4a4a4a;
+  --ss-paper: #ffffff;
+  --ss-bg: #f5f8ff;
+  --ss-sky: #cddcff;
+  --ss-sky-soft: #e6eeff;
+  --ss-blue: #5b7cfa;
+  --ss-blue-dark: #3e5ce0;
+  --ss-blue-light: #b9ccff;
+  --ss-green: #6dbb6a;
+  --ss-green-dark: #2f7d2c;
+  --ss-green-light: #dff1d9;
+  --ss-yellow: #f6d84a;
+  --ss-yellow-light: #fdf3c4;
+  --ss-coral: #e5675a;
+  --ss-coral-dark: #b83a2e;
+  --ss-coral-light: #fde1dc;
+  --ss-lilac: #a5a8ff;
+  --ss-lilac-light: #e8e8ff;
+  --ss-muted: #5f6470;
+
+  /* Shape */
+  --ss-line: 2px;
+  --ss-border: var(--ss-line) solid var(--ss-ink);
+  --ss-shadow-sm: 3px 3px 0 var(--ss-ink);
+  --ss-shadow: 5px 5px 0 var(--ss-ink);
+  --ss-shadow-lg: 8px 8px 0 var(--ss-ink);
+  --ss-radius-sm: 10px;
+  --ss-radius: 14px;
+  --ss-radius-lg: 22px;
+
+  /* Type */
+  --ss-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, Consolas, monospace;
+  --ss-sans: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* Motion */
+  --ss-ease: 0.12s ease;
+
+  /* Bootstrap variables mapped to the theme */
+  --bs-body-font-family: var(--ss-sans);
+  --bs-body-color: var(--ss-ink);
+  --bs-body-color-rgb: 31, 31, 31;
+  --bs-body-bg: var(--ss-bg);
+  --bs-emphasis-color: var(--ss-ink);
+  --bs-secondary-color: var(--ss-muted);
+  --bs-border-color: var(--ss-ink);
+  --bs-border-width: var(--ss-line);
+  --bs-border-radius: var(--ss-radius-sm);
+  --bs-border-radius-sm: 8px;
+  --bs-border-radius-lg: var(--ss-radius);
+  --bs-primary: var(--ss-blue);
+  --bs-primary-rgb: 91, 124, 250;
+  --bs-success-rgb: 47, 125, 44;
+  --bs-danger-rgb: 184, 58, 46;
+  --bs-warning-rgb: 246, 216, 74;
+  --bs-link-color: var(--ss-blue-dark);
+  --bs-link-color-rgb: 62, 92, 224;
+  --bs-link-hover-color: var(--ss-ink);
+  --bs-link-hover-color-rgb: 31, 31, 31;
+  --bs-focus-ring-color: rgba(246, 216, 74, 0.6);
+  --bs-tertiary-bg: var(--ss-sky-soft);
+}
