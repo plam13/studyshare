@@ -107,6 +107,8 @@ How the parts talk to Supabase:
 
 The seed script creates demo users (through the Supabase Auth Admin API), courses, materials with sample PDF files in Storage, comments and ratings. It is safe to rerun: existing records are skipped and passwords are never reset.
 
+It also uploads 15 real slide decks from SoftUni courses (`scripts/seed-softuni.mjs`). The PDFs are read from a local `pdf/` folder, which is git-ignored and never committed. If a file is missing, it is skipped with a warning. Each of these materials keeps its original file name and its description ends with „Източник: SoftUni“.
+
 ```bash
 cp .env.server.example .env.server.local   # server-side only: SUPABASE_URL, SUPABASE_SECRET_KEY, SEED_EXPECTED_PROJECT_REF
 npm run seed:dry-run                        # shows what would be created, writes nothing
