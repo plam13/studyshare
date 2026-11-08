@@ -76,6 +76,83 @@ npm run dev
 - `avatars` bucket (public): `<user-id>/avatar-<timestamp>.<ext>`; old avatar files are removed when replaced.
 - Deleting or replacing a material also deletes its file — database cascades do not remove Storage objects.
 
+## Database schema
+
+```mermaid
+erDiagram
+    AUTH_USERS ||--|| PROFILES : "has profile"
+    AUTH_USERS ||--|| USER_ROLES : "has role"
+    PROFILES ||--o{ COURSES : "creates (admin)"
+    PROFILES ||--o{ MATERIALS : uploads
+    PROFILES ||--o{ COMMENTS : writes
+    PROFILES ||--o{ RATINGS : gives
+    COURSES ||--o{ MATERIALS : contains
+    MATERIALS ||--o{ COMMENTS : has
+    MATERIALS ||--o{ RATINGS : has
+
+    AUTH_USERS {
+        uuid id PK
+        text email
+    }
+    PROFILES {
+        uuid id PK "FK auth.users"
+        text full_name
+        text avatar_url
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    USER_ROLES {
+        uuid user_id PK "FK auth.users"
+        app_role role "user | admin"
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    COURSES {
+        uuid id PK
+        text title UK
+        text description
+        uuid created_by FK "profiles, set null"
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    MATERIALS {
+        uuid id PK
+        uuid course_id FK
+        uuid author_id FK
+        text title
+        text description
+        text file_path UK "Storage object path"
+        text file_name "original name"
+        text file_type "MIME type"
+        bigint file_size
+        int downloads_count
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    COMMENTS {
+        uuid id PK
+        uuid material_id FK
+        uuid author_id FK
+        text content
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    RATINGS {
+        uuid material_id PK, FK
+        uuid user_id PK, FK
+        smallint score "1-5"
+        timestamptz created_at
+        timestamptz updated_at
+    }
+```
+
+- **`profiles`** is 1:1 with `auth.users` and is created by the `on_auth_user_created` trigger together with a default `user` row in **`user_roles`**. Roles never come from sign-up metadata.
+- **`materials`**, **`comments`** and **`ratings`** are deleted in cascade with their course, material or author. Storage files are removed by the app (cascades do not delete Storage objects).
+- **`ratings`** uses a composite primary key `(material_id, user_id)`, so each user rates a material at most once. An RLS policy blocks rating your own material.
+- **`material_stats`** (view, `security_invoker`) aggregates the average rating, ratings count and comments count per material.
+- **Indexes** on every foreign key (`course_id`, `author_id`, `material_id`, `user_id`, `created_by`), on `materials.created_at` for "latest" lists and on `user_roles.role`. Check constraints limit text lengths and the 1–5 score.
+- **RLS** is enabled on every table; `public.is_admin()` is used by admin policies. Clients can update only allowed columns (column-level grants), e.g. never `author_id` or `downloads_count`.
+
 ## Database workflow
 
 The DB schema is managed only through SQL migrations in `supabase/migrations/`, using the **Supabase CLI** linked to the remote project (`npx supabase link`). No schema changes are made by hand in the dashboard, so the migration files in this repo are the full history of the database.
@@ -144,5 +221,3 @@ npm run seed                                # applies the seed
 ├── .github/copilot-instructions.md   # AI agent instructions
 └── vite.config.js
 ```
-
-Full documentation (DB schema diagram, roles, deployment) will be added as the project grows.
