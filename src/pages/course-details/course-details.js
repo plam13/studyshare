@@ -11,7 +11,7 @@ import { courseTone } from '../../utils/tone.js';
 function renderHeader(course) {
   const uploadHref = `/materials/add?course=${encodeURIComponent(course.id)}`;
   return `
-    <div class="ss-course-banner ss-tone-${courseTone(course.id)} d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div class="ss-course-banner ss-tone-${courseTone(course.id)} d-flex flex-wrap justify-content-between align-items-center gap-3 ss-banner-gap">
       <div class="ss-course-heading d-flex align-items-start gap-3">
         <span class="ss-icon-tile ss-tone-paper d-none d-sm-inline-grid"><i class="bi bi-folder2-open" aria-hidden="true"></i></span>
         <div class="ss-min-w-0">

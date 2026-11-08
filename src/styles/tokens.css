@@ -40,6 +40,9 @@
   /* Motion */
   --ss-ease: 0.12s ease;
 
+  /* Space below page banners: 1.5rem on phones, grows with the viewport up to 2.5rem (~1216px+) */
+  --ss-banner-gap: clamp(1.5rem, 0.6rem + 2.5vw, 2.5rem);
+
   /* Bootstrap variables mapped to the theme */
   --bs-body-font-family: var(--ss-sans);
   --bs-body-color: var(--ss-ink);

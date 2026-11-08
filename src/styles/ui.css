@@ -10,6 +10,11 @@
 .ss-tone-lilac { --ss-tone: var(--ss-lilac-light); --ss-tone-strong: #4a4dc4; }
 .ss-tone-paper { --ss-tone: var(--ss-paper); --ss-tone-strong: var(--ss-ink); }
 
+/* ------------------------------------------------------------------ Spacing */
+.ss-banner-gap {
+  margin-bottom: var(--ss-banner-gap);
+}
+
 /* ------------------------------------------------------------------ Logo tile (header + footer) */
 .ss-logo {
   display: inline-grid;

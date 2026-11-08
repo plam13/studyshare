@@ -291,6 +291,7 @@
   --bs-breadcrumb-divider: '/';
   --bs-breadcrumb-divider-color: var(--ss-blue);
   --bs-breadcrumb-item-active-color: var(--ss-muted);
+  --bs-breadcrumb-margin-bottom: 1.5rem; /* same as the space above it (main.py-4) */
   font-family: var(--ss-mono);
   font-size: 0.85rem;
   font-weight: 600;
