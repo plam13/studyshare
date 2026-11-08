@@ -76,6 +76,33 @@ npm run dev
 - `avatars` bucket (public): `<user-id>/avatar-<timestamp>.<ext>`; old avatar files are removed when replaced.
 - Deleting or replacing a material also deletes its file — database cascades do not remove Storage objects.
 
+## Database workflow
+
+The DB schema is managed only through SQL migrations in `supabase/migrations/`, using the **Supabase CLI** linked to the remote project (`npx supabase link`). No schema changes are made by hand in the dashboard, so the migration files in this repo are the full history of the database.
+
+```bash
+npx supabase migration new <name>          # create a new SQL migration file
+npx supabase db push --remote --dry-run    # preview what will be applied
+npx supabase db push --remote              # apply it to the Supabase project
+npx supabase migration list --remote       # check that local and remote history match
+```
+
+| Migration | What it does |
+|---|---|
+| `init_schema` | tables `profiles`, `user_roles`, `courses`, `materials`, `comments`, `ratings`, view `material_stats`, indexes |
+| `rls_policies` | RLS on every table, `is_admin()` helper, column-level grants |
+| `seed_admin_role` | assigns the admin role to the bootstrap admin account |
+| `storage_buckets` | `avatars` (public) and `materials` (private) buckets and their policies |
+| `dashboard_stats_rpc` | personal dashboard statistics function |
+| `download_counter_rpc` | safe download counter increment |
+| `ratings_no_self_rating` | users cannot rate their own materials |
+| `admin_users_rpc` | admin-only user list and site statistics |
+
+How the parts talk to Supabase:
+- **Frontend:** `@supabase/supabase-js` (REST API) with the public publishable key; access is limited by RLS.
+- **Schema:** Supabase CLI migrations (above).
+- **Sample data:** the Node.js seed script below, using the secret key on the server side only.
+
 ## Sample data (seed)
 
 The seed script creates demo users (through the Supabase Auth Admin API), courses, materials with sample PDF files in Storage, comments and ratings. It is safe to rerun: existing records are skipped and passwords are never reset.
