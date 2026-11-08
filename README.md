@@ -92,7 +92,7 @@ npm run seed                                # applies the seed
 
 | Role | Email | Password |
 |---|---|---|
-| Admin | `admin@studyshare.bg` | `admin123` |
+| Admin | `admin@studyshare.bg` | `********` (provided in the project submission) |
 | User | `demo@studyshare.bg` | `demo123` |
 | User | `maria@studyshare.bg`, `peter@studyshare.bg`, `elena@studyshare.bg` | `pass123` |
 
