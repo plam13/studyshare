@@ -69,6 +69,54 @@ async function copyText(text) {
   if (!ok) throw new Error('copy failed');
 }
 
+const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/**
+ * One gentle "nudge" of the share icon, 1.5 s after the page opens — once per browser session,
+ * never with reduced motion. A constant pulse would compete with the main action (download).
+ */
+export function nudgeShareOnce(root, signal) {
+  if (prefersReducedMotion()) return;
+  try {
+    if (sessionStorage.getItem('ss-share-nudged')) return;
+    sessionStorage.setItem('ss-share-nudged', '1');
+  } catch {
+    return; // storage blocked → skip the hint rather than repeat it on every page
+  }
+  const timer = setTimeout(() => {
+    const menu = root.querySelector('.ss-share');
+    if (!menu || signal?.aborted) return;
+    menu.classList.add('is-nudging');
+    menu.addEventListener('animationend', () => menu.classList.remove('is-nudging'), { once: true });
+  }, 1500);
+  signal?.addEventListener('abort', () => clearTimeout(timer), { once: true });
+}
+
+/**
+ * Highlights the share button with a short hint at a moment the user is likely to share
+ * (after a download or a 4–5 star rating). Disappears after a few seconds or when the menu opens.
+ */
+export function highlightShare(root, message = 'Полезно? Сподели с колегите') {
+  const menu = root.querySelector('.ss-share');
+  if (!menu) return;
+  menu.querySelector('.ss-share-hint')?.remove();
+  clearTimeout(Number(menu.dataset.hintTimer));
+
+  const hint = document.createElement('span');
+  hint.className = 'ss-share-hint';
+  hint.setAttribute('role', 'status');
+  hint.textContent = message;
+  menu.append(hint);
+  menu.classList.add('is-highlighted');
+
+  const clear = () => {
+    menu.classList.remove('is-highlighted');
+    hint.remove();
+  };
+  menu.dataset.hintTimer = String(setTimeout(clear, 6000));
+  menu.addEventListener('show.bs.dropdown', clear, { once: true });
+}
+
 /** Activates every share menu inside `root` (one delegated listener; removed with the page content). */
 export function mountShareMenu(root) {
   root.addEventListener('click', async (event) => {

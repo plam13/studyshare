@@ -18,7 +18,7 @@ function renderStarsInput(score, disabled) {
 /**
  * "Your rating" control: guests see a login link, authors a note, other users 1–5 stars.
  * @param {HTMLElement} box
- * @param {{ material: object, user: object | null, myScore: number, signal: AbortSignal, onChange: () => void }} options
+ * @param {{ material: object, user: object | null, myScore: number, signal: AbortSignal, onChange: (score: number) => void }} options
  */
 export function mountRating(box, { material, user, myScore, signal, onChange }) {
   if (!user) {
@@ -58,7 +58,7 @@ export function mountRating(box, { material, user, myScore, signal, onChange }) 
     try {
       await action();
       showSuccess(message);
-      onChange();
+      onChange(score);
     } catch (error) {
       if (!signal.aborted) showError(error.message);
     } finally {

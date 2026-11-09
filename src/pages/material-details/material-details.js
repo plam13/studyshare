@@ -9,7 +9,7 @@ import { renderFileBadge } from '../../components/material-item/material-item.js
 import { renderStars } from '../../components/rating-stars/rating-stars.js';
 import { renderMaterialBanner } from '../../components/material-banner/material-banner.js';
 import { confirmDialog } from '../../components/confirm-dialog/confirm-dialog.js';
-import { absoluteUrl, mountShareMenu, renderShareMenu } from '../../components/share-menu/share-menu.js';
+import { absoluteUrl, highlightShare, mountShareMenu, nudgeShareOnce, renderShareMenu } from '../../components/share-menu/share-menu.js';
 import { renderError, renderLoading, renderNotFound } from '../../components/page-state/page-state.js';
 import { escapeHtml } from '../../utils/dom.js';
 import { fileTypeInfo, formatBytes, formatDate, formatNumber, plural } from '../../utils/format.js';
@@ -133,6 +133,7 @@ export async function mount(container, { params, user, signal, setTitle, navigat
     title: `${material.title} – StudyShare`,
   });
   mountShareMenu(region('share'));
+  nudgeShareOnce(region('share'), signal);
 
   // Author or admin: edit / delete (UX only — RLS enforces the same rule)
   if (user && (material.authorId === user.id || user.isAdmin)) {
@@ -152,7 +153,16 @@ export async function mount(container, { params, user, signal, setTitle, navigat
     }
   };
 
-  mountRating(region('rating'), { material, user, myScore: data.myScore, signal, onChange: refreshSummary });
+  mountRating(region('rating'), {
+    material,
+    user,
+    myScore: data.myScore,
+    signal,
+    onChange: (score) => {
+      refreshSummary();
+      if (score >= 4) highlightShare(region('share'), 'Хареса ти? Сподели с колегите');
+    },
+  });
   mountComments(region('comments'), { materialId: material.id, comments: data.comments, user, signal, onChange: refreshSummary });
 
   content.addEventListener('click', async (event) => {
@@ -169,6 +179,7 @@ export async function mount(container, { params, user, signal, setTitle, navigat
           material.downloadsCount = count;
           content.querySelector('[data-field="downloads"]').textContent = formatNumber(count);
         }
+        if (!signal.aborted) highlightShare(region('share'));
       } catch (error) {
         showError(error.message);
       } finally {

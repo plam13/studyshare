@@ -20,6 +20,85 @@
 .ss-share-viber { color: #7360f2; }
 .ss-share-discord { color: #5865f2; }
 
+/* Open menu: keep the lifted "hover" look so the active button is obvious */
+.ss-share > .btn.show {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 var(--ss-ink);
+}
+
+/* 1) One-time nudge of the share icon (see nudgeShareOnce) */
+.ss-share .bi-share {
+  display: inline-block;
+  transform-origin: 50% 60%;
+}
+
+.ss-share.is-nudging .bi-share {
+  animation: ss-share-nudge 0.7s ease-in-out 1;
+}
+
+@keyframes ss-share-nudge {
+  0%, 100% { transform: rotate(0) scale(1); }
+  20% { transform: rotate(-14deg) scale(1.15); }
+  45% { transform: rotate(10deg) scale(1.15); }
+  70% { transform: rotate(-5deg) scale(1.05); }
+}
+
+/* 2) Highlight at a "share moment" (after download / good rating) */
+.ss-share {
+  position: relative;
+}
+
+.ss-share.is-highlighted > .btn {
+  --bs-btn-bg: var(--ss-yellow);
+  --bs-btn-color: var(--ss-ink);
+  --bs-btn-border-color: var(--ss-ink);
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 var(--ss-ink);
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ss-share-hint {
+  position: absolute;
+  top: calc(100% + 0.6rem);
+  left: 0; /* on phones the button wraps to the left edge — grow to the right */
+  z-index: 5;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+  color: var(--ss-ink);
+  background: var(--ss-yellow-light);
+  border: var(--ss-border);
+  border-radius: var(--ss-radius-sm);
+  box-shadow: var(--ss-shadow-sm);
+  animation: ss-hint-in 0.25s ease-out;
+}
+
+/* little arrow pointing at the button */
+.ss-share-hint::before {
+  content: '';
+  position: absolute;
+  top: -7px;
+  left: 1.25rem;
+  width: 12px;
+  height: 12px;
+  background: inherit;
+  border-top: var(--ss-border);
+  border-left: var(--ss-border);
+  transform: rotate(45deg);
+}
+
+@keyframes ss-hint-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ss-share.is-nudging .bi-share,
+  .ss-share-hint { animation: none; }
+  .ss-share.is-highlighted > .btn { transform: none; }
+}
+
 .ss-qr-box {
   display: grid;
   place-items: center;
