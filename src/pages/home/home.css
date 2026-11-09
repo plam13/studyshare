@@ -113,16 +113,55 @@
   color: var(--ss-ink-soft);
 }
 
-.ss-step-done {
+/* The title link covers the whole card (.stretched-link) */
+.ss-step-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.ss-step-title a::after {
+  border-radius: var(--ss-radius); /* focus ring / click area follows the card corners */
+}
+
+.ss-step:hover .ss-step-title a,
+.ss-step-title a:focus-visible {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.ss-step:has(a:focus-visible) {
+  outline: 3px solid var(--ss-blue-dark);
+  outline-offset: 3px;
+}
+
+.ss-step-title a:focus-visible {
+  outline: none; /* the whole card gets the outline instead */
+}
+
+.ss-step-badge {
   display: inline-block;
   margin-top: 0.4rem;
   padding: 0.1rem 0.5rem;
   font-size: 0.78rem;
   font-weight: 700;
+  border: var(--ss-line) solid;
+  border-radius: 999px;
+}
+
+.ss-step-badge-done {
   color: var(--ss-green-dark);
   background: var(--ss-green-light);
-  border: var(--ss-line) solid var(--ss-green-dark);
-  border-radius: 999px;
+}
+
+.ss-step-badge-lock {
+  color: var(--ss-coral-dark);
+  background: var(--ss-coral-light);
+}
+
+/* In-page link from step 03: keep the heading visible below the sticky header */
+#latest-title {
+  scroll-margin-top: 6rem;
 }
 
 /* Tablet: 2 × 2 cards with number + icon on top */

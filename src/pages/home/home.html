@@ -65,33 +65,36 @@
 <section aria-labelledby="how-title">
   <h2 id="how-title" class="h4 mb-3 ss-page-title">Как работи?</h2>
   <ol class="ss-steps">
+    <!-- Each card is clickable: the title link has .stretched-link. data-href-guest / data-href-user are set in home.js. -->
     <li class="ss-step ss-tone-sky">
       <span class="ss-step-icon" aria-hidden="true"><i class="bi bi-person-plus"></i></span>
       <div>
-        <h3 class="ss-step-title">Създай профил</h3>
+        <h3 class="ss-step-title"><a class="stretched-link" href="/register" data-href-guest="/register" data-href-user="/profile">Създай профил</a></h3>
         <p class="ss-step-text">Безплатно и за минута.</p>
-        <span class="ss-step-done" data-show="user"><i class="bi bi-check2-circle me-1" aria-hidden="true"></i>Вече имаш профил</span>
+        <span class="ss-step-badge ss-step-badge-done" data-show="user"><i class="bi bi-check2-circle me-1" aria-hidden="true"></i>Вече имаш профил</span>
       </div>
     </li>
     <li class="ss-step ss-tone-green">
       <span class="ss-step-icon" aria-hidden="true"><i class="bi bi-folder2-open"></i></span>
       <div>
-        <h3 class="ss-step-title">Избери курс</h3>
+        <h3 class="ss-step-title"><a class="stretched-link" href="/courses">Избери курс</a></h3>
         <p class="ss-step-text">Разгледай качените материали, търси и сортирай.</p>
       </div>
     </li>
     <li class="ss-step ss-tone-yellow">
       <span class="ss-step-icon" aria-hidden="true"><i class="bi bi-cloud-arrow-down"></i></span>
       <div>
-        <h3 class="ss-step-title">Изтегли и оцени</h3>
+        <h3 class="ss-step-title"><a class="stretched-link" href="#latest-title">Изтегли и оцени</a></h3>
         <p class="ss-step-text">Прегледай, изтегли, дай звезди и остави коментар.</p>
+        <span class="ss-step-badge ss-step-badge-lock" data-show="guest"><i class="bi bi-lock me-1" aria-hidden="true"></i>Свалянето изисква вход</span>
       </div>
     </li>
     <li class="ss-step ss-tone-coral">
       <span class="ss-step-icon" aria-hidden="true"><i class="bi bi-cloud-arrow-up"></i></span>
       <div>
-        <h3 class="ss-step-title">Качи и сподели</h3>
+        <h3 class="ss-step-title"><a class="stretched-link" href="/materials/add" data-href-guest="/login?redirect=%2Fmaterials%2Fadd" data-href-user="/materials/add">Качи и сподели</a></h3>
         <p class="ss-step-text">Качи свои записки и помогни на колегите си.</p>
+        <span class="ss-step-badge ss-step-badge-lock" data-show="guest"><i class="bi bi-lock me-1" aria-hidden="true"></i>Нужен е профил</span>
       </div>
     </li>
   </ol>

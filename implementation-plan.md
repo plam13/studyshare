@@ -92,7 +92,8 @@ For every stage: **prompt** the AI agent with a small, clear task → **implemen
 - In-browser PDF preview with pdf.js (lazy-loaded; not counted as a download).
 - Documentation: Agent Instructions moved to `AGENTS.md`, "Who can do what" table, multi-page notes.
 - Landing page: "Как работи?" redesigned as a 4-step process (a row with arrows on desktop, 2 × 2 on tablet,
-  a list on phones) — the old full-width list left most of a wide screen empty.
+  a list on phones) — the old full-width list left most of a wide screen empty. Each step is a link whose
+  target depends on login (e.g. "Качи и сподели" → login and back for guests), with 🔒 badges for guests.
 
 ### Stage 11 — Final features and release · 10.11 · ⏳ planned
 

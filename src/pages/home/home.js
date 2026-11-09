@@ -12,6 +12,10 @@ export async function mount(container, { user, signal }) {
   container.querySelectorAll('[data-show]').forEach((element) => {
     element.hidden = element.dataset.show === 'guest' ? Boolean(user) : !user;
   });
+  // "How it works" links lead to a different place for guests and logged-in users
+  container.querySelectorAll('[data-href-guest]').forEach((link) => {
+    link.href = user ? link.dataset.hrefUser : link.dataset.hrefGuest;
+  });
 
   const latest = container.querySelector('#latest-materials');
   latest.innerHTML = renderLoading();
