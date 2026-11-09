@@ -139,24 +139,38 @@
   outline: none; /* the whole card gets the outline instead */
 }
 
+/* Badges: light at rest (transparent, thin pale border), filled when the card is hovered or focused.
+   The text keeps a dark tone at rest for readable contrast (≥ 4.5:1 on white). */
 .ss-step-badge {
   display: inline-block;
   margin-top: 0.4rem;
   padding: 0.1rem 0.5rem;
   font-size: 0.78rem;
-  font-weight: 700;
-  border: var(--ss-line) solid;
+  font-weight: 600;
+  color: var(--ss-badge-text);
+  background: transparent;
+  border: 1.5px solid var(--ss-badge-line);
   border-radius: 999px;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
 .ss-step-badge-done {
-  color: var(--ss-green-dark);
-  background: var(--ss-green-light);
+  --ss-badge-text: var(--ss-green-dark);
+  --ss-badge-line: rgba(47, 125, 44, 0.35);
+  --ss-badge-fill: var(--ss-green-light);
 }
 
 .ss-step-badge-lock {
-  color: var(--ss-coral-dark);
-  background: var(--ss-coral-light);
+  --ss-badge-text: var(--ss-coral-dark);
+  --ss-badge-line: rgba(229, 103, 90, 0.45);
+  --ss-badge-fill: var(--ss-coral-light);
+}
+
+.ss-step:hover .ss-step-badge,
+.ss-step:focus-within .ss-step-badge {
+  font-weight: 700;
+  background: var(--ss-badge-fill);
+  border-color: var(--ss-badge-text);
 }
 
 /* In-page link from step 03: keep the heading visible below the sticky header */
