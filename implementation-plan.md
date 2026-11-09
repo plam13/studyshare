@@ -99,6 +99,7 @@ For every stage: **prompt** the AI agent with a small, clear task → **implemen
 
 - [ ] "Запази" / favorites: `favorites` table (migration + RLS), save button, list in the dashboard.
 - [ ] Global search across all courses with a `pg_trgm` GIN index (works for Bulgarian, partial words).
+  Optional: point the home page step 03 to all materials sorted by downloads (now it opens the most downloaded one).
 - [ ] Admin panel: count of open reports on the "Модерация" tab and in the overview.
 - [ ] Final check: responsive screens, demo accounts, README.
 - [ ] One production deploy (`[deploy]`) before 16:00.
