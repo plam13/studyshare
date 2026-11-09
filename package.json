@@ -9,7 +9,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "seed": "node --env-file=.env.server.local scripts/seed.mjs",
-    "seed:dry-run": "node --env-file=.env.server.local scripts/seed.mjs --dry-run"
+    "seed:dry-run": "node --env-file=.env.server.local scripts/seed.mjs --dry-run",
+    "seed:reset": "node --env-file=.env.server.local scripts/seed.mjs --reset"
   },
   "devDependencies": {
     "supabase": "^3.0.0",

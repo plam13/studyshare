@@ -182,12 +182,22 @@ How the parts talk to Supabase:
 
 ## Sample data (seed)
 
-The seed script creates demo users (through the Supabase Auth Admin API), courses, materials with sample PDF files in Storage, comments and ratings. It is safe to rerun: existing records are skipped and passwords are never reset.
+The seed script creates demo users (through the Supabase Auth Admin API), courses, 30 materials with generated files in Storage, comments (including short discussions) and ratings. It is safe to rerun: existing records are skipped and passwords are never reset.
+
+- **Files** are generated without extra dependencies (`scripts/lib/`): multi-page PDFs (some with "scanned notes" pages), DOCX, PPTX, XLSX, TXT and ZIP. Sizes range from about 2 KB to 2.4 MB, and every file opens in its usual program.
+- **Dates** follow a semester: materials are spread from mid-September in curriculum order, and comments and ratings come after their material. All values are deterministic, so every run produces the same data.
+
 ```bash
 cp .env.server.example .env.server.local   # server-side only: SUPABASE_URL, SUPABASE_SECRET_KEY, SEED_EXPECTED_PROJECT_REF
 npm run seed:dry-run                        # shows what would be created, writes nothing
 npm run seed                                # applies the seed
+npm run seed:reset                          # deletes the demo materials (files, comments, ratings) and creates them again
+
+# then align account and course dates with the materials (data only, not a migration)
+npx supabase db query --remote -f scripts/sql/backdate-demo-accounts.sql
 ```
+
+`seed:reset` touches only materials created by the seed (Storage path `<author>/seed-<key>.<ext>`), never content uploaded through the app.
 
 > The secret key is used only by Node.js scripts in `scripts/`. It never has a `VITE_` prefix and never reaches the browser.
 

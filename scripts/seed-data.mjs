@@ -68,7 +68,7 @@ export const MATERIALS = [
 
   // Second batch (2026-11-09)
   { key: 'pb-nested-loops', course: 'pb', author: 'elena@studyshare.bg', title: 'Вложени цикли — задачи с фигури', description: 'Рисуване на триъгълници, ромбове и шахматни дъски с вложени цикли. 12 задачи с решения.', topic: 'Nested loops - drawing figures', downloads: 58 },
-  { key: 'pb-exam-prep', course: 'pb', author: 'peter@studyshare.bg', title: 'Пробен изпит — Programming Basics', description: '6 задачи във формата на изпита, с примерен вход и изход и кратки насоки.\n\nРешенията са в отделен раздел накрая — опитайте първо сами!', topic: 'Programming Basics mock exam', downloads: 187 },
+  { key: 'pb-exam-prep', course: 'pb', author: 'peter@studyshare.bg', title: 'Пробен изпит — Programming Basics', description: '6 задачи във формата на изпита, с примерен вход и изход и кратки насоки.\n\nВ архива има начален код и отделна папка с решения — опитайте първо сами!', topic: 'Programming Basics mock exam', downloads: 187 },
   { key: 'pf-objects', course: 'pf', author: 'demo@studyshare.bg', title: 'Обекти и асоциативни масиви', description: 'Създаване, обхождане и сортиране на обекти. Кога да ползваме Map вместо обект.', topic: 'Objects and associative arrays', downloads: 66 },
   { key: 'pf-text', course: 'pf', author: 'elena@studyshare.bg', title: 'Текстообработка — split, slice, replace', description: 'Най-често използваните методи за низове, с примери от реални задачи.', topic: 'Text processing methods', downloads: 79 },
   { key: 'pf-mid-exam', course: 'pf', author: 'maria@studyshare.bg', title: 'Mid Exam — решени задачи', description: 'Три задачи от междинен изпит с обяснение на подхода и типичните капани.', topic: 'Mid exam - solved problems', downloads: 152 },
@@ -84,6 +84,38 @@ export const MATERIALS = [
   { key: 'ai-vite-netlify', course: 'ai', author: 'elena@studyshare.bg', title: 'Vite + Netlify — деплой стъпка по стъпка', description: 'От npm create vite до работещ сайт в Netlify, с environment variables и пренасочвания.', topic: 'Deploying Vite apps to Netlify', downloads: 63 },
 ];
 
+/**
+ * File format and size class per material: xs (a few KB) … xl (2–3 MB, PDF with "scanned notes" pages).
+ * Materials not listed here get a small PDF.
+ */
+export const FILE_SPECS = {
+  'pb-intro': ['pdf', 'l'], 'pb-conditions': ['docx', 's'], 'pb-loops': ['txt', 's'],
+  'pf-arrays': ['pdf', 'm'], 'pf-regex': ['docx', 'm'],
+  'jsa-closures': ['pptx', 'm'], 'jsa-async': ['pdf', 'm'], 'jsa-dom': ['zip', 'm'],
+  'db-sql': ['pdf', 'l'], 'db-normal': ['docx', 's'],
+  'web-flex': ['pptx', 's'], 'web-responsive': ['docx', 'xs'],
+  'ai-prompts': ['pdf', 's'], 'ai-supabase': ['pptx', 'l'], 'ai-rls': ['txt', 'xs'],
+  'pb-nested-loops': ['pdf', 'm'], 'pb-exam-prep': ['zip', 'l'],
+  'pf-objects': ['pdf', 's'], 'pf-text': ['pdf', 'xs'], 'pf-mid-exam': ['pdf', 'xl'],
+  'jsa-classes': ['pdf', 'm'], 'jsa-events': ['pptx', 'm'],
+  'db-joins': ['pdf', 'xl'], 'db-indexes': ['pdf', 's'], 'db-exercises': ['xlsx', 'm'],
+  'web-forms': ['pdf', 'm'], 'web-bootstrap': ['pdf', 'xs'], 'web-a11y': ['docx', 's'],
+  'ai-git': ['txt', 'm'], 'ai-vite-netlify': ['zip', 'm'],
+};
+
+/** Demo history: materials are spread over this period; comments and ratings follow their material. */
+export const DATE_RANGE = { from: '2026-09-16T09:00:00+03:00', to: '2026-11-09T09:00:00+02:00' };
+
+/** When each material appears in the semester (0 = start, 1 = end), following the curriculum; ±3 days jitter is added. */
+export const DATE_HINTS = {
+  'pb-intro': 0, 'pb-conditions': 0.08, 'pb-loops': 0.15, 'pb-nested-loops': 0.22, 'pb-exam-prep': 0.45,
+  'pf-arrays': 0.35, 'pf-text': 0.4, 'pf-objects': 0.5, 'pf-regex': 0.55, 'pf-mid-exam': 0.62,
+  'jsa-closures': 0.6, 'jsa-classes': 0.68, 'jsa-events': 0.72, 'jsa-dom': 0.76, 'jsa-async': 0.82,
+  'db-sql': 0.3, 'db-normal': 0.42, 'db-joins': 0.5, 'db-indexes': 0.66, 'db-exercises': 0.78,
+  'web-flex': 0.18, 'web-forms': 0.26, 'web-responsive': 0.38, 'web-bootstrap': 0.58, 'web-a11y': 0.7,
+  'ai-prompts': 0.05, 'ai-git': 0.12, 'ai-supabase': 0.48, 'ai-rls': 0.64, 'ai-vite-netlify': 0.88,
+};
+
 /** [materialKey, authorEmail, content] */
 export const COMMENTS = [
   ['pb-intro', 'peter@studyshare.bg', 'Много ясно обяснено, благодаря!'],
@@ -91,13 +123,15 @@ export const COMMENTS = [
   ['pb-loops', 'maria@studyshare.bg', 'Помощният лист е супер, разпечатах си го.'],
   ['pb-loops', 'elena@studyshare.bg', 'Може ли да добавиш и примери с вложени цикли?'],
   ['jsa-async', 'peter@studyshare.bg', 'Най-накрая разбрах async/await :)'],
+  ['jsa-async', 'demo@studyshare.bg', '...също и Promises'],
   ['db-sql', 'elena@studyshare.bg', 'Добре структурирано, особено частта за JOIN.'],
   ['web-flex', 'maria@studyshare.bg', 'Сравнителната таблица е много удобна.'],
-  ['ai-prompts', 'demo@studyshare.bg', 'Ползвам тези съвети за капстоун проекта.'],
+  ['ai-prompts', 'demo@studyshare.bg', 'Ползвам тези съвети при всички проекти.'],
+  ['ai-prompts', 'demo@studyshare.bg', 'Дали са още актуални съветите в материала с това бързо развитие на Ai'],
   ['ai-supabase', 'peter@studyshare.bg', 'Полезно ръководство за начало.'],
 
   // Second batch — short discussions (inserted in order, so they read chronologically)
-  ['pb-loops', 'demo@studyshare.bg', '@Елена, добавих вложени цикли във втората версия — виж и „Вложени цикли — задачи с фигури“ от теб, допълват се.'],
+  ['pb-loops', 'demo@studyshare.bg', '@Елена, добавих няколко примера с вложени цикли в края на файла.'],
   ['pb-exam-prep', 'maria@studyshare.bg', 'Задача 4 не ми минава в Judge на последния тест. Някой да е имал същия проблем?'],
   ['pb-exam-prep', 'elena@studyshare.bg', 'Да, при мен беше закръгляне — пробвай с toFixed(2) накрая, а не по средата на сметките.'],
   ['pb-exam-prep', 'maria@studyshare.bg', 'Това беше! Мина 100/100, благодаря :)'],

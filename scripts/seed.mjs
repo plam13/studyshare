@@ -4,6 +4,7 @@
  *
  *   npm run seed:dry-run   # report what would be created, write nothing
  *   npm run seed           # create missing users, courses, materials (+ files), comments, ratings
+ *   npm run seed -- --reset   # delete the demo materials (files, comments, ratings) and create them again
  *
  * Config is read from .env.server.local (git-ignored):
  *   SUPABASE_URL, SUPABASE_SECRET_KEY, SEED_EXPECTED_PROJECT_REF
@@ -12,15 +13,19 @@
  * - Users are created through the Auth Admin API (never by writing to auth.users); no emails are sent.
  * - Existing users are reused; passwords are never reset.
  * - Reruns skip records that already exist (no duplicates).
+ * - --reset touches only demo materials (Storage path "<author>/seed-<key>.<ext>"), never content created in the app.
  * - Refuses to run against any project other than SEED_EXPECTED_PROJECT_REF.
  * - Never prints keys or tokens.
  */
 import { createClient } from '@supabase/supabase-js';
-import { COMMENTS, COURSES, MATERIALS, RATINGS, USERS } from './seed-data.mjs';
-import { createSamplePdf } from './lib/pdf.mjs';
+import { COMMENTS, COURSES, DATE_HINTS, DATE_RANGE, FILE_SPECS, MATERIALS, RATINGS, USERS } from './seed-data.mjs';
+import { buildSampleFile } from './lib/sample-files.mjs';
+import { createSeedDates, iso } from './lib/seed-dates.mjs';
 
 const DRY_RUN = process.argv.includes('--dry-run');
+const RESET = process.argv.includes('--reset');
 const BUCKET = 'materials';
+const dates = createSeedDates(DATE_RANGE);
 
 // ---------------------------------------------------------------------------
 // Config & safety checks
@@ -41,7 +46,7 @@ if (projectRef !== SEED_EXPECTED_PROJECT_REF) {
 
 // The secret key bypasses RLS, so check the data rules the policies would normally enforce.
 const authorOf = new Map(MATERIALS.map((m) => [m.key, m.author]));
-for (const [materialKey, email] of [...COMMENTS, ...RATINGS]) {
+for (const [materialKey] of [...COMMENTS, ...RATINGS]) {
   if (!authorOf.has(materialKey)) fail(`Seed data refers to unknown material "${materialKey}".`);
 }
 for (const [materialKey, email] of RATINGS) {
@@ -54,7 +59,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SECRET_KEY, {
 
 const stats = {};
 function count(entity, outcome) {
-  stats[entity] ??= { created: 0, skipped: 0, 'would create': 0 };
+  stats[entity] ??= { created: 0, skipped: 0, deleted: 0, 'would create': 0, 'would delete': 0 };
   stats[entity][outcome] += 1;
 }
 const created = (entity) => count(entity, DRY_RUN ? 'would create' : 'created');
@@ -104,6 +109,7 @@ async function seedCourses(userIds) {
   const rows = await must(supabase.from('courses').select('id, title'), 'Load courses');
   const byTitle = new Map(rows.map((row) => [row.title, row.id]));
   const ids = new Map();
+  const courseDate = iso(new Date(DATE_RANGE.from).getTime() - 7 * 24 * 3600 * 1000);
 
   for (const course of COURSES) {
     const id = byTitle.get(course.title);
@@ -117,7 +123,13 @@ async function seedCourses(userIds) {
     const row = await must(
       supabase
         .from('courses')
-        .insert({ title: course.title, description: course.description, created_by: userIds.get('admin@studyshare.bg') ?? null })
+        .insert({
+          title: course.title,
+          description: course.description,
+          created_by: userIds.get('admin@studyshare.bg') ?? null,
+          created_at: courseDate,
+          updated_at: courseDate,
+        })
         .select('id')
         .single(),
       `Create course ${course.title}`,
@@ -127,11 +139,24 @@ async function seedCourses(userIds) {
   return ids;
 }
 
+/** --reset: remove demo materials (Storage files first; comments and ratings cascade with the rows). */
+async function resetDemoMaterials() {
+  const rows = await must(supabase.from('materials').select('id, file_path').like('file_path', '%/seed-%'), 'Load demo materials');
+  rows.forEach(() => count('materials', DRY_RUN ? 'would delete' : 'deleted'));
+  if (DRY_RUN || !rows.length) return;
+  for (let i = 0; i < rows.length; i += 100) {
+    const batch = rows.slice(i, i + 100);
+    await must(supabase.storage.from(BUCKET).remove(batch.map((r) => r.file_path)), 'Delete demo files');
+    await must(supabase.from('materials').delete().in('id', batch.map((r) => r.id)), 'Delete demo materials');
+  }
+}
+
 async function seedMaterials(userIds, courseIds) {
-  const ids = new Map();
-  const course = (key) => COURSES.find((c) => c.key === key);
+  const ids = new Map(); // key -> { id, time }
+  const courseTitle = (key) => COURSES.find((c) => c.key === key).title;
 
   for (const material of MATERIALS) {
+    const time = dates.material(material.key, DATE_HINTS[material.key]);
     const authorId = userIds.get(material.author);
     const courseId = courseIds.get(material.course);
     if (!authorId || !courseId) {
@@ -139,13 +164,14 @@ async function seedMaterials(userIds, courseIds) {
       continue;
     }
 
-    const filePath = `${authorId}/seed-${material.key}.pdf`;
-    const existing = await must(
-      supabase.from('materials').select('id').eq('file_path', filePath).maybeSingle(),
-      `Check material ${material.key}`,
-    );
+    const existing = RESET && DRY_RUN
+      ? null // after a real reset nothing would exist
+      : await must(
+        supabase.from('materials').select('id, created_at').like('file_path', `${authorId}/seed-${material.key}.%`).maybeSingle(),
+        `Check material ${material.key}`,
+      );
     if (existing) {
-      ids.set(material.key, existing.id);
+      ids.set(material.key, { id: existing.id, time: new Date(existing.created_at).getTime() });
       count('materials', 'skipped');
       continue;
     }
@@ -153,13 +179,11 @@ async function seedMaterials(userIds, courseIds) {
     created('materials');
     if (DRY_RUN) continue;
 
-    const pdf = createSamplePdf(`StudyShare: ${material.topic}`, [
-      `Course: ${course(material.course).title}`,
-      'This is a sample study material generated by the StudyShare seed script.',
-      'Replace it with your own lecture notes, exercises or slides.',
-    ]);
+    const [format, size] = FILE_SPECS[material.key] ?? ['pdf', 's'];
+    const file = buildSampleFile({ ...material, format, size }, courseTitle(material.course), new Date(time));
+    const filePath = `${authorId}/seed-${material.key}.${file.ext}`;
     await must(
-      supabase.storage.from(BUCKET).upload(filePath, pdf, { contentType: 'application/pdf', upsert: true }),
+      supabase.storage.from(BUCKET).upload(filePath, file.data, { contentType: file.mime, upsert: true }),
       `Upload file ${filePath}`,
     );
 
@@ -172,22 +196,25 @@ async function seedMaterials(userIds, courseIds) {
           title: material.title,
           description: material.description,
           file_path: filePath,
-          file_name: `${material.key}.pdf`,
-          file_type: 'application/pdf',
-          file_size: pdf.length,
+          file_name: file.fileName,
+          file_type: file.mime,
+          file_size: file.data.length,
           downloads_count: material.downloads,
+          created_at: iso(time),
+          updated_at: iso(time), // equal to created_at, so the material is not shown as edited
         })
         .select('id')
         .single(),
       `Create material ${material.key}`,
     );
-    ids.set(material.key, row.id);
+    ids.set(material.key, { id: row.id, time });
+    console.log(`↑ ${file.fileName.padEnd(48)} ${(file.data.length / 1024).toFixed(1).padStart(8)} KB  ${iso(time).slice(0, 10)}`);
   }
   return ids;
 }
 
-async function seedComments(userIds, materialIds) {
-  const materialIdList = [...materialIds.values()];
+async function seedComments(userIds, materials) {
+  const materialIdList = [...materials.values()].map((m) => m.id);
   const existing = materialIdList.length
     ? await must(
         supabase.from('comments').select('material_id, author_id, content').in('material_id', materialIdList),
@@ -196,8 +223,18 @@ async function seedComments(userIds, materialIds) {
     : [];
   const seen = new Set(existing.map((c) => `${c.material_id}|${c.author_id}|${c.content}`));
 
-  for (const [materialKey, email, content] of COMMENTS) {
-    const materialId = materialIds.get(materialKey);
+  // Times per material, in list order (so a discussion reads chronologically)
+  const byMaterial = new Map();
+  COMMENTS.forEach(([key], index) => byMaterial.set(key, [...(byMaterial.get(key) ?? []), index]));
+  const timeOf = new Map();
+  for (const [key, indexes] of byMaterial) {
+    const material = materials.get(key);
+    if (!material) continue;
+    dates.comments(key, material.time, indexes.length).forEach((time, i) => timeOf.set(indexes[i], time));
+  }
+
+  for (const [index, [materialKey, email, content]] of COMMENTS.entries()) {
+    const materialId = materials.get(materialKey)?.id;
     const authorId = userIds.get(email);
     if (!materialId || !authorId) {
       created('comments');
@@ -209,35 +246,37 @@ async function seedComments(userIds, materialIds) {
     }
     created('comments');
     if (DRY_RUN) continue;
+    const time = iso(timeOf.get(index));
     await must(
-      supabase.from('comments').insert({ material_id: materialId, author_id: authorId, content }),
+      supabase.from('comments').insert({ material_id: materialId, author_id: authorId, content, created_at: time, updated_at: time }),
       `Create comment on ${materialKey}`,
     );
   }
 }
 
-async function seedRatings(userIds, materialIds) {
-  const materialIdList = [...materialIds.values()];
+async function seedRatings(userIds, materials) {
+  const materialIdList = [...materials.values()].map((m) => m.id);
   const existing = materialIdList.length
     ? await must(supabase.from('ratings').select('material_id, user_id').in('material_id', materialIdList), 'Load ratings')
     : [];
   const seen = new Set(existing.map((r) => `${r.material_id}|${r.user_id}`));
 
   for (const [materialKey, email, score] of RATINGS) {
-    const materialId = materialIds.get(materialKey);
+    const material = materials.get(materialKey);
     const userId = userIds.get(email);
-    if (!materialId || !userId) {
+    if (!material || !userId) {
       created('ratings');
       continue;
     }
-    if (seen.has(`${materialId}|${userId}`)) {
+    if (seen.has(`${material.id}|${userId}`)) {
       count('ratings', 'skipped');
       continue;
     }
     created('ratings');
     if (DRY_RUN) continue;
+    const time = iso(dates.rating(materialKey, email, material.time));
     await must(
-      supabase.from('ratings').insert({ material_id: materialId, user_id: userId, score }),
+      supabase.from('ratings').insert({ material_id: material.id, user_id: userId, score, created_at: time, updated_at: time }),
       `Create rating on ${materialKey}`,
     );
   }
@@ -246,13 +285,15 @@ async function seedRatings(userIds, materialIds) {
 // ---------------------------------------------------------------------------
 // Run
 // ---------------------------------------------------------------------------
-console.log(`StudyShare seed → project ${projectRef}${DRY_RUN ? '  [DRY RUN — nothing will be written]' : ''}\n`);
+const flags = [DRY_RUN && 'DRY RUN — nothing will be written', RESET && 'RESET demo materials'].filter(Boolean).join(', ');
+console.log(`StudyShare seed → project ${projectRef}${flags ? `  [${flags}]` : ''}\n`);
 
 const userIds = await seedUsers();
 const courseIds = await seedCourses(userIds);
-const materialIds = await seedMaterials(userIds, courseIds);
-await seedComments(userIds, materialIds);
-await seedRatings(userIds, materialIds);
+if (RESET) await resetDemoMaterials();
+const materials = await seedMaterials(userIds, courseIds);
+await seedComments(userIds, materials);
+await seedRatings(userIds, materials);
 
 console.table(stats);
-console.log(DRY_RUN ? 'Dry run finished. Run `npm run seed` to apply.' : 'Seed finished.');
+console.log(DRY_RUN ? 'Dry run finished. Run without --dry-run to apply.' : 'Seed finished.');
