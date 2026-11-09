@@ -50,7 +50,8 @@
   50% { scale: 0.75; }
 }
 
-/* "How it works" numbered steps */
+/* "How it works": a process of 4 steps.
+   Phone: compact vertical list · tablet: 2 × 2 · desktop: 4 in a row with arrows, slightly tilted like stickers. */
 .ss-steps {
   display: grid;
   gap: 0.85rem;
@@ -60,12 +61,12 @@
   counter-reset: ss-step;
 }
 
-.ss-steps li {
+.ss-step {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 1rem;
   padding: 0.75rem 1rem;
-  font-weight: 600;
   background: var(--ss-paper);
   border: var(--ss-border);
   border-radius: var(--ss-radius);
@@ -73,7 +74,8 @@
   counter-increment: ss-step;
 }
 
-.ss-steps li::before {
+/* Step number (from the <ol> counter) */
+.ss-step::before {
   content: counter(ss-step, decimal-leading-zero);
   display: grid;
   place-items: center;
@@ -85,4 +87,89 @@
   background: var(--ss-tone);
   border: var(--ss-border);
   border-radius: var(--ss-radius-sm);
+}
+
+.ss-step-icon {
+  display: none; /* shown from tablet up */
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  font-size: 1.4rem;
+  background: var(--ss-tone);
+  border: var(--ss-border);
+  border-radius: var(--ss-radius-sm);
+  box-shadow: var(--ss-shadow-sm);
+}
+
+.ss-step-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.ss-step-text {
+  margin: 0.15rem 0 0;
+  font-size: 0.9rem;
+  color: var(--ss-ink-soft);
+}
+
+.ss-step-done {
+  display: inline-block;
+  margin-top: 0.4rem;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ss-green-dark);
+  background: var(--ss-green-light);
+  border: var(--ss-line) solid var(--ss-green-dark);
+  border-radius: 999px;
+}
+
+/* Tablet: 2 × 2 cards with number + icon on top */
+@media (min-width: 768px) {
+  .ss-steps {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+
+  .ss-step {
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    grid-template-areas:
+      'num icon .'
+      'body body body';
+    align-items: center;
+    align-content: start; /* equal-height cards: keep titles on one line, extra space goes to the bottom */
+    gap: 0.75rem;
+    padding: 1.1rem 1.25rem 1.25rem;
+    box-shadow: var(--ss-shadow);
+  }
+
+  .ss-step::before { grid-area: num; }
+  .ss-step-icon { grid-area: icon; display: grid; }
+  .ss-step > div { grid-area: body; margin-top: 0.25rem; }
+}
+
+/* Desktop: one row with arrows between the steps */
+@media (min-width: 992px) {
+  .ss-steps {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2.75rem;
+  }
+
+  .ss-step { height: 100%; }
+  .ss-step:nth-child(odd) { transform: rotate(-1deg); }
+  .ss-step:nth-child(even) { transform: rotate(1deg); }
+
+  .ss-step:not(:last-child)::after {
+    content: '\F138'; /* bi-arrow-right */
+    position: absolute;
+    top: 50%;
+    right: -2.15rem;
+    font-family: 'bootstrap-icons';
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--ss-blue-dark);
+    transform: translateY(-50%);
+  }
 }

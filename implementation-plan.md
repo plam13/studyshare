@@ -91,6 +91,8 @@ For every stage: **prompt** the AI agent with a small, clear task → **implemen
   admin review in the moderation tab. RLS verified with real demo logins (11/11 checks).
 - In-browser PDF preview with pdf.js (lazy-loaded; not counted as a download).
 - Documentation: Agent Instructions moved to `AGENTS.md`, "Who can do what" table, multi-page notes.
+- Landing page: "Как работи?" redesigned as a 4-step process (a row with arrows on desktop, 2 × 2 on tablet,
+  a list on phones) — the old full-width list left most of a wide screen empty.
 
 ### Stage 11 — Final features and release · 10.11 · ⏳ planned
 
