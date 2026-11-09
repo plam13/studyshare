@@ -28,6 +28,7 @@
   font-family: var(--ss-mono);
   font-size: 0.85rem;
   font-weight: 600;
+  word-spacing: -0.5ch; /* monospace spaces are too wide */
   color: var(--ss-muted);
 }
 

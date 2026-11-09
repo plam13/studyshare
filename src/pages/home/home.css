@@ -148,6 +148,7 @@
 .ss-step-title a {
   color: inherit;
   text-decoration: none;
+  word-spacing: -0.35ch; /* monospace spaces are too wide */
 }
 
 .ss-step-title a::after {
