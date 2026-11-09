@@ -13,8 +13,10 @@ const CRAWLERS = /bot|crawler|spider|facebookexternalhit|facebookcatalog|discord
 const ROUTE = /^\/(materials|courses)\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\/?$/i;
 
 const escapeAttr = (text) => String(text).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+/** Share texts use the en dash: "Пробен изпит – Programming Basics – StudyShare". */
+const dash = (text) => String(text).replace(/\s+—\s+/g, ' – ');
 const shorten = (text, max) => {
-  const clean = String(text ?? '').replace(/\s+/g, ' ').trim();
+  const clean = dash(String(text ?? '').replace(/\s+/g, ' ').trim());
   return clean.length > max ? `${clean.slice(0, max - 1).trimEnd()}…` : clean;
 };
 
@@ -35,13 +37,13 @@ async function loadPreview(kind, id) {
   if (kind === 'materials') {
     const by = [row.course?.title && `Курс: ${row.course.title}`, row.author?.full_name && `Автор: ${row.author.full_name}`].filter(Boolean).join(' · ');
     return {
-      title: `${row.title} — StudyShare`,
-      description: shorten([row.description, by].filter(Boolean).join(' — '), 200),
+      title: dash(`${row.title} – StudyShare`),
+      description: shorten([row.description, by].filter(Boolean).join(' – '), 200),
       type: 'article',
     };
   }
   return {
-    title: `${row.title} — курс в StudyShare`,
+    title: dash(`${row.title} – курс в StudyShare`),
     description: shorten(row.description || 'Учебни материали по курса, споделени от студенти.', 200),
     type: 'website',
   };

@@ -18,12 +18,16 @@ const NETWORKS = [
 /** Absolute URL of an app path, e.g. "/materials/<id>" → "https://…/materials/<id>". */
 export const absoluteUrl = (path) => new URL(path, window.location.origin).href;
 
+/** Share texts use the en dash: "Пробен изпит – Programming Basics – StudyShare". */
+const toShareText = (text) => text.replace(/\s+—\s+/g, ' – ');
+
 /**
  * "Сподели" dropdown: native share sheet (when available), copy link, QR code and social networks.
  * Call mountShareMenu() on a parent element to activate the actions.
  * @param {{ url: string, title: string, label?: string, buttonClass?: string, align?: 'start' | 'end' }} options
  */
-export function renderShareMenu({ url, title, label = 'Сподели', buttonClass = 'btn-outline-primary btn-sm', align = 'end' }) {
+export function renderShareMenu({ url, title: rawTitle, label = 'Сподели', buttonClass = 'btn-outline-primary btn-sm', align = 'end' }) {
+  const title = toShareText(rawTitle);
   const u = encodeURIComponent(url);
   const t = encodeURIComponent(title);
   const native = typeof navigator.share === 'function'

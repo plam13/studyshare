@@ -21,7 +21,7 @@ function renderHeader(course) {
         </div>
       </div>
       <div class="d-flex flex-wrap gap-2">
-        ${renderShareMenu({ url: absoluteUrl(`/courses/${encodeURIComponent(course.id)}`), title: `${course.title} — StudyShare`, buttonClass: 'btn-light' })}
+        ${renderShareMenu({ url: absoluteUrl(`/courses/${encodeURIComponent(course.id)}`), title: `${course.title} – StudyShare`, buttonClass: 'btn-light' })}
         <a class="btn btn-warning" href="${uploadHref}"><i class="bi bi-cloud-arrow-up me-1" aria-hidden="true"></i>Качи материал</a>
       </div>
     </div>

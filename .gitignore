@@ -33,3 +33,6 @@ npm-debug.log*
 
 # Local Netlify folder
 .netlify
+
+# Netlify CLI local Deno lock (edge functions)
+deno.lock

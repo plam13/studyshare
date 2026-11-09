@@ -130,7 +130,7 @@ export async function mount(container, { params, user, signal, setTitle, navigat
   // Sharing is public: guests can open the link; download and comments still require login
   region('share').innerHTML = renderShareMenu({
     url: absoluteUrl(`/materials/${encodeURIComponent(material.id)}`),
-    title: `${material.title} — StudyShare`,
+    title: `${material.title} – StudyShare`,
   });
   mountShareMenu(region('share'));
 
