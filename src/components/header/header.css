@@ -91,6 +91,22 @@
   font-size: 0.7rem;
 }
 
+/* Compact links (e.g. "Търсене"): icon only on lg–xl where the row is tight; the label stays for screen readers */
+@media (min-width: 992px) and (max-width: 1399.98px) {
+  .ss-nav-compact {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .ss-navbar .nav-link[title] .bi {
+    margin-right: 0 !important;
+  }
+}
+
 @media (max-width: 991.98px) {
   .ss-navbar .navbar-collapse {
     padding-bottom: 0.75rem;

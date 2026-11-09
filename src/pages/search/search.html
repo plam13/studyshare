@@ -1,0 +1,32 @@
+<section>
+  <div class="mb-4">
+    <h1 class="h3 mb-1"><i class="bi bi-search me-2" aria-hidden="true"></i>Търсене</h1>
+    <p class="text-secondary mb-0">Търси материали във всички курсове по заглавие или описание.</p>
+  </div>
+
+  <form class="ss-toolbar card mb-3" role="search" data-form="search" novalidate>
+    <div class="card-body row g-2 align-items-center">
+      <div class="col-md-6">
+        <label for="search-input" class="visually-hidden">Търси материали</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-search" aria-hidden="true"></i></span>
+          <input type="search" id="search-input" name="q" class="form-control" placeholder="напр. цикли, SQL JOIN, async…"
+                 autocomplete="off" maxlength="100" />
+          <button type="submit" class="btn btn-primary">Търси</button>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-3">
+        <label for="search-sort" class="visually-hidden">Подреди по</label>
+        <select id="search-sort" class="form-select">
+          <option value="downloads">Най-изтегляни</option>
+          <option value="rating">Най-високо оценени</option>
+          <option value="newest">Най-нови</option>
+          <option value="title">По заглавие (А–Я)</option>
+        </select>
+      </div>
+      <div class="col-sm-6 col-md-3 text-sm-end small text-secondary" data-field="summary" aria-live="polite"></div>
+    </div>
+  </form>
+
+  <div data-region="results"></div>
+</section>

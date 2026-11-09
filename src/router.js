@@ -21,6 +21,7 @@ export const routes = [
   { path: '/register', page: 'register', title: 'Регистрация', access: 'guest', load: () => import('./pages/register/register.js') },
   { path: '/dashboard', page: 'dashboard', title: 'Табло', access: 'user', load: () => import('./pages/dashboard/dashboard.js') },
   { path: '/courses', page: 'courses', title: 'Курсове', access: 'any', load: () => import('./pages/courses/courses.js') },
+  { path: '/search', page: 'search', title: 'Търсене', access: 'any', load: () => import('./pages/search/search.js') },
   { path: '/courses/:id', page: 'course-details', title: 'Курс', access: 'any', load: () => import('./pages/course-details/course-details.js') },
   { path: '/materials/add', page: 'material-add', title: 'Качване на материал', access: 'user', load: () => import('./pages/material-form/material-form.js') },
   { path: '/materials/:id', page: 'material-details', title: 'Материал', access: 'any', load: () => import('./pages/material-details/material-details.js') },

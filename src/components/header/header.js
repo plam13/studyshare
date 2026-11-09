@@ -9,6 +9,7 @@ import { renderAvatar } from '../avatar/avatar.js';
 const NAV_LINKS = [
   { href: '/', label: 'Начало', icon: 'bi-house', auth: 'any', exact: true },
   { href: '/courses', label: 'Курсове', icon: 'bi-journal-bookmark', auth: 'any' },
+  { href: '/search', label: 'Търсене', icon: 'bi-search', auth: 'any', compact: true },
   { href: '/dashboard', label: 'Табло', icon: 'bi-speedometer2', auth: 'user' },
   { href: '/materials/add', label: 'Качи материал', icon: 'bi-cloud-arrow-up', auth: 'user', exact: true },
   { href: '/admin', label: 'Админ', icon: 'bi-shield-lock', auth: 'admin' },
@@ -83,8 +84,9 @@ export function createHeader(container, { onLogout }) {
       .map(
         (link) => `
           <li class="nav-item">
-            <a class="nav-link" href="${link.href}" data-nav-href="${link.href}" ${link.exact ? 'data-nav-exact' : ''}>
-              <i class="bi ${link.icon} me-1" aria-hidden="true"></i>${link.label}
+            <a class="nav-link" href="${link.href}" data-nav-href="${link.href}" ${link.exact ? 'data-nav-exact' : ''}
+               ${link.compact ? `title="${link.label}"` : ''}>
+              <i class="bi ${link.icon} me-1" aria-hidden="true"></i>${link.compact ? `<span class="ss-nav-compact">${link.label}</span>` : link.label}
             </a>
           </li>`,
       )
