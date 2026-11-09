@@ -15,16 +15,12 @@
  * - Refuses to run against any project other than SEED_EXPECTED_PROJECT_REF.
  * - Never prints keys or tokens.
  */
-import { readFile, stat } from 'node:fs/promises';
 import { createClient } from '@supabase/supabase-js';
 import { COMMENTS, COURSES, MATERIALS, RATINGS, USERS } from './seed-data.mjs';
-import { SOFTUNI_ATTRIBUTION, SOFTUNI_COMMENTS, SOFTUNI_MATERIALS, SOFTUNI_RATINGS } from './seed-softuni.mjs';
 import { createSamplePdf } from './lib/pdf.mjs';
 
 const DRY_RUN = process.argv.includes('--dry-run');
 const BUCKET = 'materials';
-const PDF_DIR = new URL('../pdf/', import.meta.url); // real course slides, git-ignored
-const MAX_FILE_SIZE = 20 * 1024 * 1024; // same limit as the upload form
 
 // ---------------------------------------------------------------------------
 // Config & safety checks
@@ -181,68 +177,6 @@ async function seedMaterials(userIds, courseIds) {
   return ids;
 }
 
-/** Real SoftUni slides from `pdf/`. Missing files are skipped with a warning, so the seed works without them. */
-async function seedSoftUniMaterials(userIds, courseIds, ids) {
-  for (const material of SOFTUNI_MATERIALS) {
-    const fileUrl = new URL(material.file, PDF_DIR);
-    const size = await stat(fileUrl).then((s) => s.size, () => null);
-    if (size === null) {
-      console.warn(`⚠ pdf/${material.file} not found — skipping ${material.key}`);
-      count('softuni materials', 'skipped');
-      continue;
-    }
-    if (size > MAX_FILE_SIZE) fail(`pdf/${material.file} is larger than 20 MB`);
-
-    const authorId = userIds.get(material.author);
-    const courseId = courseIds.get(material.course);
-    if (!authorId || !courseId) {
-      created('softuni materials'); // only possible in dry-run (author/course not created yet)
-      continue;
-    }
-
-    const filePath = `${authorId}/softuni-${material.key}.pdf`;
-    const existing = await must(
-      supabase.from('materials').select('id').eq('file_path', filePath).maybeSingle(),
-      `Check material ${material.key}`,
-    );
-    if (existing) {
-      ids.set(material.key, existing.id);
-      count('softuni materials', 'skipped');
-      continue;
-    }
-
-    created('softuni materials');
-    if (DRY_RUN) continue;
-
-    const pdf = await readFile(fileUrl);
-    await must(
-      supabase.storage.from(BUCKET).upload(filePath, pdf, { contentType: 'application/pdf', upsert: true }),
-      `Upload file ${filePath}`,
-    );
-
-    const row = await must(
-      supabase
-        .from('materials')
-        .insert({
-          course_id: courseId,
-          author_id: authorId,
-          title: material.title,
-          description: `${material.description}\n\n${SOFTUNI_ATTRIBUTION}`,
-          file_path: filePath,
-          file_name: material.file,
-          file_type: 'application/pdf',
-          file_size: size,
-          downloads_count: material.downloads,
-        })
-        .select('id')
-        .single(),
-      `Create material ${material.key}`,
-    );
-    ids.set(material.key, row.id);
-    console.log(`↑ uploaded pdf/${material.file} (${(size / 1024 / 1024).toFixed(1)} MB)`);
-  }
-}
-
 async function seedComments(userIds, materialIds) {
   const materialIdList = [...materialIds.values()];
   const existing = materialIdList.length
@@ -253,7 +187,7 @@ async function seedComments(userIds, materialIds) {
     : [];
   const seen = new Set(existing.map((c) => `${c.material_id}|${c.author_id}|${c.content}`));
 
-  for (const [materialKey, email, content] of [...COMMENTS, ...SOFTUNI_COMMENTS]) {
+  for (const [materialKey, email, content] of COMMENTS) {
     const materialId = materialIds.get(materialKey);
     const authorId = userIds.get(email);
     if (!materialId || !authorId) {
@@ -280,7 +214,7 @@ async function seedRatings(userIds, materialIds) {
     : [];
   const seen = new Set(existing.map((r) => `${r.material_id}|${r.user_id}`));
 
-  for (const [materialKey, email, score] of [...RATINGS, ...SOFTUNI_RATINGS]) {
+  for (const [materialKey, email, score] of RATINGS) {
     const materialId = materialIds.get(materialKey);
     const userId = userIds.get(email);
     if (!materialId || !userId) {
@@ -308,7 +242,6 @@ console.log(`StudyShare seed → project ${projectRef}${DRY_RUN ? '  [DRY RUN �
 const userIds = await seedUsers();
 const courseIds = await seedCourses(userIds);
 const materialIds = await seedMaterials(userIds, courseIds);
-await seedSoftUniMaterials(userIds, courseIds, materialIds);
 await seedComments(userIds, materialIds);
 await seedRatings(userIds, materialIds);
 
