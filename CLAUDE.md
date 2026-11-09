@@ -1,9 +1,9 @@
 # CLAUDE.md
 
 The single source of truth for project context, architecture and rules is
-[.github/copilot-instructions.md](.github/copilot-instructions.md) — read and follow it.
+[AGENTS.md](AGENTS.md) — read and follow it.
 
-@.github/copilot-instructions.md
+@AGENTS.md
 
 ## Commands
 

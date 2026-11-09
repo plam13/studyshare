@@ -1,6 +1,7 @@
 # StudyShare — Agent Instructions
 
-These instructions give AI dev agents (GitHub Copilot, Claude Code, etc.) the context and rules for working on this project.
+These are the project's **Agent Instructions** (required by the assignment; previously `.github/copilot-instructions.md`).
+They give AI dev agents (GitHub Copilot, Claude Code, Codex, etc.) the context and rules for working on this project.
 
 ## Project
 
@@ -19,9 +20,13 @@ UI language is **Bulgarian**. Code, identifiers, comments, commit messages and d
 - **Build:** Node.js, npm, **Vite**.
 - **Backend:** **Supabase** — Postgres DB, Auth (JWT), Storage, optional Edge Functions.
   - The browser talks to Supabase only via `@supabase/supabase-js` (REST API).
-- **Deploy:** Netlify (`public/_redirects` serves `index.html` for all routes).
+- **Deploy:** Netlify (`public/_redirects` serves `index.html` for all routes). One Netlify Edge Function
+  (`netlify/edge-functions/link-preview.js`) adds Open Graph tags for social crawlers.
 
 ## Architecture
+
+**Multi-page navigation** as taught in the course workshop (Taskboard): every screen is a separate page with its own
+URL and its own files, rendered into one app shell by a client-side router — not a single page with popups.
 
 - **One `index.html` shell** with `#app-header`, `<main id="app">` and `#app-footer`. Entry point: `src/main.js`.
 - **One client-side router** (`src/router.js`) using the History API (`pushState` / `popstate`):
@@ -34,7 +39,9 @@ UI language is **Bulgarian**. Code, identifiers, comments, commit messages and d
   - A page module exports `mount(container, ctx)`; it may return a cleanup function (called on unmount).
     `ctx = { params, query, user, route, signal, navigate, setTitle }`. Use `ctx.signal` to cancel/ignore stale requests.
   - Remove page-level listeners/subscriptions in the cleanup function (listeners on `container` children are dropped automatically).
-- **Shared components** in `src/components/<name>/` (header, footer, cards, rating stars…), each with its own JS/HTML/CSS.
+- **Shared components** in `src/components/<name>/` (header, footer, cards, rating stars, share menu…), each with its own JS/HTML/CSS.
+- **Sharing:** `components/share-menu/` renders the "Сподели" dropdown (native share sheet, copy link, QR code, social links).
+  Shared pages stay public for guests; download, comments and ratings still require login (then `?redirect=` back).
 
 ### Canonical routes
 
@@ -67,8 +74,9 @@ After login go to the safe `?redirect=` target or `/dashboard`; after logout go 
 | `src/utils/` | Small helpers: DOM/escaping, validation, toasts, guards, formatting |
 | `src/styles.css` | Global styles on top of Bootstrap; custom classes use the `ss-` prefix |
 | `supabase/migrations/` | SQL migrations — the only way to change the DB schema |
-| `scripts/` | Node.js maintenance scripts (seed, admin bootstrap) — server-side only |
-| `public/` | Static assets copied as-is (favicon, `_redirects`) |
+| `scripts/` | Node.js maintenance scripts — server-side only: `seed.mjs` + `seed-data.mjs`, `lib/` (dependency-free PDF/DOCX/PPTX/XLSX/ZIP generators, deterministic dates), `sql/` (one-off data scripts) |
+| `netlify/edge-functions/` | Netlify Edge Functions (link previews for crawlers) |
+| `public/` | Static assets copied as-is (favicon, `_redirects`, `robots.txt`, `og-image.png`) |
 
 ### Rules
 
@@ -100,10 +108,15 @@ After login go to the safe `?redirect=` target or `/dashboard`; after logout go 
 
 - `.env` holds only public values: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`. `.env.example` is the template.
 - Never commit `.env`, `.secrets/`, the DB password, the service-role key or access tokens.
-- Privileged keys (service role) are used only in `scripts/` or Edge Functions, never with a `VITE_` prefix, never printed in logs.
+- Privileged keys (service role / secret key) are used only in `scripts/`, never with a `VITE_` prefix, never printed in logs.
+  The Netlify Edge Function uses only the public publishable key (RLS still applies).
 
 ## Workflow
 
 - AI dev loop: prompt → implement → run & test (`npm run dev`, `npm run build`) → refine → commit & push.
 - Small, working commits with Conventional Commit messages (`feat:`, `fix:`, `chore:`, `docs:`, `refactor:`, `style:`).
 - Update `README.md` when adding routes, tables or setup steps.
+- **Deploys (Netlify free plan, 15 of 300 monthly credits each):** a push builds only when the last commit message
+  contains `[deploy]` (`ignore` rule in `netlify.toml`). Check changes first with a free draft deploy:
+  `netlify deploy --build` (without `--prod`), then release with one `[deploy]` commit.
+- Demo data: `npm run seed:dry-run` → `npm run seed` (`seed:reset` recreates only seed materials).

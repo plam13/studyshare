@@ -1,10 +1,26 @@
 # StudyShare
 
-A web app for sharing study materials by course. Students upload lecture notes, solved exercises and slides (PDF / DOCX / PPTX), download others' materials, comment and rate them. Admins manage courses, moderate content and assign roles.
+A web app for sharing study materials by course. Students upload lecture notes, solved exercises and slides (PDF / DOCX / PPTX), download others' materials, comment and rate them, and share links to them. Admins manage courses, moderate content and assign roles.
 
-> 🚧 Work in progress — capstone project for the SoftUni course “Software Technologies with AI”.
+Capstone project for the SoftUni course “Software Technologies with AI”, built with AI-assisted development (prompt → implement → test → refine → commit).
 
 **Live demo:** https://studyshare-learn.netlify.app (demo accounts are listed [below](#demo-accounts)).
+
+## Who can do what
+
+| Action | Guest | User | Admin |
+|---|:-:|:-:|:-:|
+| Browse courses, materials, comments and ratings; share links | ✅ | ✅ | ✅ |
+| Register, log in, log out | ✅ | — | — |
+| Download files | — | ✅ | ✅ |
+| Upload materials; edit / delete **own** materials | — | ✅ | ✅ |
+| Comment (edit / delete **own** comments); rate others' materials 1–5 | — | ✅ | ✅ |
+| Profile with avatar; personal dashboard | — | ✅ | ✅ |
+| Create / edit / delete courses | — | — | ✅ |
+| Delete **any** material or comment (moderation) | — | — | ✅ |
+| Grant / revoke the admin role (not their own) | — | — | ✅ |
+
+The browser only hides what a role cannot do; the real checks are **Row-Level Security policies** in the database.
 
 ## Features
 
@@ -25,7 +41,8 @@ A web app for sharing study materials by course. Students upload lecture notes, 
 
 ## Architecture (short)
 
-- Single `index.html` shell + client-side router (`src/router.js`, History API) with clean URLs.
+- **Multi-page navigation** as in the course workshop (Taskboard): every screen is a separate page with its own URL (`/courses/:id`, `/materials/:id`, …) and its own files — not one page with popups. Back/Forward, reload and direct links work on every page.
+- Single `index.html` shell + client-side router (`src/router.js`, History API) with clean URLs; header and footer are shared components.
 - Each page is a separate folder in `src/pages/` (HTML fragment + CSS + JS), loaded on demand.
 - All data access goes through services in `src/services/`; authorization is enforced by Supabase RLS.
 - **Link previews:** social crawlers do not run JavaScript, so `netlify/edge-functions/link-preview.js` rewrites the Open Graph tags of `/materials/:id` and `/courses/:id` for crawler requests only (title and description are read from Supabase with the public key). Regular visitors are not affected; other pages use the static tags in `index.html` and `public/og-image.png`.
@@ -215,19 +232,24 @@ npx supabase db query --remote -f scripts/sql/backdate-demo-accounts.sql
 ## Project structure
 
 ```
-├── index.html             # app shell
-├── public/                # static assets (favicon, Netlify _redirects)
+├── index.html             # app shell (+ static Open Graph tags)
+├── AGENTS.md              # Agent Instructions for AI dev agents (project context, architecture, rules)
+├── public/                # static assets: favicon, Netlify _redirects, robots.txt, og-image.png
 ├── src/
 │   ├── main.js            # entry: global CSS/JS, layout, auth init, router start
 │   ├── router.js          # routes, guards, mount/unmount
 │   ├── styles.css         # global styles entry (imports src/styles/*)
 │   ├── styles/            # design tokens, base, Bootstrap theme, shared ss- blocks
-│   ├── pages/<page>/      # page fragment (.html) + styles (.css) + logic (.js)
-│   ├── components/        # header, footer, cards, SVG illustrations, material banner, …
-│   ├── services/          # Supabase client, auth and data services
-│   └── utils/             # escaping, validation, toasts, guards
-├── supabase/migrations/   # DB migrations (SQL)
-├── scripts/               # server-side Node.js scripts (seed)
-├── .github/copilot-instructions.md   # AI agent instructions
+│   ├── pages/<page>/      # one folder per page: fragment (.html) + styles (.css) + logic (.js)
+│   ├── components/        # header, footer, cards, share menu + QR dialog, material banner, …
+│   ├── services/          # Supabase client, auth and data services (the only place that talks to Supabase)
+│   └── utils/             # escaping, validation, toasts, guards, formatting
+├── supabase/migrations/   # DB migrations (SQL) — the only way the schema changes
+├── netlify/edge-functions/# link previews for social crawlers
+├── scripts/               # server-side Node.js scripts
+│   ├── seed.mjs, seed-data.mjs   # demo users, courses, materials, comments, ratings
+│   ├── lib/               # dependency-free PDF / DOCX / PPTX / XLSX / ZIP generators, demo dates
+│   └── sql/               # one-off data scripts (align demo account dates)
+├── netlify.toml           # build settings, [deploy] rule, cache headers
 └── vite.config.js
 ```
