@@ -95,12 +95,17 @@ For every stage: **prompt** the AI agent with a small, clear task → **implemen
   a list on phones) — the old full-width list left most of a wide screen empty. Each step is a link whose
   target depends on login (e.g. "Качи и сподели" → login and back for guests), with 🔒 badges for guests.
 
-### Stage 11 — Final features and release · 10.11 · ⏳ planned
+### Stage 11 — Final features and release · 10.11 · ⏳ in progress
 
-- [ ] "Запази" / favorites: `favorites` table (migration + RLS), save button, list in the dashboard.
-- [ ] Global search across all courses with a `pg_trgm` GIN index (works for Bulgarian, partial words).
-  Optional: point the home page step 03 to all materials sorted by downloads (now it opens the most downloaded one).
-- [ ] Admin panel: count of open reports on the "Модерация" tab and in the overview.
+- [x] "Запази" / favorites: `favorites` table (migration + private RLS), save button on the material page,
+  "Запазени материали" in the dashboard.
+- [x] Global search across all courses (`/search?q=`, link in the header) with `pg_trgm` GIN indexes
+  (works for Bulgarian, partial words; every word must match).
+  Not done (optional): pointing the home page step 03 to search results — it keeps opening the most downloaded material.
+- [x] Admin panel: count of open reports on the "Модерация" tab and a notice above the tabs.
+- [x] README: how to run the project with your own Supabase backend.
+- [x] Polish: two-sentence demo descriptions (updated in place by a data script), tighter word spacing in the
+  monospace headings, hero title alignment.
 - [ ] Final check: responsive screens, demo accounts, README.
 - [ ] One production deploy (`[deploy]`) before 16:00.
 

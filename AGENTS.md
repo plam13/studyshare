@@ -53,6 +53,7 @@ URL and its own files, rendered into one app shell by a client-side router — n
 | `/dashboard` | User dashboard (after login) | user |
 | `/courses` | Course list | any |
 | `/courses/:id` | Materials in a course | any |
+| `/search?q=` | Global material search (all courses) | any |
 | `/materials/add` | Upload material | user |
 | `/materials/:id` | Material details, download, comments, rating | any |
 | `/materials/:id/edit` | Edit material | user (author/admin) |
@@ -92,7 +93,9 @@ After login go to the safe `?redirect=` target or `/dashboard`; after logout go 
 
 ## Database & security
 
-- Tables: `profiles`, `user_roles`, `courses`, `materials`, `comments`, `ratings`, `reports` + view `material_stats` (see README).
+- Tables: `profiles`, `user_roles`, `courses`, `materials`, `comments`, `ratings`, `reports`, `favorites` + view `material_stats` (see README).
+- Search uses `ILIKE '%word%'` on `materials.title` / `description`, backed by `pg_trgm` GIN indexes. User input is reduced to
+  letters, digits and `#+.-` before it goes into a PostgREST `or()` filter (`toSearchWords()` in `services/materials.js`).
 - **Every schema change is a migration** in `supabase/migrations/`:
   `npx supabase migration new <name>` → write SQL → `npx supabase db push --remote --dry-run` → `npx supabase db push --remote`.
   Never change the schema only in the dashboard.
