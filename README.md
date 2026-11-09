@@ -246,6 +246,10 @@ npx supabase db query --remote -f scripts/sql/backdate-demo-accounts.sql
 | User | `demo@studyshare.bg` | `demo123` |
 | User | `maria@studyshare.bg`, `peter@studyshare.bg`, `elena@studyshare.bg` | `pass123` |
 
+**You can also register your own test account.** E-mail confirmation is **intentionally disabled** for this student project, so reviewers can sign up with any e-mail address (no message is sent) and are logged in immediately. Every new account gets the `user` role from a database trigger; roles never come from the sign-up data, so nobody can register as an admin.
+
+For real use the following would be turned on in Supabase Auth: e-mail confirmation (the register page already has a "check your inbox" screen for it), leaked-password protection and a CAPTCHA on sign-up.
+
 ## Project structure
 
 ```
