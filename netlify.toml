@@ -2,6 +2,9 @@
 [build]
   command = "npm run build"
   publish = "dist"
+  # Free plan: every production deploy costs 15 of 300 monthly credits.
+  # Build only when the last commit message contains "[deploy]" (exit 1 = build, exit 0 = skip).
+  ignore = "git log -1 --pretty=%B | grep -qF '[deploy]' && exit 1 || exit 0"
 
 [build.environment]
   NODE_VERSION = "22"
