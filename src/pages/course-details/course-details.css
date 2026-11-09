@@ -15,4 +15,5 @@
 
 .ss-course-heading h1 {
   overflow-wrap: anywhere;
+  word-spacing: -0.4ch; /* monospace spaces are too wide */
 }

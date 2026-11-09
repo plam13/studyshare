@@ -12,9 +12,27 @@
   background: var(--ss-sky-soft);
 }
 
+/* word-spacing is set on the title itself: `ch` is resolved where it is declared, so on .ss-hero-body it would
+   use the 16px sans font and squash the spaces in the paragraph and the buttons */
 .ss-hero-title {
-  font-size: clamp(2rem, 4.5vw, 3.2rem);
+  font-size: clamp(2.2rem, 5vw, 3.2rem);
   line-height: 1.05;
+  word-spacing: -0.4ch; /* monospace spaces are too wide */
+}
+
+/* "Учи. Повтори." start under "Сподели.": indent = "//" + one space in the monospace font
+   (each glyph is 1ch + letter-spacing −0.02em; the space is also reduced by word-spacing −0.4ch) */
+.ss-hero-title-rest {
+  display: inline-block;
+  margin-left: calc(2.6ch - 0.06em);
+}
+
+/* Very narrow phones: no indent, the lines start at the left edge */
+@media (max-width: 359.98px) {
+  .ss-hero-title-rest {
+    display: inline;
+    margin-left: 0;
+  }
 }
 
 .ss-hero-slashes {
@@ -26,12 +44,25 @@
   width: 100%;
   max-width: 520px;
   height: auto;
-  margin-inline: auto;
+  margin-inline: auto; /* phones and tablets: centered under the text */
 }
 
 @media (max-width: 991.98px) {
   .ss-hero-art {
     max-width: 360px;
+  }
+}
+
+/* Desktop (art beside the text): pull the art slightly to the right */
+@media (min-width: 992px) {
+  .ss-hero-art {
+    margin-right: -1vw;
+  }
+}
+
+@media (min-width: 1400px) {
+  .ss-hero-art {
+    margin-right: unset;
   }
 }
 
@@ -184,6 +215,7 @@
 /* In-page link from step 03: keep the heading visible below the sticky header */
 #latest-title {
   scroll-margin-top: 6rem;
+  word-spacing: -0.35ch; /* monospace spaces are too wide */
 }
 
 /* Tablet: 2 × 2 cards with number + icon on top */

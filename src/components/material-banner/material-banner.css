@@ -28,6 +28,7 @@
   font-size: 50px;
   font-weight: 800;
   letter-spacing: -0.02em;
+  word-spacing: -0.45ch; /* monospace spaces are too wide */
   fill: var(--ss-ink);
 }
 

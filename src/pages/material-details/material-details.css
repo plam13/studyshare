@@ -1,5 +1,6 @@
 .ss-material-title {
   overflow-wrap: anywhere;
+  word-spacing: -0.45ch; /* monospace spaces are too wide */
 }
 
 .ss-material-description {

@@ -37,6 +37,7 @@
 
 .ss-material-row-body h3 {
   overflow-wrap: anywhere;
+  word-spacing: -0.35ch; /* monospace spaces are too wide */
 }
 
 .ss-material-meta {

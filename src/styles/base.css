@@ -32,6 +32,11 @@ h1, h2, h3, h4, h5,
   letter-spacing: -0.02em;
 }
 
+/* The monospace heading font has very wide spaces between words — tighten them */
+h5, .h5 {
+  word-spacing: -0.35ch;
+}
+
 h6, .h6 {
   font-weight: 700;
 }
