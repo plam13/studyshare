@@ -1,4 +1,5 @@
 import { listRecentComments } from '../../services/admin.js';
+import { listOpenReports, setReportStatus } from '../../services/reports.js';
 import { deleteComment } from '../../services/comments.js';
 import { deleteMaterial, listLatestMaterials } from '../../services/materials.js';
 import { renderFileBadge } from '../../components/material-item/material-item.js';
@@ -37,6 +38,34 @@ function renderMaterials(materials) {
     .join('')}</ul>`;
 }
 
+function renderReports(reports) {
+  if (!reports.length) return renderEmpty({ icon: 'bi-flag', title: 'Няма отворени сигнали.' });
+  return `<ul class="ss-mod-list">${reports
+    .map(
+      (r) => `
+        <li class="ss-mod-item">
+          <div class="ss-mod-item-body">
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+              <span class="badge text-bg-danger">${escapeHtml(r.reasonLabel)}</span>
+              ${r.material
+                ? `<a class="fw-semibold" href="/materials/${encodeURIComponent(r.material.id)}">${escapeHtml(r.material.title)}</a>
+                   <span class="small text-secondary">от ${escapeHtml(r.material.authorName)}</span>`
+                : '<span class="text-secondary">Материалът е изтрит</span>'}
+            </div>
+            <div class="small text-secondary">Сигнал от <strong class="text-body">${escapeHtml(r.reporterName)}</strong> · ${formatDateTime(r.createdAt)}</div>
+            ${r.details ? `<p class="ss-mod-quote">${escapeHtml(r.details)}</p>` : ''}
+          </div>
+          <div class="d-flex flex-column flex-sm-row gap-2 flex-shrink-0">
+            ${r.material ? `<button type="button" class="btn btn-outline-danger btn-sm" data-action="report-delete" data-id="${escapeHtml(r.id)}">
+              <i class="bi bi-trash me-1" aria-hidden="true"></i>Изтрий материала</button>` : ''}
+            <button type="button" class="btn btn-outline-secondary btn-sm" data-action="report-dismiss" data-id="${escapeHtml(r.id)}">
+              <i class="bi bi-x-circle me-1" aria-hidden="true"></i>Отхвърли</button>
+          </div>
+        </li>`,
+    )
+    .join('')}</ul>`;
+}
+
 function renderComments(comments) {
   if (!comments.length) return renderEmpty({ icon: 'bi-chat-square-text', title: 'Няма коментари.' });
   return `<ul class="ss-mod-list">${comments
@@ -60,13 +89,67 @@ function renderComments(comments) {
 export async function mountModeration(box, { signal, onChange }) {
   box.innerHTML = `
     <div class="row g-4">
+      <div class="col-12">${renderWindow({ title: 'reports.open()', tone: 'yellow', body: '<div id="mod-reports"></div>' })}</div>
       <div class="col-lg-6">${renderWindow({ title: `materials.latest(${LIMIT})`, tone: 'coral', body: '<div id="mod-materials"></div>' })}</div>
       <div class="col-lg-6">${renderWindow({ title: `comments.latest(${LIMIT})`, tone: 'lilac', body: '<div id="mod-comments"></div>' })}</div>
     </div>`;
+  const reportsBox = box.querySelector('#mod-reports');
   const materialsBox = box.querySelector('#mod-materials');
   const commentsBox = box.querySelector('#mod-comments');
+  let reports = [];
   let materials = [];
   let comments = [];
+
+  async function loadReports() {
+    reportsBox.innerHTML = renderLoading();
+    try {
+      reports = await listOpenReports({ signal });
+      if (!signal.aborted) reportsBox.innerHTML = renderReports(reports);
+    } catch (error) {
+      if (!signal.aborted) reportsBox.innerHTML = renderError(error.message);
+    }
+  }
+
+  // Reports: delete the reported material (its reports cascade) or dismiss the report
+  reportsBox.addEventListener('click', async (event) => {
+    const button = event.target.closest('[data-action="report-delete"], [data-action="report-dismiss"]');
+    if (!button) return;
+    const report = reports.find((r) => r.id === button.dataset.id);
+    if (!report) return;
+    const isDelete = button.dataset.action === 'report-delete';
+
+    const ok = await confirmDialog(isDelete
+      ? {
+          title: 'Изтриване на сигнализиран материал',
+          message: `Да изтрия ли „${report.material.title}“ на ${report.material.authorName}? Файлът, коментарите, оценките и сигналите също ще бъдат изтрити.`,
+          confirmLabel: 'Изтрий',
+        }
+      : {
+          title: 'Отхвърляне на сигнал',
+          message: `Сигналът за „${report.material?.title ?? 'материала'}“ ще бъде затворен без промяна по материала.`,
+          confirmLabel: 'Отхвърли',
+          confirmClass: 'btn-primary',
+          icon: 'bi-x-circle',
+        });
+    if (!ok) return;
+
+    setButtonLoading(button, true);
+    try {
+      if (isDelete) {
+        await deleteMaterial(report.material);
+        showSuccess('Материалът е изтрит.');
+      } else {
+        await setReportStatus(report.id, 'dismissed');
+        showSuccess('Сигналът е отхвърлен.');
+      }
+      if (signal.aborted) return;
+      await Promise.all([loadReports(), isDelete ? loadMaterials() : Promise.resolve(), isDelete ? loadComments() : Promise.resolve()]);
+      if (isDelete) onChange();
+    } catch (error) {
+      showError(error.message);
+      setButtonLoading(button, false);
+    }
+  });
 
   async function loadMaterials() {
     materialsBox.innerHTML = renderLoading();
@@ -120,8 +203,8 @@ export async function mountModeration(box, { signal, onChange }) {
         showSuccess('Коментарът е изтрит.');
       }
       if (signal.aborted) return;
-      // Deleting a material also removes its comments → reload both lists.
-      await Promise.all([isMaterial ? loadMaterials() : Promise.resolve(), loadComments()]);
+      // Deleting a material also removes its comments and reports → reload those lists too.
+      await Promise.all([isMaterial ? loadMaterials() : Promise.resolve(), isMaterial ? loadReports() : Promise.resolve(), loadComments()]);
       onChange();
     } catch (error) {
       showError(error.message);
@@ -129,5 +212,5 @@ export async function mountModeration(box, { signal, onChange }) {
     }
   });
 
-  await Promise.all([loadMaterials(), loadComments()]);
+  await Promise.all([loadReports(), loadMaterials(), loadComments()]);
 }

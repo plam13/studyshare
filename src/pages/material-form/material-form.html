@@ -52,6 +52,20 @@
         <div class="ss-selected-file small mt-2" data-field="selected-file" hidden></div>
       </div>
 
+      <div class="ss-rights-box mb-4">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="rights" name="rights" required aria-describedby="rights-help" />
+          <label class="form-check-label fw-semibold" for="rights">
+            Потвърждавам, че съм автор на материала или имам право да го споделя.
+          </label>
+          <div class="invalid-feedback"></div>
+        </div>
+        <div id="rights-help" class="form-text ms-4">
+          Не качвай чужди лекции, книги или презентации без разрешение — например материали, обозначени с
+          „© … All rights reserved“. Собствени записки, решения и резюмета с посочен източник са добре дошли.
+        </div>
+      </div>
+
       <div class="d-flex flex-wrap gap-2 justify-content-end">
         <a class="btn btn-outline-secondary" href="/courses" data-field="cancel">Отказ</a>
         <button type="submit" class="btn btn-primary">

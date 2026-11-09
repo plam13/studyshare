@@ -92,7 +92,7 @@ After login go to the safe `?redirect=` target or `/dashboard`; after logout go 
 
 ## Database & security
 
-- Tables: `profiles`, `user_roles`, `courses`, `materials`, `comments`, `ratings` + view `material_stats` (see README).
+- Tables: `profiles`, `user_roles`, `courses`, `materials`, `comments`, `ratings`, `reports` + view `material_stats` (see README).
 - **Every schema change is a migration** in `supabase/migrations/`:
   `npx supabase migration new <name>` → write SQL → `npx supabase db push --remote --dry-run` → `npx supabase db push --remote`.
   Never change the schema only in the dashboard.

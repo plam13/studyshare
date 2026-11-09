@@ -3,6 +3,8 @@ import './material-details.css';
 import { deleteMaterial, getMaterial, incrementDownloads } from '../../services/materials.js';
 import { listComments } from '../../services/comments.js';
 import { getMyRating } from '../../services/ratings.js';
+import { getMyReport } from '../../services/reports.js';
+import { openReportDialog } from '../../components/report-dialog/report-dialog.js';
 import { downloadMaterialFile } from '../../services/storage.js';
 import { saveBlob } from '../../utils/download.js';
 import { renderFileBadge } from '../../components/material-item/material-item.js';
@@ -44,6 +46,14 @@ function renderDownloadAction(user) {
     </button>`;
 }
 
+function renderReportButton(reported) {
+  return reported
+    ? `<button type="button" class="btn btn-outline-secondary btn-sm" disabled title="Администраторите ще прегледат сигнала">
+         <i class="bi bi-flag-fill me-1" aria-hidden="true"></i>Сигнализирано</button>`
+    : `<button type="button" class="btn btn-outline-secondary btn-sm" data-action="report">
+         <i class="bi bi-flag me-1" aria-hidden="true"></i>Сигнализирай</button>`;
+}
+
 function renderFileCard(material, user) {
   const type = fileTypeInfo(material.fileType);
   return `
@@ -71,12 +81,13 @@ function renderFileCard(material, user) {
 async function loadPageData(id, user, signal) {
   const material = await getMaterial(id, { signal });
   if (!material) return null;
-  const canRate = user && material.authorId !== user.id;
-  const [comments, myScore] = await Promise.all([
+  const isOther = user && material.authorId !== user.id; // may rate and report
+  const [comments, myScore, myReport] = await Promise.all([
     listComments(material.id, { signal }),
-    canRate ? getMyRating(material.id, user.id, { signal }) : Promise.resolve(0),
+    isOther ? getMyRating(material.id, user.id, { signal }) : Promise.resolve(0),
+    isOther ? getMyReport(material.id, user.id, { signal }).catch(() => null) : Promise.resolve(null),
   ]);
-  return { material, comments, myScore };
+  return { material, comments, myScore, myReport };
 }
 
 /** Public page: material details, download, comments and rating (/materials/:id). */
@@ -135,6 +146,9 @@ export async function mount(container, { params, user, signal, setTitle, navigat
   mountShareMenu(region('share'));
   nudgeShareOnce(region('share'), material.id, signal);
 
+  // Other logged-in users: report (copyright, inappropriate…) — RLS forbids reporting your own material
+  if (user && material.authorId !== user.id) region('report').innerHTML = renderReportButton(Boolean(data.myReport));
+
   // Author or admin: edit / delete (UX only — RLS enforces the same rule)
   if (user && (material.authorId === user.id || user.isAdmin)) {
     region('owner-actions').hidden = false;
@@ -166,8 +180,14 @@ export async function mount(container, { params, user, signal, setTitle, navigat
   mountComments(region('comments'), { materialId: material.id, comments: data.comments, user, signal, onChange: refreshSummary });
 
   content.addEventListener('click', async (event) => {
-    const button = event.target.closest('[data-action="download"], [data-action="delete-material"]');
+    const button = event.target.closest('[data-action="download"], [data-action="delete-material"], [data-action="report"]');
     if (!button) return;
+
+    if (button.dataset.action === 'report') {
+      const sent = await openReportDialog({ materialId: material.id, materialTitle: material.title, userId: user.id });
+      if (sent && !signal.aborted) region('report').innerHTML = renderReportButton(true);
+      return;
+    }
 
     if (button.dataset.action === 'download') {
       setButtonLoading(button, true);

@@ -15,9 +15,10 @@ Capstone project for the SoftUni course “Software Technologies with AI”, bui
 | Download files | — | ✅ | ✅ |
 | Upload materials; edit / delete **own** materials | — | ✅ | ✅ |
 | Comment (edit / delete **own** comments); rate others' materials 1–5 | — | ✅ | ✅ |
+| Report another user's material (copyright, inappropriate, spam…) | — | ✅ | ✅ |
 | Profile with avatar; personal dashboard | — | ✅ | ✅ |
 | Create / edit / delete courses | — | — | ✅ |
-| Delete **any** material or comment (moderation) | — | — | ✅ |
+| Delete **any** material or comment; review reports (moderation) | — | — | ✅ |
 | Grant / revoke the admin role (not their own) | — | — | ✅ |
 
 The browser only hides what a role cannot do; the real checks are **Row-Level Security policies** in the database.
@@ -25,7 +26,8 @@ The browser only hides what a role cannot do; the real checks are **Row-Level Se
 ## Features
 
 - Browse courses and their materials (search, sorting by date, rating, downloads, title) — no login needed.
-- Upload materials (PDF, Word, PowerPoint, Excel, TXT, ZIP up to 20 MB) to a course; edit or delete your own.
+- Upload materials (PDF, Word, PowerPoint, Excel, TXT, ZIP up to 20 MB) to a course; edit or delete your own. The uploader confirms they are the author or have the right to share the material.
+- Report a material („Сигнализирай“: copyright, inappropriate content, spam, wrong course); admins review the reports.
 - Download files (logged-in users), with a download counter.
 - Comment (add, edit, delete your own) and rate materials with 1–5 stars (not your own).
 - Profile with avatar upload and name editing; personal dashboard with statistics.
@@ -66,7 +68,7 @@ The browser only hides what a role cannot do; the real checks are **Row-Level Se
 - **Users:** list with email, role and activity, search and role filter; grant or revoke the admin role (with confirmation).
   An admin cannot change their own role, so at least one admin always remains.
 - **Courses:** create, edit and delete. Deleting a course removes its materials, comments and ratings (DB cascade) and their files in Storage.
-- **Moderation:** the latest 20 materials and comments site-wide, each deletable.
+- **Moderation:** open reports (delete the reported material or dismiss the report), plus the latest 20 materials and comments site-wide, each deletable.
 
 Security is enforced in the database, not in the browser:
 - `admin_list_users()` and `admin_get_stats()` are `SECURITY DEFINER` functions that check `public.is_admin()` first. They return only the needed fields (emails come from `auth.users`, which clients cannot read).
@@ -109,6 +111,8 @@ erDiagram
     COURSES ||--o{ MATERIALS : contains
     MATERIALS ||--o{ COMMENTS : has
     MATERIALS ||--o{ RATINGS : has
+    MATERIALS ||--o{ REPORTS : "is reported in"
+    PROFILES ||--o{ REPORTS : "reports / resolves"
 
     AUTH_USERS {
         uuid id PK
@@ -164,11 +168,23 @@ erDiagram
         timestamptz created_at
         timestamptz updated_at
     }
+    REPORTS {
+        uuid id PK
+        uuid material_id FK
+        uuid reporter_id FK
+        text reason "copyright | inappropriate | spam | wrong_course | other"
+        text details
+        text status "open | resolved | dismissed"
+        timestamptz created_at
+        timestamptz resolved_at
+        uuid resolved_by FK "profiles, set null"
+    }
 ```
 
 - **`profiles`** is 1:1 with `auth.users` and is created by the `on_auth_user_created` trigger together with a default `user` row in **`user_roles`**. Roles never come from sign-up metadata.
 - **`materials`**, **`comments`** and **`ratings`** are deleted in cascade with their course, material or author. Storage files are removed by the app (cascades do not delete Storage objects).
 - **`ratings`** uses a composite primary key `(material_id, user_id)`, so each user rates a material at most once. An RLS policy blocks rating your own material.
+- **`reports`** — one report per user per material (`unique (material_id, reporter_id)`). Users can report only other users' materials and see only their own reports; only admins see all and change the status, and a trigger records who closed the report and when.
 - **`material_stats`** (view, `security_invoker`) aggregates the average rating, ratings count and comments count per material.
 - **Indexes** on every foreign key (`course_id`, `author_id`, `material_id`, `user_id`, `created_by`), on `materials.created_at` for "latest" lists and on `user_roles.role`. Check constraints limit text lengths and the 1–5 score.
 - **RLS** is enabled on every table; `public.is_admin()` is used by admin policies. Clients can update only allowed columns (column-level grants), e.g. never `author_id` or `downloads_count`.
@@ -194,6 +210,7 @@ npx supabase migration list --remote       # check that local and remote history
 | `download_counter_rpc` | safe download counter increment |
 | `ratings_no_self_rating` | users cannot rate their own materials |
 | `admin_users_rpc` | admin-only user list and site statistics |
+| `material_reports` | `reports` table, RLS, column grants and resolution trigger |
 
 How the parts talk to Supabase:
 - **Frontend:** `@supabase/supabase-js` (REST API) with the public publishable key; access is limited by RLS.

@@ -41,6 +41,7 @@ function formRules({ fileRequired }) {
       const file = form.elements.file.files[0] ?? null;
       return file || fileRequired ? validateMaterialFile(file) : '';
     },
+    rights: (form) => (form.elements.rights.checked ? '' : 'Потвърди, че имаш право да споделиш материала.'),
   };
 }
 
