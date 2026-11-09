@@ -11,12 +11,13 @@ Capstone project for the SoftUni course “Software Technologies with AI”, bui
 | Action | Guest | User | Admin |
 |---|:-:|:-:|:-:|
 | Browse courses, materials, comments and ratings; share links | ✅ | ✅ | ✅ |
+| Search materials across all courses | ✅ | ✅ | ✅ |
 | Register, log in, log out | ✅ | — | — |
 | Download files | — | ✅ | ✅ |
 | Upload materials; edit / delete **own** materials | — | ✅ | ✅ |
 | Comment (edit / delete **own** comments); rate others' materials 1–5 | — | ✅ | ✅ |
 | Report another user's material (copyright, inappropriate, spam…) | — | ✅ | ✅ |
-| Profile with avatar; personal dashboard | — | ✅ | ✅ |
+| Profile with avatar; personal dashboard; save materials („Запази“, private list) | — | ✅ | ✅ |
 | Create / edit / delete courses | — | — | ✅ |
 | Delete **any** material or comment; review reports (moderation) | — | — | ✅ |
 | Grant / revoke the admin role (not their own) | — | — | ✅ |
@@ -26,11 +27,12 @@ The browser only hides what a role cannot do; the real checks are **Row-Level Se
 ## Features
 
 - Browse courses and their materials (search, sorting by date, rating, downloads, title) — no login needed.
+- Global search across all courses (`/search?q=`): every word must appear in the title or description; partial words and Cyrillic work (Postgres `pg_trgm` indexes). The query stays in the URL, so a search can be shared.
 - Upload materials (PDF, Word, PowerPoint, Excel, TXT, ZIP up to 20 MB) to a course; edit or delete your own. The uploader confirms they are the author or have the right to share the material.
 - Report a material („Сигнализирай“: copyright, inappropriate content, spam, wrong course); admins review the reports.
 - Download files (logged-in users), with a download counter. PDFs can also be read in the browser first („Преглед“, rendered with pdf.js — works the same on desktop, Android and iOS; not counted as a download).
 - Comment (add, edit, delete your own) and rate materials with 1–5 stars (not your own).
-- Profile with avatar upload and name editing; personal dashboard with statistics.
+- Profile with avatar upload and name editing; personal dashboard with statistics, my latest materials and my saved materials („Запази“ on a material page; the list is private).
 - Share a material or course: native share sheet on phones, copy link (also for Discord), QR code (with PNG download), Facebook, X, LinkedIn, Reddit, Telegram, WhatsApp, Viber and e-mail. Shared links show a rich preview (title, description, image). Guests who open a shared link can browse it; downloading, commenting and rating still require login, and after login or registration they return to the same material.
 - Admins: manage courses, moderate any material or comment, assign roles.
 
@@ -57,6 +59,7 @@ The browser only hides what a role cannot do; the real checks are **Row-Level Se
 | `/login`, `/register` | Login / registration | guests |
 | `/dashboard` | User dashboard | users |
 | `/courses`, `/courses/:id` | Courses and their materials | everyone |
+| `/search?q=` | Search materials in all courses | everyone |
 | `/materials/add`, `/materials/:id/edit` | Upload / edit material | users |
 | `/materials/:id` | Material details | everyone |
 | `/profile` | My profile | users |
@@ -64,7 +67,8 @@ The browser only hides what a role cannot do; the real checks are **Row-Level Se
 
 ### Admin panel
 
-- **Overview:** totals for users, admins, courses, materials, comments and downloads.
+- **Overview:** totals for users, admins, courses, materials, comments and downloads. When there are open reports, a notice
+  above the tabs and a counter on the "Модерация" tab show how many wait for review.
 - **Users:** list with email, role and activity, search and role filter; grant or revoke the admin role (with confirmation).
   An admin cannot change their own role, so at least one admin always remains.
 - **Courses:** create, edit and delete. Deleting a course removes its materials, comments and ratings (DB cascade) and their files in Storage.
@@ -83,6 +87,32 @@ npm install
 cp .env.example .env   # fill in VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY
 npm run dev
 ```
+
+### Run it with your own Supabase backend
+
+The repository contains the whole backend as code, so a new Supabase project can be set up from scratch:
+
+1. Create a free project at [supabase.com](https://supabase.com) and note its **project ref** (from the URL).
+2. Link the repository and apply all migrations (tables, RLS policies, functions, Storage buckets and their policies):
+   ```bash
+   npx supabase login
+   npx supabase link --project-ref <your-project-ref>
+   npx supabase db push --remote --dry-run   # preview
+   npx supabase db push --remote             # apply
+   ```
+3. Fill in `.env` with the project URL and the **publishable** key (Project Settings → API Keys) and run `npm run dev`.
+4. Auth settings (Authentication → Sign In / Providers and URL Configuration): turn e-mail confirmation on or off, and add
+   `http://localhost:5173/**` (and your live URL) to the redirect URLs.
+5. Optional demo data: copy `.env.server.example` to `.env.server.local` (secret key, server-side only), then
+   `npm run seed:dry-run` → `npm run seed`. The seed creates the demo accounts listed below.
+6. Make the first admin. Roles cannot be set from the browser, so run this once in the dashboard SQL Editor
+   (a data change, not a schema change):
+   ```sql
+   update public.user_roles set role = 'admin'
+   where user_id = (select id from auth.users where email = 'admin@studyshare.bg');
+   ```
+   (or use any other registered e-mail). After that, admins grant the role to others in the admin panel.
+   On a public deployment, change the demo passwords first.
 
 ## Deployment (Netlify)
 
@@ -113,6 +143,8 @@ erDiagram
     MATERIALS ||--o{ RATINGS : has
     MATERIALS ||--o{ REPORTS : "is reported in"
     PROFILES ||--o{ REPORTS : "reports / resolves"
+    PROFILES ||--o{ FAVORITES : saves
+    MATERIALS ||--o{ FAVORITES : "is saved in"
 
     AUTH_USERS {
         uuid id PK
@@ -179,14 +211,20 @@ erDiagram
         timestamptz resolved_at
         uuid resolved_by FK "profiles, set null"
     }
+    FAVORITES {
+        uuid user_id PK, FK
+        uuid material_id PK, FK
+        timestamptz created_at
+    }
 ```
 
 - **`profiles`** is 1:1 with `auth.users` and is created by the `on_auth_user_created` trigger together with a default `user` row in **`user_roles`**. Roles never come from sign-up metadata.
 - **`materials`**, **`comments`** and **`ratings`** are deleted in cascade with their course, material or author. Storage files are removed by the app (cascades do not delete Storage objects).
 - **`ratings`** uses a composite primary key `(material_id, user_id)`, so each user rates a material at most once. An RLS policy blocks rating your own material.
 - **`reports`** — one report per user per material (`unique (material_id, reporter_id)`). Users can report only other users' materials and see only their own reports; only admins see all and change the status, and a trigger records who closed the report and when.
+- **`favorites`** — the "Запази" list, composite primary key `(user_id, material_id)`. It is private: users see, add and remove only their own rows (not even admins read them through the API); no updates.
 - **`material_stats`** (view, `security_invoker`) aggregates the average rating, ratings count and comments count per material.
-- **Indexes** on every foreign key (`course_id`, `author_id`, `material_id`, `user_id`, `created_by`), on `materials.created_at` for "latest" lists and on `user_roles.role`. Check constraints limit text lengths and the 1–5 score.
+- **Indexes** on every foreign key (`course_id`, `author_id`, `material_id`, `user_id`, `created_by`), on `materials.created_at` for "latest" lists and on `user_roles.role`. Trigram GIN indexes (`pg_trgm`) on `materials.title` and `materials.description` serve the global search (`ILIKE '%word%'`). Check constraints limit text lengths and the 1–5 score.
 - **RLS** is enabled on every table; `public.is_admin()` is used by admin policies. Clients can update only allowed columns (column-level grants), e.g. never `author_id` or `downloads_count`.
 
 ## Database workflow
@@ -211,6 +249,8 @@ npx supabase migration list --remote       # check that local and remote history
 | `ratings_no_self_rating` | users cannot rate their own materials |
 | `admin_users_rpc` | admin-only user list and site statistics |
 | `material_reports` | `reports` table, RLS, column grants and resolution trigger |
+| `favorites` | `favorites` table ("Запази"), private RLS, column grants |
+| `material_search` | `pg_trgm` extension and trigram indexes for the global search |
 
 How the parts talk to Supabase:
 - **Frontend:** `@supabase/supabase-js` (REST API) with the public publishable key; access is limited by RLS.
@@ -232,6 +272,9 @@ npm run seed:reset                          # deletes the demo materials (files,
 
 # then align account and course dates with the materials (data only, not a migration)
 npx supabase db query --remote -f scripts/sql/backdate-demo-accounts.sql
+
+# demo descriptions changed in seed-data.mjs? update the existing rows in place (ids, links and dates are kept)
+npx supabase db query --remote -f scripts/sql/update-demo-descriptions.sql
 ```
 
 `seed:reset` touches only materials created by the seed (Storage path `<author>/seed-<key>.<ext>`), never content uploaded through the app.
@@ -244,7 +287,7 @@ npx supabase db query --remote -f scripts/sql/backdate-demo-accounts.sql
 |---|---|---|
 | Admin | `admin@studyshare.bg` | `********` (provided in the project submission) |
 | User | `demo@studyshare.bg` | `demo123` |
-| User | `maria@studyshare.bg`, `peter@studyshare.bg`, `elena@studyshare.bg` | `pass123` |
+| Users | `maria@studyshare.bg`, `peter@studyshare.bg`, `elena@studyshare.bg` | `pass123` |
 
 **You can also register your own test account.** E-mail confirmation is **intentionally disabled** for this student project, so reviewers can sign up with any e-mail address (no message is sent) and are logged in immediately. Every new account gets the `user` role from a database trigger; roles never come from the sign-up data, so nobody can register as an admin.
 
@@ -271,7 +314,7 @@ For real use the following would be turned on in Supabase Auth: e-mail confirmat
 ├── scripts/               # server-side Node.js scripts
 │   ├── seed.mjs, seed-data.mjs   # demo users, courses, materials, comments, ratings
 │   ├── lib/               # dependency-free PDF / DOCX / PPTX / XLSX / ZIP generators, demo dates
-│   └── sql/               # one-off data scripts (align demo account dates)
+│   └── sql/               # one-off data scripts (demo account dates, demo descriptions)
 ├── netlify.toml           # build settings, [deploy] rule, cache headers
 └── vite.config.js
 ```
