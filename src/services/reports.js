@@ -32,6 +32,16 @@ export async function createReport({ materialId, userId, reason, details }) {
   if (error) throwFriendly(error, 'Сигналът не можа да бъде изпратен. Опитай отново.');
 }
 
+/** Admin: number of open reports (count only, no rows are transferred). */
+export async function countOpenReports({ signal } = {}) {
+  const { count, error } = await withSignal(
+    supabase.from('reports').select('id', { count: 'exact', head: true }).eq('status', 'open'),
+    signal,
+  );
+  if (error) throwFriendly(error, 'Броят на сигналите не можа да бъде зареден.');
+  return count ?? 0;
+}
+
 /** Admin: open reports, newest first, with material and reporter. */
 export async function listOpenReports({ signal } = {}) {
   const { data, error } = await withSignal(

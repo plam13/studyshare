@@ -2,7 +2,8 @@ import html from './admin.html?raw';
 import './admin.css';
 import { getAdminStats } from '../../services/admin.js';
 import { renderError, renderLoading } from '../../components/page-state/page-state.js';
-import { formatNumber } from '../../utils/format.js';
+import { countOpenReports } from '../../services/reports.js';
+import { formatNumber, plural } from '../../utils/format.js';
 import { mountUsers } from './users-section.js';
 import { mountCourses } from './courses-section.js';
 import { mountModeration } from './moderation-section.js';
@@ -59,9 +60,33 @@ export async function mount(container, { user, query, signal, setTitle }) {
       if (!signal.aborted) statsBox.innerHTML = renderError(error.message);
     }
   };
+  // Open reports: a count on the "Модерация" tab and a notice above the tabs (the active tab is never switched)
+  const badge = container.querySelector('[data-field="reports-badge"]');
+  const attention = container.querySelector('[data-region="attention"]');
+  const loadReportsCount = async () => {
+    try {
+      const count = await countOpenReports({ signal });
+      if (signal.aborted) return;
+      const label = plural(count, 'отворен сигнал', 'отворени сигнала');
+      badge.innerHTML = `${formatNumber(count)}<span class="visually-hidden"> ${label.split(' ').slice(1).join(' ')}</span>`;
+      badge.hidden = count === 0;
+      attention.querySelector('[data-field="attention-text"]').textContent = label;
+      attention.querySelector('[data-field="attention-verb"]').textContent = count === 1 ? 'чака преглед.' : 'чакат преглед.';
+      attention.querySelector('[data-field="attention-link"]').hidden = tab === 'moderation';
+      attention.hidden = count === 0;
+    } catch {
+      /* the count is a hint only — the moderation tab still lists the reports */
+    }
+  };
+
   statsBox.innerHTML = renderLoading('Зареждане на статистиката…');
   loadStats();
+  loadReportsCount();
 
-  // Sections call onChange after a mutation so the totals stay current.
-  await SECTIONS[tab](container.querySelector('#admin-section'), { user, signal, onChange: loadStats });
+  // Sections call onChange after a mutation so the totals and the report count stay current.
+  const onChange = () => {
+    loadStats();
+    loadReportsCount();
+  };
+  await SECTIONS[tab](container.querySelector('#admin-section'), { user, signal, onChange });
 }

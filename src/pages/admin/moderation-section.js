@@ -144,7 +144,7 @@ export async function mountModeration(box, { signal, onChange }) {
       }
       if (signal.aborted) return;
       await Promise.all([loadReports(), isDelete ? loadMaterials() : Promise.resolve(), isDelete ? loadComments() : Promise.resolve()]);
-      if (isDelete) onChange();
+      onChange(); // totals and the open-reports count
     } catch (error) {
       showError(error.message);
       setButtonLoading(button, false);

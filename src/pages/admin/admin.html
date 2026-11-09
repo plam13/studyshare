@@ -8,6 +8,13 @@
 
   <div id="admin-stats" class="mb-4"></div>
 
+  <!-- Shown only when there are open reports (admin.js) -->
+  <div class="alert alert-warning d-flex flex-wrap align-items-center gap-2 mb-4" role="status" data-region="attention" hidden>
+    <i class="bi bi-flag-fill" aria-hidden="true"></i>
+    <span class="me-auto"><strong data-field="attention-text"></strong> <span data-field="attention-verb"></span></span>
+    <a class="btn btn-sm btn-warning" href="/admin?tab=moderation" data-field="attention-link">Към модерацията <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+  </div>
+
   <nav aria-label="Раздели на админ панела">
     <ul class="nav nav-pills flex-wrap mb-4">
       <li class="nav-item">
@@ -17,7 +24,7 @@
         <a class="nav-link" href="/admin?tab=courses" data-tab="courses"><i class="bi bi-journal-bookmark me-1" aria-hidden="true"></i>Курсове</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/admin?tab=moderation" data-tab="moderation"><i class="bi bi-flag me-1" aria-hidden="true"></i>Модерация</a>
+        <a class="nav-link" href="/admin?tab=moderation" data-tab="moderation"><i class="bi bi-flag me-1" aria-hidden="true"></i>Модерация<span class="badge rounded-pill text-bg-danger ms-2" data-field="reports-badge" hidden></span></a>
       </li>
     </ul>
   </nav>
