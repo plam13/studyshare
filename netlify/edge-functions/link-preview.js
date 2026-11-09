@@ -82,6 +82,10 @@ export default async (request, context) => {
   for (const [property, value] of Object.entries(tags)) {
     html = setContent(html, new RegExp(`(<meta property="${property}" content=")[^"]*(")`), value);
   }
+  const twitter = { 'twitter:title': tags['og:title'], 'twitter:description': tags['og:description'], 'twitter:image': tags['og:image'] };
+  for (const [name, value] of Object.entries(twitter)) {
+    html = setContent(html, new RegExp(`(<meta name="${name}" content=")[^"]*(")`), value);
+  }
 
   const headers = new Headers(response.headers);
   headers.delete('content-length');
