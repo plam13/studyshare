@@ -2,6 +2,7 @@ import html from './dashboard.html?raw';
 import './dashboard.css';
 import { getMyDashboard } from '../../services/dashboard.js';
 import { listUserMaterials } from '../../services/materials.js';
+import { listFavoriteMaterials } from '../../services/favorites.js';
 import { renderMaterialList } from '../../components/material-item/material-item.js';
 import { renderEmpty, renderError, renderLoading } from '../../components/page-state/page-state.js';
 import { formatNumber, formatRating, plural } from '../../utils/format.js';
@@ -38,21 +39,36 @@ function renderStats(stats) {
   return `<div class="row g-4">${cards.map(statCard).join('')}</div>`;
 }
 
-/** Home page for logged-in users: personal statistics + latest own materials. */
+/** Home page for logged-in users: personal statistics, latest own materials and saved materials. */
 export async function mount(container, { user, signal }) {
   container.innerHTML = html;
   container.querySelector('[data-field="name"]').textContent = user.fullName || user.email;
 
   const statsBox = container.querySelector('#dashboard-stats');
   const materialsBox = container.querySelector('#dashboard-materials');
+  const favoritesBox = container.querySelector('#dashboard-favorites');
   statsBox.innerHTML = renderLoading('Зареждане на статистиката…');
   materialsBox.innerHTML = renderLoading('Зареждане на материалите…');
+  favoritesBox.innerHTML = renderLoading('Зареждане на запазените…');
 
-  const [statsResult, materialsResult] = await Promise.allSettled([
+  const [statsResult, materialsResult, favoritesResult] = await Promise.allSettled([
     getMyDashboard({ signal }),
     listUserMaterials(user.id, { limit: 5, signal }),
+    listFavoriteMaterials(user.id, { signal }),
   ]);
   if (signal.aborted) return;
+
+  if (favoritesResult.status === 'rejected') {
+    favoritesBox.innerHTML = renderError(favoritesResult.reason.message);
+  } else if (!favoritesResult.value.length) {
+    favoritesBox.innerHTML = renderEmpty({
+      icon: 'bi-bookmark',
+      title: 'Още нямаш запазени материали.',
+      text: 'Натисни „Запази“ на страницата на материал, за да го намериш бързо тук.',
+    });
+  } else {
+    favoritesBox.innerHTML = renderMaterialList(favoritesResult.value, { showCourse: true });
+  }
 
   statsBox.innerHTML = statsResult.status === 'fulfilled' ? renderStats(statsResult.value) : renderError(statsResult.reason.message);
 

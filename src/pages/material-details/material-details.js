@@ -4,6 +4,7 @@ import { deleteMaterial, getMaterial, incrementDownloads } from '../../services/
 import { listComments } from '../../services/comments.js';
 import { getMyRating } from '../../services/ratings.js';
 import { getMyReport } from '../../services/reports.js';
+import { addFavorite, isFavorite, removeFavorite } from '../../services/favorites.js';
 import { openReportDialog } from '../../components/report-dialog/report-dialog.js';
 import { openPdfPreview } from '../../components/pdf-preview/pdf-preview.js';
 import { downloadMaterialFile } from '../../services/storage.js';
@@ -54,6 +55,14 @@ function renderDownloadAction(user, material) {
     ${preview}`;
 }
 
+function renderFavoriteButton(saved) {
+  return saved
+    ? `<button type="button" class="btn btn-warning btn-sm" data-action="favorite" aria-pressed="true" title="Премахни от запазените">
+         <i class="bi bi-bookmark-fill me-1" aria-hidden="true"></i>Запазено</button>`
+    : `<button type="button" class="btn btn-outline-primary btn-sm" data-action="favorite" aria-pressed="false" title="Запази в таблото си">
+         <i class="bi bi-bookmark me-1" aria-hidden="true"></i>Запази</button>`;
+}
+
 function renderReportButton(reported) {
   return reported
     ? `<button type="button" class="btn btn-outline-secondary btn-sm" disabled title="Администраторите ще прегледат сигнала">
@@ -90,12 +99,13 @@ async function loadPageData(id, user, signal) {
   const material = await getMaterial(id, { signal });
   if (!material) return null;
   const isOther = user && material.authorId !== user.id; // may rate and report
-  const [comments, myScore, myReport] = await Promise.all([
+  const [comments, myScore, myReport, saved] = await Promise.all([
     listComments(material.id, { signal }),
     isOther ? getMyRating(material.id, user.id, { signal }) : Promise.resolve(0),
     isOther ? getMyReport(material.id, user.id, { signal }).catch(() => null) : Promise.resolve(null),
+    user ? isFavorite(material.id, user.id, { signal }).catch(() => null) : Promise.resolve(null), // null → no button
   ]);
-  return { material, comments, myScore, myReport };
+  return { material, comments, myScore, myReport, saved };
 }
 
 /** Public page: material details, download, comments and rating (/materials/:id). */
@@ -154,6 +164,10 @@ export async function mount(container, { params, user, signal, setTitle, navigat
   mountShareMenu(region('share'));
   nudgeShareOnce(region('share'), material.id, signal);
 
+  // Logged-in users: save to the dashboard (private list, RLS)
+  let saved = data.saved;
+  if (saved !== null) region('favorite').innerHTML = renderFavoriteButton(saved);
+
   // Other logged-in users: report (copyright, inappropriate…) — RLS forbids reporting your own material
   if (user && material.authorId !== user.id) region('report').innerHTML = renderReportButton(Boolean(data.myReport));
 
@@ -188,8 +202,28 @@ export async function mount(container, { params, user, signal, setTitle, navigat
   mountComments(region('comments'), { materialId: material.id, comments: data.comments, user, signal, onChange: refreshSummary });
 
   content.addEventListener('click', async (event) => {
-    const button = event.target.closest('[data-action="download"], [data-action="delete-material"], [data-action="report"], [data-action="preview"]');
+    const button = event.target.closest(
+      '[data-action="download"], [data-action="delete-material"], [data-action="report"], [data-action="preview"], [data-action="favorite"]',
+    );
     if (!button) return;
+
+    if (button.dataset.action === 'favorite') {
+      setButtonLoading(button, true);
+      try {
+        if (saved) await removeFavorite(material.id, user.id);
+        else await addFavorite(material.id, user.id);
+        saved = !saved;
+        showSuccess(saved ? 'Материалът е запазен в таблото ти.' : 'Материалът е премахнат от запазените.');
+        if (!signal.aborted) {
+          region('favorite').innerHTML = renderFavoriteButton(saved);
+          region('favorite').querySelector('button').focus();
+        }
+      } catch (error) {
+        showError(error.message);
+        setButtonLoading(button, false);
+      }
+      return;
+    }
 
     if (button.dataset.action === 'preview') {
       // Preview reads the file but is not counted as a download

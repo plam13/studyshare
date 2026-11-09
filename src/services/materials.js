@@ -80,6 +80,52 @@ export async function getMostDownloadedMaterial({ signal } = {}) {
   return data;
 }
 
+/** Materials with the given IDs, in the same order as `ids` (missing ones are skipped). */
+export async function listMaterialsByIds(ids, { signal } = {}) {
+  if (!ids.length) return [];
+  const { data, error } = await withSignal(supabase.from('materials').select(MATERIAL_FIELDS).in('id', ids), signal);
+  if (error) throwFriendly(error, 'Материалите не можаха да бъдат заредени.');
+  const materials = await withStats(data, signal);
+  const byId = new Map(materials.map((material) => [material.id, material]));
+  return ids.map((id) => byId.get(id)).filter(Boolean);
+}
+
+export const SEARCH_MIN_LENGTH = 2;
+const SEARCH_LIMIT = 50;
+
+/**
+ * Splits a search phrase into safe words: letters, digits and a few signs used in tech names (C#, C++, .NET, async-await).
+ * Everything else (commas, brackets, quotes, % and _) would break the PostgREST filter or act as a LIKE wildcard.
+ */
+export function toSearchWords(text) {
+  return text
+    .replace(/[^\p{L}\p{N}#+.\-\s]/gu, ' ')
+    .split(/\s+/)
+    .filter((word) => word.length >= SEARCH_MIN_LENGTH)
+    .slice(0, 5);
+}
+
+/**
+ * Global search across all courses: every word must appear in the title or the description (case-insensitive,
+ * partial words). Served by the pg_trgm GIN indexes. Results are ordered by downloads.
+ */
+export async function searchMaterials(text, { signal } = {}) {
+  const words = toSearchWords(text);
+  if (!words.length) return [];
+  const perWord = words.map((word) => `or(title.ilike.%${word}%,description.ilike.%${word}%)`);
+  const { data, error } = await withSignal(
+    supabase
+      .from('materials')
+      .select(MATERIAL_FIELDS)
+      .or(`and(${perWord.join(',')})`)
+      .order('downloads_count', { ascending: false })
+      .limit(SEARCH_LIMIT),
+    signal,
+  );
+  if (error) throwFriendly(error, 'Търсенето не успя. Опитай отново.');
+  return withStats(data, signal);
+}
+
 /** Materials uploaded by one user, newest first. */
 export async function listUserMaterials(userId, { limit, signal } = {}) {
   let query = supabase.from('materials').select(MATERIAL_FIELDS).eq('author_id', userId).order('created_at', { ascending: false });
