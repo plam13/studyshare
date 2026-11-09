@@ -28,7 +28,7 @@ The browser only hides what a role cannot do; the real checks are **Row-Level Se
 - Browse courses and their materials (search, sorting by date, rating, downloads, title) — no login needed.
 - Upload materials (PDF, Word, PowerPoint, Excel, TXT, ZIP up to 20 MB) to a course; edit or delete your own. The uploader confirms they are the author or have the right to share the material.
 - Report a material („Сигнализирай“: copyright, inappropriate content, spam, wrong course); admins review the reports.
-- Download files (logged-in users), with a download counter.
+- Download files (logged-in users), with a download counter. PDFs can also be read in the browser first („Преглед“, rendered with pdf.js — works the same on desktop, Android and iOS; not counted as a download).
 - Comment (add, edit, delete your own) and rate materials with 1–5 stars (not your own).
 - Profile with avatar upload and name editing; personal dashboard with statistics.
 - Share a material or course: native share sheet on phones, copy link (also for Discord), QR code (with PNG download), Facebook, X, LinkedIn, Reddit, Telegram, WhatsApp, Viber and e-mail. Shared links show a rich preview (title, description, image). Guests who open a shared link can browse it; downloading, commenting and rating still require login, and after login or registration they return to the same material.
