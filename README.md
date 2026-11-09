@@ -251,6 +251,7 @@ npx supabase db query --remote -f scripts/sql/backdate-demo-accounts.sql
 ```
 ├── index.html             # app shell (+ static Open Graph tags)
 ├── AGENTS.md              # Agent Instructions for AI dev agents (project context, architecture, rules)
+├── implementation-plan.md # stages of the AI-assisted implementation, status and remaining work
 ├── public/                # static assets: favicon, Netlify _redirects, robots.txt, og-image.png
 ├── src/
 │   ├── main.js            # entry: global CSS/JS, layout, auth init, router start
