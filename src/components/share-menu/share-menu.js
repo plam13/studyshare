@@ -133,7 +133,9 @@ export function mountShareMenu(root) {
     switch (action.dataset.share) {
       case 'native':
         try {
-          await navigator.share({ title, text: title, url });
+          // No `text`: some apps join text + title, which would repeat the title in the message.
+          // The OS draws the share sheet itself (Windows shows the link's domain there).
+          await navigator.share({ title, url });
         } catch {
           /* the user closed the share sheet */
         }
