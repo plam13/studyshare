@@ -157,9 +157,15 @@
     gap: 2.75rem;
   }
 
-  .ss-step { height: 100%; }
-  .ss-step:nth-child(odd) { transform: rotate(-1deg); }
-  .ss-step:nth-child(even) { transform: rotate(1deg); }
+  /* Tilted like the feature stickers above; straightens and lifts on hover (same as .ss-sticker) */
+  .ss-step {
+    height: 100%;
+    transform: rotate(var(--ss-tilt, 0deg));
+    transition: transform 0.15s ease;
+  }
+  .ss-step:nth-child(odd) { --ss-tilt: -1deg; }
+  .ss-step:nth-child(even) { --ss-tilt: 0.75deg; }
+  .ss-step:hover { transform: rotate(0deg) translateY(-2px); }
 
   .ss-step:not(:last-child)::after {
     content: '\F138'; /* bi-arrow-right */
@@ -172,4 +178,8 @@
     color: var(--ss-blue-dark);
     transform: translateY(-50%);
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ss-step:hover { transform: rotate(var(--ss-tilt, 0deg)); }
 }
