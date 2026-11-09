@@ -49,7 +49,7 @@ export function mount(container) {
         confirmBox.hidden = false;
         return;
       }
-      // Session created → the router redirects to /dashboard.
+      // Session created → the router redirects to the safe ?redirect= target (e.g. a shared material) or /dashboard.
       showSuccess(`Добре дошъл, ${values.fullName}! Профилът ти е създаден.`);
     } catch (error) {
       showError(error.message);

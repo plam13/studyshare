@@ -13,6 +13,7 @@ A web app for sharing study materials by course. Students upload lecture notes, 
 - Download files (logged-in users), with a download counter.
 - Comment (add, edit, delete your own) and rate materials with 1–5 stars (not your own).
 - Profile with avatar upload and name editing; personal dashboard with statistics.
+- Share a material or course: native share sheet on phones, copy link (also for Discord), QR code (with PNG download), Facebook, X, LinkedIn, Reddit, Telegram, WhatsApp, Viber and e-mail. Shared links show a rich preview (title, description, image). Guests who open a shared link can browse it; downloading, commenting and rating still require login, and after login or registration they return to the same material.
 - Admins: manage courses, moderate any material or comment, assign roles.
 
 ## Tech stack
@@ -27,6 +28,7 @@ A web app for sharing study materials by course. Students upload lecture notes, 
 - Single `index.html` shell + client-side router (`src/router.js`, History API) with clean URLs.
 - Each page is a separate folder in `src/pages/` (HTML fragment + CSS + JS), loaded on demand.
 - All data access goes through services in `src/services/`; authorization is enforced by Supabase RLS.
+- **Link previews:** social crawlers do not run JavaScript, so `netlify/edge-functions/link-preview.js` rewrites the Open Graph tags of `/materials/:id` and `/courses/:id` for crawler requests only (title and description are read from Supabase with the public key). Regular visitors are not affected; other pages use the static tags in `index.html` and `public/og-image.png`.
 
 ### Routes
 
@@ -69,6 +71,7 @@ npm run dev
 - Environment variables on Netlify: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` (public values only).
 - Supabase Auth → URL configuration: Site URL `https://studyshare-learn.netlify.app`, redirect URLs for the live site and `http://localhost:5173/**`.
 - Manual deploy with the Netlify CLI: `netlify deploy --build --prod`.
+- **Free-plan credits:** each production deploy costs 15 of 300 monthly credits, so Netlify builds only when the last commit message contains `[deploy]` (`ignore` rule in `netlify.toml`). Test first with a free draft deploy: `netlify deploy --build` (without `--prod`).
 
 ## Files and storage
 

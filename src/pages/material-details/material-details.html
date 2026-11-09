@@ -16,13 +16,16 @@
     <div class="col-lg-8">
       <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
         <h1 class="h3 ss-material-title mb-0" data-field="title"></h1>
-        <div class="d-flex gap-2" data-region="owner-actions" hidden>
-          <a class="btn btn-outline-primary btn-sm" data-field="edit-link" href="#">
-            <i class="bi bi-pencil-square me-1" aria-hidden="true"></i>Редактирай
-          </a>
-          <button type="button" class="btn btn-outline-danger btn-sm" data-action="delete-material">
-            <i class="bi bi-trash me-1" aria-hidden="true"></i>Изтрий
-          </button>
+        <div class="d-flex flex-wrap gap-2">
+          <div data-region="share"></div>
+          <div class="d-flex gap-2" data-region="owner-actions" hidden>
+            <a class="btn btn-outline-primary btn-sm" data-field="edit-link" href="#">
+              <i class="bi bi-pencil-square me-1" aria-hidden="true"></i>Редактирай
+            </a>
+            <button type="button" class="btn btn-outline-danger btn-sm" data-action="delete-material">
+              <i class="bi bi-trash me-1" aria-hidden="true"></i>Изтрий
+            </button>
+          </div>
         </div>
       </div>
       <div class="d-flex flex-wrap gap-3 small text-secondary mb-3" data-region="meta"></div>

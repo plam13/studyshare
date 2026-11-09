@@ -3,6 +3,7 @@ import './course-details.css';
 import { getCourse } from '../../services/courses.js';
 import { listCourseMaterials, sortMaterials } from '../../services/materials.js';
 import { renderMaterialList } from '../../components/material-item/material-item.js';
+import { absoluteUrl, mountShareMenu, renderShareMenu } from '../../components/share-menu/share-menu.js';
 import { renderEmpty, renderError, renderLoading, renderNotFound } from '../../components/page-state/page-state.js';
 import { escapeHtml } from '../../utils/dom.js';
 import { plural } from '../../utils/format.js';
@@ -19,7 +20,10 @@ function renderHeader(course) {
           <p class="mb-0">${escapeHtml(course.description)}</p>
         </div>
       </div>
-      <a class="btn btn-warning" href="${uploadHref}"><i class="bi bi-cloud-arrow-up me-1" aria-hidden="true"></i>Качи материал</a>
+      <div class="d-flex flex-wrap gap-2">
+        ${renderShareMenu({ url: absoluteUrl(`/courses/${encodeURIComponent(course.id)}`), title: `${course.title} — StudyShare`, buttonClass: 'btn-light' })}
+        <a class="btn btn-warning" href="${uploadHref}"><i class="bi bi-cloud-arrow-up me-1" aria-hidden="true"></i>Качи материал</a>
+      </div>
     </div>
 
     <div class="ss-toolbar card mb-3">
@@ -77,6 +81,7 @@ export async function mount(container, { params, signal, setTitle }) {
   setTitle(course.title);
   container.querySelector('[data-field="crumb"]').textContent = course.title;
   content.innerHTML = renderHeader(course);
+  mountShareMenu(content);
 
   const list = content.querySelector('#materials-list');
   const search = content.querySelector('#material-search');

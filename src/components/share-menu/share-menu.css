@@ -1,0 +1,39 @@
+/* Share dropdown and QR dialog */
+.ss-share-menu {
+  min-width: 14rem;
+  max-height: min(70vh, 32rem);
+  overflow-y: auto;
+}
+
+.ss-share-menu .dropdown-item {
+  display: flex;
+  align-items: center;
+}
+
+.ss-share-icon { width: 1.1em; text-align: center; }
+.ss-share-facebook { color: #1877f2; }
+.ss-share-x { color: var(--ss-ink); }
+.ss-share-linkedin { color: #0a66c2; }
+.ss-share-reddit { color: #ff4500; }
+.ss-share-telegram { color: #229ed9; }
+.ss-share-whatsapp { color: #25d366; }
+.ss-share-viber { color: #7360f2; }
+.ss-share-discord { color: #5865f2; }
+
+.ss-qr-box {
+  display: grid;
+  place-items: center;
+  width: min(100%, 240px);
+  aspect-ratio: 1;
+  margin-inline: auto;
+  padding: 0.5rem;
+  background: var(--ss-paper);
+  border: var(--ss-border);
+  border-radius: var(--ss-radius-sm);
+  box-shadow: var(--ss-shadow-sm);
+}
+
+.ss-qr-box svg {
+  width: 100%;
+  height: auto;
+}
