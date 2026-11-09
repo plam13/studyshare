@@ -39,6 +39,15 @@ if (projectRef !== SEED_EXPECTED_PROJECT_REF) {
   fail(`Refusing to run: SUPABASE_URL points to "${projectRef}", expected "${SEED_EXPECTED_PROJECT_REF}".`);
 }
 
+// The secret key bypasses RLS, so check the data rules the policies would normally enforce.
+const authorOf = new Map(MATERIALS.map((m) => [m.key, m.author]));
+for (const [materialKey, email] of [...COMMENTS, ...RATINGS]) {
+  if (!authorOf.has(materialKey)) fail(`Seed data refers to unknown material "${materialKey}".`);
+}
+for (const [materialKey, email] of RATINGS) {
+  if (authorOf.get(materialKey) === email) fail(`Seed data: ${email} rates their own material "${materialKey}".`);
+}
+
 const supabase = createClient(SUPABASE_URL, SUPABASE_SECRET_KEY, {
   auth: { persistSession: false, autoRefreshToken: false },
 });
