@@ -84,7 +84,7 @@ For every stage: **prompt** the AI agent with a small, clear task → **implemen
 - Small accents: one-time nudge of the share icon, highlight after a download or a 4–5 star rating.
 - Netlify free plan: production deploys only for commits marked `[deploy]`; checks on free draft deploys.
 
-### Stage 10 — Trust and usability · 09.11 · ✅ done (released with Stage 11)
+### Stage 10 — Trust and usability · 09.11 · ✅ done (released together with Stage 11)
 
 - Copyright confirmation on upload/edit.
 - "Сигнализирай" reports: new `reports` table with RLS, column grants and a resolution trigger;
@@ -95,7 +95,7 @@ For every stage: **prompt** the AI agent with a small, clear task → **implemen
   a list on phones) — the old full-width list left most of a wide screen empty. Each step is a link whose
   target depends on login (e.g. "Качи и сподели" → login and back for guests), with 🔒 badges for guests.
 
-### Stage 11 — Final features and release · 10.11 · ⏳ in progress
+### Stage 11 — Final features and release · 10.11 · ✅ done
 
 - [x] "Запази" / favorites: `favorites` table (migration + private RLS), save button on the material page,
   "Запазени материали" in the dashboard.
@@ -106,8 +106,8 @@ For every stage: **prompt** the AI agent with a small, clear task → **implemen
 - [x] README: how to run the project with your own Supabase backend.
 - [x] Polish: two-sentence demo descriptions (updated in place by a data script), tighter word spacing in the
   monospace headings, hero title alignment.
-- [ ] Final check: responsive screens, demo accounts, README.
-- [ ] One production deploy (`[deploy]`) before 16:00.
+- [x] Final check: responsive screens, demo accounts, README; RLS for favorites verified with real demo logins (10/10).
+- [x] One production deploy (`[deploy]`) before 16:00 — released on 10.11 together with Stage 10.
 
 ## After the exam (backlog)
 
