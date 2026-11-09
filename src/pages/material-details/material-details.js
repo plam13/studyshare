@@ -5,6 +5,7 @@ import { listComments } from '../../services/comments.js';
 import { getMyRating } from '../../services/ratings.js';
 import { getMyReport } from '../../services/reports.js';
 import { openReportDialog } from '../../components/report-dialog/report-dialog.js';
+import { openPdfPreview } from '../../components/pdf-preview/pdf-preview.js';
 import { downloadMaterialFile } from '../../services/storage.js';
 import { saveBlob } from '../../utils/download.js';
 import { renderFileBadge } from '../../components/material-item/material-item.js';
@@ -31,7 +32,7 @@ function renderMeta(material) {
     ${renderStars(material.avgRating, material.ratingsCount)}`;
 }
 
-function renderDownloadAction(user) {
+function renderDownloadAction(user, material) {
   if (!user) {
     const back = encodeURIComponent(window.location.pathname);
     return `
@@ -40,10 +41,17 @@ function renderDownloadAction(user) {
       </a>
       <p class="small text-secondary mt-2 mb-0 text-center">Изтеглянето е достъпно за регистрирани потребители.</p>`;
   }
+  // PDFs can be read in the browser first (pdf.js); other formats only download
+  const preview = material.fileType === 'application/pdf'
+    ? `<button type="button" class="btn btn-outline-primary w-100 mt-2" data-action="preview">
+         <i class="bi bi-eye me-1" aria-hidden="true"></i>Преглед в браузъра
+       </button>`
+    : '';
   return `
     <button type="button" class="btn btn-success w-100" data-action="download">
       <i class="bi bi-cloud-arrow-down me-1" aria-hidden="true"></i>Изтегли файла
-    </button>`;
+    </button>
+    ${preview}`;
 }
 
 function renderReportButton(reported) {
@@ -74,7 +82,7 @@ function renderFileCard(material, user) {
       <dt class="col-6">Коментари</dt>
       <dd class="col-6">${formatNumber(material.commentsCount)}</dd>
     </dl>
-    ${renderDownloadAction(user)}`;
+    ${renderDownloadAction(user, material)}`;
 }
 
 /** Loads the material plus everything the page needs; null when the material does not exist. */
@@ -180,8 +188,14 @@ export async function mount(container, { params, user, signal, setTitle, navigat
   mountComments(region('comments'), { materialId: material.id, comments: data.comments, user, signal, onChange: refreshSummary });
 
   content.addEventListener('click', async (event) => {
-    const button = event.target.closest('[data-action="download"], [data-action="delete-material"], [data-action="report"]');
+    const button = event.target.closest('[data-action="download"], [data-action="delete-material"], [data-action="report"], [data-action="preview"]');
     if (!button) return;
+
+    if (button.dataset.action === 'preview') {
+      // Preview reads the file but is not counted as a download
+      openPdfPreview({ title: material.title, loadBlob: () => downloadMaterialFile(material.filePath) });
+      return;
+    }
 
     if (button.dataset.action === 'report') {
       const sent = await openReportDialog({ materialId: material.id, materialTitle: material.title, userId: user.id });
