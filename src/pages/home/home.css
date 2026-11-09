@@ -139,6 +139,14 @@
   outline: none; /* the whole card gets the outline instead */
 }
 
+.ss-step-hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--ss-muted);
+  overflow-wrap: anywhere;
+}
+
 /* Badges: light at rest (transparent, thin pale border), filled when the card is hovered or focused.
    The text keeps a dark tone at rest for readable contrast (≥ 4.5:1 on white). */
 .ss-step-badge {

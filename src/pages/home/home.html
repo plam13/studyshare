@@ -84,8 +84,10 @@
     <li class="ss-step ss-tone-yellow">
       <span class="ss-step-icon" aria-hidden="true"><i class="bi bi-cloud-arrow-down"></i></span>
       <div>
-        <h3 class="ss-step-title"><a class="stretched-link" href="#latest-title">Изтегли и оцени</a></h3>
+        <!-- Leads to the most downloaded material (set in home.js); falls back to "Последно качени" above -->
+        <h3 class="ss-step-title"><a class="stretched-link" href="#latest-title" data-field="top-material-link">Изтегли и оцени</a></h3>
         <p class="ss-step-text">Прегледай, изтегли, дай звезди и остави коментар.</p>
+        <p class="ss-step-hint" data-field="top-material-hint" hidden></p>
         <span class="ss-step-badge ss-step-badge-lock" data-show="guest"><i class="bi bi-lock me-1" aria-hidden="true"></i>Свалянето изисква вход</span>
       </div>
     </li>

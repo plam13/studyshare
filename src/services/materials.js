@@ -70,6 +70,16 @@ export async function listLatestMaterials(limit = 6, { signal } = {}) {
   return withStats(data, signal);
 }
 
+/** The most downloaded material ({ id, title }) or null — used as an example on the home page. */
+export async function getMostDownloadedMaterial({ signal } = {}) {
+  const { data, error } = await withSignal(
+    supabase.from('materials').select('id, title').order('downloads_count', { ascending: false }).limit(1).maybeSingle(),
+    signal,
+  );
+  if (error) throwFriendly(error, 'Материалът не можа да бъде зареден.');
+  return data;
+}
+
 /** Materials uploaded by one user, newest first. */
 export async function listUserMaterials(userId, { limit, signal } = {}) {
   let query = supabase.from('materials').select(MATERIAL_FIELDS).eq('author_id', userId).order('created_at', { ascending: false });
