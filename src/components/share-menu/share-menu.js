@@ -71,24 +71,29 @@ async function copyText(text) {
 
 const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+const NUDGED_KEY = 'ss-share-nudged';
+
 /**
- * One gentle "nudge" of the share icon, 1.5 s after the page opens — once per browser session,
- * never with reduced motion. A constant pulse would compete with the main action (download).
+ * One gentle "nudge" of the share icon, 1 s after the page opens — once per item (e.g. material id)
+ * in the browser session, so going Back to an already seen page does not repeat it.
+ * Never with reduced motion. A constant pulse would compete with the main action (download).
  */
-export function nudgeShareOnce(root, signal) {
+export function nudgeShareOnce(root, itemId, signal) {
   if (prefersReducedMotion()) return;
   try {
-    if (sessionStorage.getItem('ss-share-nudged')) return;
-    sessionStorage.setItem('ss-share-nudged', '1');
+    const stored = JSON.parse(sessionStorage.getItem(NUDGED_KEY) ?? '[]');
+    const seen = Array.isArray(stored) ? stored : []; // ignore values from older versions
+    if (seen.includes(itemId)) return;
+    sessionStorage.setItem(NUDGED_KEY, JSON.stringify([...seen, itemId].slice(-200)));
   } catch {
-    return; // storage blocked → skip the hint rather than repeat it on every page
+    /* storage blocked → still nudge (it is harmless), just without remembering */
   }
   const timer = setTimeout(() => {
     const menu = root.querySelector('.ss-share');
     if (!menu || signal?.aborted) return;
     menu.classList.add('is-nudging');
     menu.addEventListener('animationend', () => menu.classList.remove('is-nudging'), { once: true });
-  }, 1500);
+  }, 1000);
   signal?.addEventListener('abort', () => clearTimeout(timer), { once: true });
 }
 

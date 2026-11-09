@@ -133,7 +133,7 @@ export async function mount(container, { params, user, signal, setTitle, navigat
     title: `${material.title} – StudyShare`,
   });
   mountShareMenu(region('share'));
-  nudgeShareOnce(region('share'), signal);
+  nudgeShareOnce(region('share'), material.id, signal);
 
   // Author or admin: edit / delete (UX only — RLS enforces the same rule)
   if (user && (material.authorId === user.id || user.isAdmin)) {
