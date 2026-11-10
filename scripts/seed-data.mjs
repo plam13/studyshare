@@ -128,7 +128,7 @@ export const COMMENTS = [
   ['web-flex', 'maria@studyshare.bg', 'Сравнителната таблица е много удобна.'],
   ['ai-prompts', 'demo@studyshare.bg', 'Ползвам тези съвети при всички проекти.'],
   ['ai-prompts', 'demo@studyshare.bg', 'Дали са още актуални съветите в материала с това бързо развитие на Ai'],
-  ['ai-supabase', 'peter@studyshare.bg', 'Полезно ръководство за начало.'],
+  // (Peter's first comment on ai-supabase was replaced by hand on the live site, so it is not recreated.)
 
   // Second batch — short discussions (inserted in order, so they read chronologically)
   ['pb-loops', 'demo@studyshare.bg', '@Елена, добавих няколко примера с вложени цикли в края на файла.'],
@@ -165,6 +165,36 @@ export const COMMENTS = [
   ['ai-vite-netlify', 'demo@studyshare.bg', 'Бях забравил _redirects файла и всички страници връщаха 404 след презареждане.'],
   ['ai-vite-netlify', 'elena@studyshare.bg', 'Точно затова е стъпка 5 :) Без него SPA routing-ът не работи на Netlify.'],
   ['ai-rls', 'peter@studyshare.bg', 'Примерът с is_admin() ми беше точно нужен.'],
+
+  // Third batch (2026-11-10): discussions on materials that had none, single remarks on the rest.
+  // Appended at the end, so for every material they come after its existing comments.
+  ['pb-conditions', 'maria@studyshare.bg', 'В задача 9 видях няколко case-а един под друг в switch. Не знаех, че така може да се групират случаите.'],
+  ['pb-conditions', 'peter@studyshare.bg', 'Да, така няколко стойности водят до един и същ код. Само не забравяй break в края на групата.'],
+  ['pb-conditions', 'demo@studyshare.bg', 'Примерният вход и изход към всяка задача много помага да си проверя решението преди Judge.'],
+  ['pf-arrays', 'peter@studyshare.bg', 'Кое е по-бързо – forEach или обикновен for цикъл?'],
+  ['pf-arrays', 'elena@studyshare.bg', 'При малки масиви разликата не се усеща. Избирай това, което се чете по-лесно – map и filter обикновено правят кода по-ясен.'],
+  ['pf-arrays', 'peter@studyshare.bg', 'Разбрах, благодаря! Таблицата кои методи променят оригиналния масив също ми беше много полезна.'],
+  ['pf-regex', 'elena@studyshare.bg', 'Упражнението с имейла ми мина, но не хваща адреси с точка преди @, например ivan.petrov@abv.bg.'],
+  ['pf-regex', 'maria@studyshare.bg', 'Добави точката в класа от символи преди @: [\\w.]+ вместо \\w+. Ще го поправя и в решенията.'],
+  ['pf-regex', 'elena@studyshare.bg', 'Сега работи, мерси!'],
+  ['jsa-closures', 'demo@studyshare.bg', 'Примерът с брояча най-накрая ми изясни защо променливата не се нулира между извикванията.'],
+  ['jsa-closures', 'maria@studyshare.bg', 'Слайдът с var в цикъл и setTimeout е класически въпрос на интервю – добре, че е включен.'],
+  ['jsa-dom', 'peter@studyshare.bg', 'В задача 3 таблицата не се филтрира, когато пиша с главни букви.'],
+  ['jsa-dom', 'maria@studyshare.bg', 'Сравнявай двете страни с toLowerCase() – и текста от полето, и съдържанието на клетката. Добавих подсказка в README файла на задачата.'],
+  ['jsa-dom', 'demo@studyshare.bg', 'Началният код в архива спестява много време – може да се фокусираш само върху логиката.'],
+  ['db-normal', 'demo@studyshare.bg', 'Кога е оправдано да не нормализираме до 3NF?'],
+  ['db-normal', 'elena@studyshare.bg', 'Например при отчети и статистики, където четенето е много по-често от писането. Тогава дублираме данни съзнателно, за да избегнем тежки JOIN-ове.'],
+  ['db-normal', 'demo@studyshare.bg', 'Ясно, примерът със сумите по месеци в края го показва добре.'],
+  ['web-responsive', 'peter@studyshare.bg', 'Минах целия чеклист, преди да предам проекта, и открих два проблема на телефон. Благодаря!'],
+  ['web-responsive', 'elena@studyshare.bg', 'Бих добавила и проверка за хоризонтален скрол на 320px – при мен често го причиняваха дълги думи и URL адреси.'],
+  ['web-responsive', 'maria@studyshare.bg', 'Добра идея, ще я добавя в следващата версия.'],
+  ['db-sql', 'demo@studyshare.bg', 'Примерната база за университет е много удачна – веднага се вижда какво връща всяка заявка.'],
+  ['web-flex', 'peter@studyshare.bg', 'Сега разбирам защо за цялата страница ползвам Grid, а за менюто – Flexbox.'],
+  ['ai-supabase', 'demo@studyshare.bg', 'Стъпката с RLS политиките ми спести доста главоболия при първия проект.'],
+  ['jsa-events', 'demo@studyshare.bg', 'preventDefault и stopPropagation винаги ги бърках – слайдът с фазите на събитието помогна.'],
+  ['web-forms', 'maria@studyshare.bg', 'Не знаех за атрибута pattern – вече проверявам телефонния номер без нито ред JavaScript.'],
+  ['web-a11y', 'peter@studyshare.bg', 'Минах сайта си само с клавиатура по чеклиста и открих бутон, до който изобщо не се стига с Tab.'],
+  ['ai-rls', 'elena@studyshare.bg', 'Коментарите към всяка политика са най-ценната част – ясно е защо е написана точно така.'],
 ];
 
 /** [materialKey, userEmail, score 1–5] */
@@ -201,4 +231,13 @@ export const RATINGS = [
   ['web-a11y', 'elena@studyshare.bg', 4],
   ['ai-git', 'peter@studyshare.bg', 5], ['ai-git', 'elena@studyshare.bg', 5],
   ['ai-vite-netlify', 'demo@studyshare.bg', 4], ['ai-vite-netlify', 'maria@studyshare.bg', 5],
+
+  // Third batch (2026-11-10): materials that had only one or two ratings
+  ['pb-conditions', 'elena@studyshare.bg', 5],
+  ['pf-arrays', 'maria@studyshare.bg', 4],
+  ['pf-regex', 'peter@studyshare.bg', 5], ['pf-regex', 'demo@studyshare.bg', 4],
+  ['jsa-closures', 'demo@studyshare.bg', 5], ['jsa-closures', 'peter@studyshare.bg', 4],
+  ['jsa-dom', 'peter@studyshare.bg', 4], ['jsa-dom', 'elena@studyshare.bg', 4],
+  ['db-normal', 'demo@studyshare.bg', 5], ['db-normal', 'maria@studyshare.bg', 4],
+  ['web-responsive', 'peter@studyshare.bg', 5], ['web-responsive', 'elena@studyshare.bg', 4],
 ];
