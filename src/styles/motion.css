@@ -34,8 +34,37 @@
 #app.ss-enter * > :nth-child(5) { animation-delay: 280ms; }
 #app.ss-enter * > :nth-child(n + 6) { animation-delay: 350ms; }
 
-@media (prefers-reduced-motion: reduce) {
-  #app.ss-enter * {
+/* Scroll reveal (hybrid): where scroll-driven animations are supported (Chrome/Edge 115+, Safari 26+), list items
+   fade in while they scroll into view, independent of when they arrive from the database. Items that are already
+   on screen at load are shown at once, so their list wrapper gets the load-time fade instead.
+   Browsers without support (e.g. Firefox) skip this block and keep the load-time stagger above. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    #app.ss-enter :is(.ss-steps, #courses-list, #latest-materials, #dashboard-materials, #dashboard-favorites,
+                      [data-region='results'], #materials-list) {
+      animation-name: ss-fade-up;
+      animation-duration: 0.45s;
+      animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+      animation-fill-mode: both;
+      animation-delay: 140ms;
+    }
+
+    /* !important: overrides the load-time rules above (they have higher specificity) */
+    #app.ss-reveal :is(.ss-material-list, .ss-steps, #courses-list .row) > * {
+      animation-name: ss-fade-up !important;
+      animation-duration: auto !important;
+      animation-timing-function: ease-out !important;
+      animation-fill-mode: both !important;
+      animation-delay: 0s !important;
+      animation-timeline: view() !important;
+      animation-range: entry 10% entry 90% !important; /* done before the item is fully on screen */
+    }
+  }
+}
+
+/* Reduced motion; print (items never scrolled into view must not print invisible) */
+@media (prefers-reduced-motion: reduce), print {
+  #app:is(.ss-enter, .ss-reveal) * {
     animation: none !important;
   }
 }
