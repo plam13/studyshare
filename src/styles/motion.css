@@ -3,6 +3,14 @@
    `translate` adds to the `transform: rotate()` of the tilted stickers instead of replacing it.
    Wrappers whose children animate on their own are excluded, so nothing moves twice. */
 
+/* Stagger step of the entrance. A custom property (not animation-delay directly), so the stagger rules below never
+   change the timing of other animations on the page (hero sparkles, spinners, the share nudge). */
+@property --ss-enter-delay {
+  syntax: '<time>';
+  inherits: false;
+  initial-value: 0ms;
+}
+
 @keyframes ss-fade-up {
   from {
     opacity: 0;
@@ -20,19 +28,19 @@
 #app.ss-enter :is(.ss-steps, #courses-list .row, #latest-materials, #dashboard-materials, #dashboard-favorites,
                   [data-region='results'], #materials-list) > :not(.ss-material-list),
 #app.ss-enter .ss-material-list > * {
-  /* longhands: animation-delay comes from the stagger rules below */
   animation-name: ss-fade-up;
   animation-duration: 0.45s;
   animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
   animation-fill-mode: both;
+  animation-delay: var(--ss-enter-delay);
 }
 
 /* Stagger: each next block / item starts a little later (capped, so long lists do not wait) */
-#app.ss-enter * > :nth-child(2) { animation-delay: 70ms; }
-#app.ss-enter * > :nth-child(3) { animation-delay: 140ms; }
-#app.ss-enter * > :nth-child(4) { animation-delay: 210ms; }
-#app.ss-enter * > :nth-child(5) { animation-delay: 280ms; }
-#app.ss-enter * > :nth-child(n + 6) { animation-delay: 350ms; }
+#app.ss-enter * > :nth-child(2) { --ss-enter-delay: 70ms; }
+#app.ss-enter * > :nth-child(3) { --ss-enter-delay: 140ms; }
+#app.ss-enter * > :nth-child(4) { --ss-enter-delay: 210ms; }
+#app.ss-enter * > :nth-child(5) { --ss-enter-delay: 280ms; }
+#app.ss-enter * > :nth-child(n + 6) { --ss-enter-delay: 350ms; }
 
 /* Scroll reveal (hybrid): where scroll-driven animations are supported (Chrome/Edge 115+, Safari 26+), list items
    fade in while they scroll into view, independent of when they arrive from the database. Items that are already

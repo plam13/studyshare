@@ -35,6 +35,7 @@ The browser only hides what a role cannot do; the real checks are **Row-Level Se
 - Profile with avatar upload and name editing; personal dashboard with statistics, my latest materials and my saved materials („Запази“ on a material page; the list is private).
 - Share a material or course: native share sheet on phones, copy link (also for Discord), QR code (with PNG download), Facebook, X, LinkedIn, Reddit, Telegram, WhatsApp, Viber and e-mail. Shared links show a rich preview (title, description, image). Guests who open a shared link can browse it; downloading, commenting and rating still require login, and after login or registration they return to the same material.
 - Admins: manage courses, moderate any material or comment, assign roles.
+- Subtle one-time entrance animation: page blocks fade up on the first visit of a URL in the tab (not on reload or Back), and list items fade in as they scroll into view (CSS scroll-driven animations, with a load-time fallback). Off with `prefers-reduced-motion`.
 
 ## Tech stack
 
