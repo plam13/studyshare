@@ -8,6 +8,7 @@
 import { getUser } from './services/auth.js';
 import { showInfo, showError } from './utils/toast.js';
 import { getSafeRedirect } from './utils/guards.js';
+import { preparePageEnter } from './utils/page-enter.js';
 
 const APP_NAME = 'StudyShare';
 
@@ -165,6 +166,7 @@ async function render() {
     };
 
     container.innerHTML = '';
+    preparePageEnter(container, window.location.pathname); // one-time fade-up on the first visit of this URL
     currentCleanup = await module.mount(container, ctx);
     if (token !== renderToken) return;
     focusMain();

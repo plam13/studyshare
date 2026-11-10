@@ -105,7 +105,9 @@ For every stage: **prompt** the AI agent with a small, clear task → **implemen
 - [x] Admin panel: count of open reports on the "Модерация" tab and a notice above the tabs.
 - [x] README: how to run the project with your own Supabase backend.
 - [x] Polish: two-sentence demo descriptions (updated in place by a data script), tighter word spacing in the
-  monospace headings, hero title alignment.
+  monospace headings, hero title alignment, a third batch of demo comments (short discussions) and ratings.
+- [x] One-time "fade-up" entrance animation per page: staggered, only on the first visit of a URL in the tab
+  (not on reload or Back), off with `prefers-reduced-motion`.
 - [x] Final check: responsive screens, demo accounts, README; RLS for favorites verified with real demo logins (10/10).
 - [x] One production deploy (`[deploy]`) before 16:00 — released on 10.11 together with Stage 10.
 

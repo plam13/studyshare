@@ -1,0 +1,41 @@
+/* One-time page entrance ("fade-up", staggered). The router adds .ss-enter to #app on the first visit of a URL
+   (src/utils/page-enter.js). Only opacity and the separate `translate` property are animated: no layout shift, and
+   `translate` adds to the `transform: rotate()` of the tilted stickers instead of replacing it.
+   Wrappers whose children animate on their own are excluded, so nothing moves twice. */
+
+@keyframes ss-fade-up {
+  from {
+    opacity: 0;
+    translate: 0 14px;
+  }
+}
+
+/* 1. Page blocks: children of each top-level section (breadcrumb, heading, toolbar, hero, sticker row…) */
+#app.ss-enter > * > :not(#material-content, #course-content, #latest-materials, #dashboard-materials,
+                         #dashboard-favorites, #courses-list, [data-region='results'], .ss-steps),
+/* 2. Content that pages render after loading data (material and course pages) */
+#app.ss-enter :is(#material-content, #course-content) > :not(.row, #materials-list),
+#app.ss-enter #material-content > .row > *,
+/* 3. Items of lists and grids (also when they arrive later from the database) */
+#app.ss-enter :is(.ss-steps, #courses-list .row, #latest-materials, #dashboard-materials, #dashboard-favorites,
+                  [data-region='results'], #materials-list) > :not(.ss-material-list),
+#app.ss-enter .ss-material-list > * {
+  /* longhands: animation-delay comes from the stagger rules below */
+  animation-name: ss-fade-up;
+  animation-duration: 0.45s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  animation-fill-mode: both;
+}
+
+/* Stagger: each next block / item starts a little later (capped, so long lists do not wait) */
+#app.ss-enter * > :nth-child(2) { animation-delay: 70ms; }
+#app.ss-enter * > :nth-child(3) { animation-delay: 140ms; }
+#app.ss-enter * > :nth-child(4) { animation-delay: 210ms; }
+#app.ss-enter * > :nth-child(5) { animation-delay: 280ms; }
+#app.ss-enter * > :nth-child(n + 6) { animation-delay: 350ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  #app.ss-enter * {
+    animation: none !important;
+  }
+}
